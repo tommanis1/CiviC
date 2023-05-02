@@ -1,0 +1,11 @@
+===== Program =====
+int main () {
+	int a = 10;
+	while(a < 5) {
+	int b = 1;
+	}
+	return a;
+}===================
+Result:
+10
+
