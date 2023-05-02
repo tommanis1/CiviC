@@ -1,0 +1,410 @@
+module CIVIC-Start
+            
+imports 
+  
+  Funcons
+
+// Language "CIVIC"
+    
+lexical syntax // Language
+  LEX-id = ( [a-z] )*
+  LEX-int = ( [0-9] )+
+  LEX-keyword = "do"
+  LEX-keyword = "else"
+  LEX-keyword = "fork"
+  LEX-keyword = "if"
+  LEX-keyword = "in"
+  LEX-keyword = "join"
+  LEX-keyword = "print"
+  LEX-keyword = "ref"
+  LEX-keyword = "spawn"
+  LEX-keyword = "else"
+  LEX-keyword = "while"
+  LEX-keyword = "true"
+  LEX-keyword = "false"
+  LEX-bool-const = "true"
+  LEX-bool-const = "false"
+  LEX-arithmetic-op = [\+\*\/]
+  LEX-rel-op = "=="
+  LEX-rel-op = "!="
+  LEX-rel-op = "<"
+  LEX-rel-op = "<="
+  LEX-rel-op = ">"
+  LEX-rel-op = ">="
+  LEX-logic-op = "&&"
+  LEX-logic-op = "||"
+  LEX-mono-op = [\!]
+  LEX-basic-type = "int"
+  LEX-basic-type = "float"
+  LEX-basic-type = "bool"
+  LEX-return-type = "void"
+  LEX-return-type = LEX-basic-type
+  
+syntax // Language
+  
+context-free syntax // Language
+  L-id.LEX-id = 
+    LEX-id
+  L-int.LEX-int = 
+    LEX-int
+  L-keyword.LEX-keyword = 
+    LEX-keyword
+  L-bool-const.LEX-bool-const = 
+    LEX-bool-const
+  L-arithmetic-op.LEX-arithmetic-op = 
+    LEX-arithmetic-op
+  L-rel-op.LEX-rel-op = 
+    LEX-rel-op
+  L-logic-op.LEX-logic-op = 
+    LEX-logic-op
+  L-mono-op.LEX-mono-op = 
+    LEX-mono-op
+  L-basic-type.LEX-basic-type = 
+    LEX-basic-type
+  L-return-type.LEX-return-type = 
+    LEX-return-type
+  L-float-const.L-float-const--L-int-DOT-L-int =
+    L-int "." L-int
+  
+  L-exp.L-exp--LPAREN-L-exp-RPAREN =
+    "(" L-exp ")"
+  L-exp.L-exp--R-spawn-LPAREN-L-id-RPAREN =
+    "spawn" "(" L-id ")"
+  L-exp.L-exp--L-exp-PLUS-L-exp =
+    L-exp "+" L-exp
+  L-exp.L-exp--L-exp-L-rel-op-L-exp =
+    L-exp L-rel-op L-exp
+  L-exp.L-exp--L-exp-L-logic-op-L-exp =
+    L-exp L-logic-op L-exp
+  L-exp.L-exp--L-mono-op-L-exp =
+    L-mono-op L-exp
+  L-exp.L-exp--L-id-LPAREN-L-exprs-Q-RPAREN =
+    L-id "(" L-exprs? ")"
+  L-exp.L-exp--L-id =
+    L-id
+  L-exp.L-exp--L-const =
+    L-const
+  
+  L-const.L-const--L-bool-const =
+    L-bool-const
+  L-const.L-const--L-int =
+    L-int
+  L-const.L-const--L-float-const =
+    L-float-const
+  
+  L-exprs.L-exprs--L-exp-C-COMMA-L-exprs-D-Q =
+    L-exp L-COMMA-L-exprs?
+  
+  L-COMMA-L-exprs.L-COMMA-L-exprs--COMMA-L-exprs =
+    "," L-exprs
+  
+  
+  L-decl.L-decl--L-function-definition =
+    L-function-definition
+  
+  L-var-decl.L-var-decl--L-basic-type-L-id-C-EQUALS-L-exp-D-Q-SEMI =
+    L-basic-type L-id L-EQUALS-L-exp? ";"
+  
+  L-EQUALS-L-exp.L-EQUALS-L-exp--EQUALS-L-exp =
+    "=" L-exp
+  
+  
+  L-stmts.L-stmts--L-stmt-L-stmts-Q =
+    L-stmt L-stmts?
+  
+  L-stmt.L-stmt--L-var-decl =
+    L-var-decl
+  L-stmt.L-stmt--L-imp-stmt =
+    L-imp-stmt
+  L-stmt.L-stmt--L-local-fun =
+    L-local-fun
+  
+  L-imp-stmt.L-imp-stmt--L-id-EQUALS-L-exp-SEMI =
+    L-id "=" L-exp ";"
+  L-imp-stmt.L-imp-stmt--L-exp-SEMI =
+    L-exp ";"
+  L-imp-stmt.L-imp-stmt--R-if-LPAREN-L-exp-RPAREN-L-block-C-R-else-L-block-D-Q =
+    "if" "(" L-exp ")" L-block L-R-else-L-block?
+  L-imp-stmt.L-imp-stmt--R-while-LPAREN-L-exp-RPAREN-L-block =
+    "while" "(" L-exp ")" L-block
+  L-imp-stmt.L-imp-stmt--R-do-L-block-R-while-LPAREN-L-exp-RPAREN =
+    "do" L-block "while" "(" L-exp ")"
+  L-imp-stmt.L-imp-stmt--R-for-LPAREN-R-int-L-id-EQUALS-L-exp-COMMA-L-exp-C-COMMA-L-exp-D-Q-RPAREN-L-block =
+    "for" "(" "int" L-id "=" L-exp "," L-exp L-COMMA-L-exp? ")" L-block
+  L-imp-stmt.L-imp-stmt--R-return-L-exp-Q-SEMI =
+    "return" L-exp? ";"
+  L-imp-stmt.L-imp-stmt--L-block =
+    L-block
+  L-imp-stmt.L-imp-stmt--R-print-LPAREN-L-exp-RPAREN-SEMI =
+    "print" "(" L-exp ")" ";"
+  L-imp-stmt.L-imp-stmt--R-join-LPAREN-L-exp-RPAREN-SEMI =
+    "join" "(" L-exp ")" ";"
+  
+  L-R-else-L-block.L-R-else-L-block--R-else-L-block =
+    "else" L-block
+  
+  
+  L-COMMA-L-exp.L-COMMA-L-exp--COMMA-L-exp =
+    "," L-exp
+  
+  
+  L-block.L-block--LBRACE-L-stmts-Q-RBRACE =
+    "{" L-stmts? "}"
+  
+  L-local-fun.L-local-fun--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
+    L-return-type L-id "(" L-params? ")" L-block
+  
+  L-function-definition.L-function-definition--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
+    L-return-type L-id "(" L-params? ")" L-block
+  
+  L-param.L-param--L-basic-type-L-id =
+    L-basic-type L-id
+  
+  L-params.L-params--L-param-C-COMMA-L-params-D-Q =
+    L-param L-COMMA-L-params?
+  
+  L-COMMA-L-params.L-COMMA-L-params--COMMA-L-params =
+    "," L-params
+  
+  
+  L-start.L-start--L-pgm =
+    L-pgm
+  
+  L-pgm.L-pgm--L-decls =
+    L-decls
+  
+  L-decls.L-decls--L-decl-L-decls-Q =
+    L-decl L-decls?
+  
+  
+context-free syntax // Semantics
+  FCT-Quoted.L-id = L-id
+  FCT-Quoted.L-int = L-int
+  FCT-Quoted.LEX-keyword = LEX-keyword
+  FCT-Quoted.L-bool-const = L-bool-const
+  FCT-Quoted.L-arithmetic-op = L-arithmetic-op
+  FCT-Quoted.LEX-rel-op = LEX-rel-op
+  FCT-Quoted.LEX-logic-op = LEX-logic-op
+  FCT-Quoted.LEX-mono-op = LEX-mono-op
+  FCT-Quoted.L-basic-type = L-basic-type
+  FCT-Quoted.L-return-type = L-return-type
+  FCT.T-eval =
+    "eval" "[:" L-exprs ":]"
+  FCT.T-exec-var =
+    "exec-var" "[:" L-var-decl ":]"
+  FCT.T-type =
+    "type" "[:" L-basic-type ":]"
+  FCT.T-id =
+    "id" "[:" L-id ":]"
+  FCT.T-local-initialise =
+    "local-initialise" "[:" L-local-fun ":]"
+  FCT.T-var-declare =
+    "var-declare" "[:" L-var-decl ":]"
+  FCT.T-exec =
+    "exec" "[:" L-stmts ":]"
+  FCT-SEQ.T-patts =
+    "patts" "[:" L-params? ":]"
+  FCT.T-start =
+    "start" "[:" L-start ":]"
+  FCT.T-run =
+    "run" "[:" L-pgm ":]"
+  FCT-SEQ.T-declarations =
+    "declarations" "[:" L-decls ":]"
+  FCT-SEQ.T-initialisations =
+    "initialisations" "[:" L-decls ":]"
+  FCT.T-initialise =
+    "initialise" "[:" L-decl ":]"
+  FCT.T-declare =
+    "declare" "[:" L-decl ":]"
+  
+context-free syntax // Desugaring
+  Term.ToTerm = "[:" L-stmt  ":]" ":" "stmt"
+  
+variables // Meta-variables
+  L-id = "(:ID" [1-9]? ":)" {prefer}
+  L-id? = "(:ID" [1-9]? "?:)" {prefer}
+  L-id* = "(:ID" [1-9]? "*:)" {prefer}
+  L-id+ = "(:ID" [1-9]? "+:)" {prefer}
+  L-int = "(:N" [1-9]? ":)" {prefer}
+  L-int? = "(:N" [1-9]? "?:)" {prefer}
+  L-int* = "(:N" [1-9]? "*:)" {prefer}
+  L-int+ = "(:N" [1-9]? "+:)" {prefer}
+  L-bool-const = "(:Bool" [1-9]? ":)" {prefer}
+  L-bool-const? = "(:Bool" [1-9]? "?:)" {prefer}
+  L-bool-const* = "(:Bool" [1-9]? "*:)" {prefer}
+  L-bool-const+ = "(:Bool" [1-9]? "+:)" {prefer}
+  L-arithmetic-op = "(:AR" [1-9]? ":)" {prefer}
+  L-arithmetic-op? = "(:AR" [1-9]? "?:)" {prefer}
+  L-arithmetic-op* = "(:AR" [1-9]? "*:)" {prefer}
+  L-arithmetic-op+ = "(:AR" [1-9]? "+:)" {prefer}
+  L-basic-type = "(:BasicType" [1-9]? ":)" {prefer}
+  L-basic-type? = "(:BasicType" [1-9]? "?:)" {prefer}
+  L-basic-type* = "(:BasicType" [1-9]? "*:)" {prefer}
+  L-basic-type+ = "(:BasicType" [1-9]? "+:)" {prefer}
+  L-return-type = "(:RetType" [1-9]? ":)" {prefer}
+  L-return-type? = "(:RetType" [1-9]? "?:)" {prefer}
+  L-return-type* = "(:RetType" [1-9]? "*:)" {prefer}
+  L-return-type+ = "(:RetType" [1-9]? "+:)" {prefer}
+  L-float-const = "(:F" [1-9]? ":)" {prefer}
+  L-float-const? = "(:F" [1-9]? "?:)" {prefer}
+  L-float-const* = "(:F" [1-9]? "*:)" {prefer}
+  L-float-const+ = "(:F" [1-9]? "+:)" {prefer}
+  L-exp = "(:E" [1-9]? ":)" {prefer}
+  L-exp? = "(:E" [1-9]? "?:)" {prefer}
+  L-exp* = "(:E" [1-9]? "*:)" {prefer}
+  L-exp+ = "(:E" [1-9]? "+:)" {prefer}
+  L-const = "(:Const" [1-9]? ":)" {prefer}
+  L-const? = "(:Const" [1-9]? "?:)" {prefer}
+  L-const* = "(:Const" [1-9]? "*:)" {prefer}
+  L-const+ = "(:Const" [1-9]? "+:)" {prefer}
+  L-exprs = "(:Exprs" [1-9]? ":)" {prefer}
+  L-exprs? = "(:Exprs" [1-9]? "?:)" {prefer}
+  L-exprs* = "(:Exprs" [1-9]? "*:)" {prefer}
+  L-exprs+ = "(:Exprs" [1-9]? "+:)" {prefer}
+  L-decl = "(:Decl" [1-9]? ":)" {prefer}
+  L-decl? = "(:Decl" [1-9]? "?:)" {prefer}
+  L-decl* = "(:Decl" [1-9]? "*:)" {prefer}
+  L-decl+ = "(:Decl" [1-9]? "+:)" {prefer}
+  L-var-decl = "(:VarDecl" [1-9]? ":)" {prefer}
+  L-var-decl? = "(:VarDecl" [1-9]? "?:)" {prefer}
+  L-var-decl* = "(:VarDecl" [1-9]? "*:)" {prefer}
+  L-var-decl+ = "(:VarDecl" [1-9]? "+:)" {prefer}
+  L-stmts = "(:Stmts" [1-9]? ":)" {prefer}
+  L-stmts? = "(:Stmts" [1-9]? "?:)" {prefer}
+  L-stmts* = "(:Stmts" [1-9]? "*:)" {prefer}
+  L-stmts+ = "(:Stmts" [1-9]? "+:)" {prefer}
+  L-stmt = "(:Stmt" [1-9]? ":)" {prefer}
+  L-stmt? = "(:Stmt" [1-9]? "?:)" {prefer}
+  L-stmt* = "(:Stmt" [1-9]? "*:)" {prefer}
+  L-stmt+ = "(:Stmt" [1-9]? "+:)" {prefer}
+  L-imp-stmt = "(:ImpStmt" [1-9]? ":)" {prefer}
+  L-imp-stmt? = "(:ImpStmt" [1-9]? "?:)" {prefer}
+  L-imp-stmt* = "(:ImpStmt" [1-9]? "*:)" {prefer}
+  L-imp-stmt+ = "(:ImpStmt" [1-9]? "+:)" {prefer}
+  L-block = "(:Block" [1-9]? ":)" {prefer}
+  L-block? = "(:Block" [1-9]? "?:)" {prefer}
+  L-block* = "(:Block" [1-9]? "*:)" {prefer}
+  L-block+ = "(:Block" [1-9]? "+:)" {prefer}
+  L-local-fun = "(:LocalFunDef" [1-9]? ":)" {prefer}
+  L-local-fun? = "(:LocalFunDef" [1-9]? "?:)" {prefer}
+  L-local-fun* = "(:LocalFunDef" [1-9]? "*:)" {prefer}
+  L-local-fun+ = "(:LocalFunDef" [1-9]? "+:)" {prefer}
+  L-function-definition = "(:FunDef" [1-9]? ":)" {prefer}
+  L-function-definition? = "(:FunDef" [1-9]? "?:)" {prefer}
+  L-function-definition* = "(:FunDef" [1-9]? "*:)" {prefer}
+  L-function-definition+ = "(:FunDef" [1-9]? "+:)" {prefer}
+  L-param = "(:Param" [1-9]? ":)" {prefer}
+  L-param? = "(:Param" [1-9]? "?:)" {prefer}
+  L-param* = "(:Param" [1-9]? "*:)" {prefer}
+  L-param+ = "(:Param" [1-9]? "+:)" {prefer}
+  L-params = "(:Params" [1-9]? ":)" {prefer}
+  L-params? = "(:Params" [1-9]? "?:)" {prefer}
+  L-params* = "(:Params" [1-9]? "*:)" {prefer}
+  L-params+ = "(:Params" [1-9]? "+:)" {prefer}
+  L-start = "(:START" [1-9]? ":)" {prefer}
+  L-start? = "(:START" [1-9]? "?:)" {prefer}
+  L-start* = "(:START" [1-9]? "*:)" {prefer}
+  L-start+ = "(:START" [1-9]? "+:)" {prefer}
+  L-pgm = "(:Pgm" [1-9]? ":)" {prefer}
+  L-pgm? = "(:Pgm" [1-9]? "?:)" {prefer}
+  L-pgm* = "(:Pgm" [1-9]? "*:)" {prefer}
+  L-pgm+ = "(:Pgm" [1-9]? "+:)" {prefer}
+  L-decls = "(:Decls" [1-9]? ":)" {prefer}
+  L-decls? = "(:Decls" [1-9]? "?:)" {prefer}
+  L-decls* = "(:Decls" [1-9]? "*:)" {prefer}
+  L-decls+ = "(:Decls" [1-9]? "+:)" {prefer}
+  
+// SDF comments
+  
+  lexical syntax 
+    LEX-id = LEX-keyword {reject}
+  
+  lexical restrictions
+    LEX-id -/- [A-Za-z0-9]
+  
+  context-free syntax
+  L-exp.L-exp--L-exp-STAR-L-exp =
+    L-exp "*" L-exp
+   {left}
+  L-exp.L-exp--L-exp-SLASH-L-exp =
+    L-exp "/" L-exp
+   {left}
+  L-exp.L-exp--L-exp-PERCENT-L-exp =
+    L-exp "%" L-exp
+   {left}
+    
+  L-exp.L-exp--L-exp-PLUS-L-exp =
+    L-exp "+" L-exp
+   {left}
+  //L-exp.L-exp--L-exp-DASH-L-exp =
+    L-exp "-" L-exp
+   {left}
+    
+  L-exp.L-exp--L-exp-AMPERSAND-AMPERSAND-L-exp =
+    L-exp "&&" L-exp
+   {left}
+  L-exp.L-exp--L-exp-BAR-BAR-L-exp =
+    L-exp "||" L-exp
+   {left}
+  
+  context-free priorities
+  {
+  //L-exp.L-exp--DASH-L-exp =
+    "-" L-exp
+  
+  L-exp.L-exp--BANG-L-exp =
+    "!" L-exp
+  
+  } >
+  {left: 
+  L-exp.L-exp--L-exp-STAR-L-exp =
+    L-exp "*" L-exp
+  
+  L-exp.L-exp--L-exp-SLASH-L-exp =
+    L-exp "/" L-exp
+  
+  L-exp.L-exp--L-exp-PERCENT-L-exp =
+    L-exp "%" L-exp
+  
+  } >
+  {left: 
+  L-exp.L-exp--L-exp-PLUS-L-exp =
+    L-exp "+" L-exp
+  
+  L-exp.L-exp--L-exp-DASH-L-exp =
+    L-exp "-" L-exp
+  
+  } >
+  {non-assoc: 
+  L-exp.L-exp--L-exp-LESS-L-exp =
+    L-exp "<" L-exp
+  
+  L-exp.L-exp--L-exp-LESS-EQUALS-L-exp =
+    L-exp "<=" L-exp
+  
+  L-exp.L-exp--L-exp-GREATER-L-exp =
+    L-exp ">" L-exp
+  
+  L-exp.L-exp--L-exp-GREATER-EQUALS-L-exp =
+    L-exp ">=" L-exp
+  
+  L-exp.L-exp--L-exp-EQUALS-EQUALS-L-exp =
+    L-exp "==" L-exp
+  
+  L-exp.L-exp--L-exp-BANG-EQUALS-L-exp =
+    L-exp "!=" L-exp
+  
+  } >
+  {assoc: 
+  L-exp.L-exp--L-exp-AMPERSAND-AMPERSAND-L-exp =
+    L-exp "&&" L-exp
+  
+  } >
+  {assoc: 
+  L-exp.L-exp--L-exp-BAR-BAR-L-exp =
+    L-exp "||" L-exp
+  
+  }
+  
+sorts // ASTs
+  T-start

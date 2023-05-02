@@ -1,0 +1,16 @@
+module Main
+
+imports
+
+  Menus
+  
+  Syntax
+  Analysis
+  Refactoring
+
+language
+
+  extensions : civ
+
+  provider : target/metaborg/stratego.ctree
+  provider : target/metaborg/stratego.jar

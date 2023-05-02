@@ -1,0 +1,3 @@
+initialise-binding initialise-storing finalise-failing multithread is-equal
+  (decimal "1",
+   decimal "1")

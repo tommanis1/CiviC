@@ -1,0 +1,5 @@
+initialise-binding initialise-storing finalise-failing bind
+  ("a",
+   allocate-initialised-variable
+     (integers,
+      decimal "1"))

@@ -1,0 +1,6 @@
+int main(){
+int a = 11;
+for(int i = 1, 10) {
+print(i);
+}
+}

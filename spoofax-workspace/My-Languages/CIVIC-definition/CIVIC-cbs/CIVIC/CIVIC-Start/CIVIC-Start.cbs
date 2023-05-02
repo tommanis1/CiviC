@@ -1,0 +1,376 @@
+Language "CIVIC"
+
+Lexis SDF
+/*
+lexical syntax 
+  ``id`` = ``keyword`` {reject}
+
+lexical restrictions
+  ``id`` -/- [A-Za-z0-9]
+*/
+Syntax SDF
+/*
+context-free syntax
+``exp ::= exp '*' exp`` {left}
+``exp ::= exp '/' exp`` {left}
+``exp ::= exp '%' exp`` {left}
+  
+``exp ::= exp '+' exp`` {left}
+//``exp ::= exp '-' exp`` {left}
+  
+``exp ::= exp '&&' exp`` {left}
+``exp ::= exp '||' exp`` {left}
+
+context-free priorities
+{
+//``exp ::= '-' exp``
+``exp ::= '!' exp``
+} >
+{left: 
+``exp ::= exp '*' exp``
+``exp ::= exp '/' exp``
+``exp ::= exp '%' exp``
+} >
+{left: 
+``exp ::= exp '+' exp``
+``exp ::= exp '-' exp``
+} >
+{non-assoc: 
+``exp ::= exp '<' exp``
+``exp ::= exp '<=' exp``
+``exp ::= exp '>' exp``
+``exp ::= exp '>=' exp``
+``exp ::= exp '==' exp``
+``exp ::= exp '!=' exp``
+} >
+{assoc: 
+``exp ::= exp '&&' exp``
+} >
+{assoc: 
+``exp ::= exp '||' exp``
+}
+*/
+
+/* 
+  Lexical syntax: 
+*/
+
+Lexis  
+		ID:id  ::= ('a'-'z')*
+     
+       N:int ::= ('0'-'9')+
+       
+       keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
+                 | 'in'  | 'join' | 'print' 
+                 | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false'
+       Bool : bool-const ::= 'true' | 'false'
+       AR : arithmetic-op ::= '+' | '*' | '/' // | '%'
+       rel-op ::= '==' | '!=' | '<' | '<=' | '>'| '>='
+	   logic-op ::= '&&' | '||'
+	   mono-op ::=  '!' //'-' | '!'
+	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
+	   RetType : return-type ::= 'void' | basic-type
+	 	//	F: float-const ::= ('0'-'9')+ '.' ('0'-'9')+
+	 	
+Syntax 
+	F: float-const ::= int '.' int
+//	int '.' int
+	
+/*		
+  Context-free syntax:
+*/
+
+Syntax E:exp ::= '(' exp ')'
+				| 'spawn' '(' id ')'
+// Arithmetic Operator:
+//               | exp arithmetic-op exp
+               | exp '+' exp
+//               | exp '*' exp
+//               | exp '/' exp
+				| exp rel-op exp
+				| exp logic-op exp
+				| mono-op exp
+				| id '(' exprs? ')'
+//				| id '('')'
+				| id
+				| const
+//				| 'Null'
+
+				
+	Const : const ::= bool-const | int | float-const
+	Exprs : exprs ::= exp (',' exprs)?
+
+/*
+  Expression evaluation:
+*/
+
+Type ld-values ~> functions(values, values)
+                | integers
+                | booleans
+                | variables
+                | null-type
+//                | thread-ids
+                
+                
+Type basic-types ~> integers
+                | booleans
+                | floats
+
+Semantics eval[[ _:exprs ]] : => ld-values
+Semantics exec-var[[ _:var-decl ]] : => ld-values
+Semantics type[[ _:basic-type ]] : => basic-types
+Semantics
+  id[[ _:id ]] : =>ids
+Rule
+  id[[ ID ]] = \"ID\"
+
+//TODO
+//Rule type[[ 'int' ]] = integers
+//Rule type[[ 'float' ]] = floats
+Rule type[[ BasicType ]] = values
+
+//#1 Lexical constructs
+
+Rule eval[[ 'spawn' '(' ID ')' ]] = allocate-index
+      thread-activate thread-joinable
+          postpone-after-effect
+            supply(assigned(bound(id[[ ID ]])), tuple
+           ( ))
+
+Rule eval[[ N ]] = decimal-natural(\"N\")
+Rule eval[[ N1 '.' N2 ]] = decimal-float(binary32, \"N1\", \"N2\", "1")
+//Rule eval[[ F ]] = float(\"F\")
+
+
+Rule eval[[ ID ]] = assigned(bound(id[[ ID ]]))
+Rule eval[[ 'true' ]] = false
+
+Rule eval[[ 'false' ]] = false
+
+Rule eval[[ ID '(' ')' ]] = apply(eval[[ ID ]], tuple() )
+Rule eval[[ ID '(' Exprs ')' ]] = apply(eval[[ ID ]], tuple(eval[[ Exprs ]]) )
+
+Rule eval[[ E ',' Exprs ]] = sequential(eval[[ E ]], eval[[ Exprs]])
+
+
+Rule eval[[ '(' E ')' ]] = eval[[ E ]]
+
+
+//#3 Arithmetic and Boolean expressions
+Rule eval[[ E1 '+' E2 ]] = else(
+	int-add(eval[[ E1 ]], eval[[ E2 ]]),
+	float-add(eval[[ E1 ]], eval[[ E2 ]])
+)
+
+Rule eval[[ E1 '*' E2 ]] = else(
+	int-mul(eval[[ E1 ]], eval[[ E2 ]]),
+	float-multiply(eval[[ E1 ]], eval[[ E2 ]])
+)
+
+Rule eval[[ E1 '/' E2 ]] = else(
+	int-div(eval[[ E1 ]], eval[[ E2 ]]),
+	float-divide(eval[[ E1 ]], eval[[ E2 ]])
+)
+
+
+//rel-op
+Rule eval[[ E1 '==' E2 ]] = is-equal(eval[[ E1 ]],eval[[ E2 ]])
+Rule eval[[ E1 '!=' E2 ]] = not(is-equal(eval[[ E1 ]],eval[[ E2 ]]))
+Rule eval[[ E1 '<' E2 ]]  = is-less(eval[[ E1 ]],eval[[ E2 ]])
+Rule eval[[ E1 '<=' E2 ]] = is-less-or-equal(eval[[ E1 ]],eval[[ E2 ]])
+Rule eval[[ E1 '>' E2 ]]  = is-greater(eval[[ E1 ]],eval[[ E2 ]])
+Rule eval[[ E1 '>=' E2 ]] = is-greater-or-equal(eval[[ E1 ]],eval[[ E2 ]])
+
+//logic-op
+Rule eval[[ E1 '&&' E2 ]] = if-else(eval[[ E1 ]],eval[[ E2 ]],false)
+Rule eval[[ E1 '||' E2 ]] = if-else(eval[[ E1 ]],true,eval[[ E2 ]])
+
+//mono-op
+//Rule eval[[ '-' E ]] = integer-negate(eval[[ E ]])
+Rule eval[[ '!' E ]]        = not(eval[[ E ]])
+
+
+//Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
+                        
+Syntax
+	Decl : decl ::= function-definition 
+	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
+	Stmts: stmts ::= stmt stmts?
+	Stmt: stmt ::= var-decl | imp-stmt | local-fun
+	ImpStmt : imp-stmt ::= id '=' exp ';'
+					| exp ';'
+					| 'if' '(' exp')' block ('else' block)?
+					| 'while' '(' exp ')' block
+					| 'do' block 'while' '(' exp ')'
+					| 'for' '(' 'int' id '=' exp ',' exp (',' exp)? ')' block
+//					| 'for' '(' 'int' id '=' exp ',' exp ')' block
+					| 'return' exp? ';'
+					| block // Needed to be able to exec[[ Block ]] needs a workaround
+					| 'print' '(' exp ')' ';' // TODO: standard library?
+					| 'join''(' exp ')' ';'
+//					| 'threadjoin' id ';'
+
+	Block : block ::= '{' stmts?'}'
+	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
+Semantics
+  local-initialise[[ _:local-fun ]] : =>null-type
+   
+Rule
+  local-initialise[[ RetType ID '(' Params? ')' Block ]] = 
+    bind(
+      id[[ ID ]],
+      function closure(
+        scope(
+          match(given, tuple(patts[[ Params? ]])),
+          handle-return(exec[[ Block ]])))
+          )
+//					| stmt
+
+//Rule exec[[ ]] = null
+//Rule exec[[ VarDecls Stmts ]] = sequential(exec[[ VarDecls ]], exec[[ Stmts ]] )
+
+////Desugaring
+//Rule [[ BasicType ID '=' E ';' ]] : var-decl =
+//	[[ BasicType ID ';' ID '=' E ';' ]]
+
+
+Semantics var-declare[[ _:var-decl ]] : =>environments
+//initialize
+Rule var-declare[[ BasicType ID ';' ]] =   bind(id[[ ID ]], allocate-initialised-variable( type[[ BasicType ]] ,  null))
+Rule var-declare[[ BasicType ID '=' E ';' ]] =  bind(id[[ ID ]],  allocate-initialised-variable( type[[ BasicType ]] ,  eval[[ E ]]))
+
+Semantics exec[[ _:stmts ]] : =>null-type
+// Stmts
+Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
+Rule exec[[ LocalFunDef Stmts ]] = scope(local-initialise[[ LocalFunDef ]], exec[[ Stmts ]])
+
+Rule exec[[ VarDecl Stmts ]] = scope(var-declare[[ VarDecl ]], exec[[ Stmts ]])
+Rule exec[[ VarDecl ]] = effect(var-declare[[ VarDecl]])
+
+
+//ImpStmt
+Rule exec[[ ID '=' E ';' ]] = assign(id[[ ID ]], eval[[ E ]])
+
+Rule [[ 'if' '(' E ')' Block ]] : stmt = [[ 'if' '(' E ')' Block 'else' '{' '}' ]]
+Rule exec[[ 'if' '(' E ')' Block1 'else' Block2 ]] = if-true-else( eval[[ E ]], exec[[ Block1 ]], exec[[ Block2 ]] )
+//Rule exec[[ 'if' '(' E ')' Block ]] = if-true-else( eval[[ E ]], exec[[ Block ]], null )
+
+Rule exec[[ 'while' '(' E ')' Block ]] = while(eval[[ E ]], exec[[ Block ]])
+Rule exec[[ 'do' Block 'while' '(' E ')' ]] = while(eval[[ E ]], exec[[ Block ]])
+
+// TODO fix, find the correct syntax for literal 1
+//Rule [[ 'for' '(' 'int' ID '=' E1 ',' E2 ')' Block ]]: stmt = [[ 'for' '(' 'int' ID '=' E1 ','  E2 ',' '1' ')' Block ]]
+Rule exec[[ 'for' '(' 'int' ID '=' E1 ',' E2 ',' E3 ')' Block ]] = 
+  scope (
+    bind(id[[ ID ]],  allocate-initialised-variable( integers, eval[[ E1 ]])),
+    while(is-less(assigned(bound(id[[ ID ]])), eval[[ E2 ]]), 
+      sequential(
+        exec[[ Block ]],
+        assign(bound(id[[ ID ]]), integer-add(assigned(bound(id[[ ID ]])), eval[[ E3 ]]))
+      )
+    )
+  )
+
+Rule exec[[ 'for' '(' 'int' ID '=' E1 ',' E2 ')' Block ]] =
+    scope(
+        bind(id[[ ID ]], allocate-initialised-variable(integers, eval[[ E1 ]])),
+        while(is-less(assigned(bound(id[[ ID ]])), eval[[ E2 ]]),
+            sequential(
+                exec[[ Block ]],
+                assign(bound(id[[ ID ]]), integer-add(assigned(bound(id[[ ID ]])), decimal-natural("1")))
+            )
+        )
+    )
+    
+Rule exec[[ 'return' E ';' ]] = return(eval[[ E ]])
+Rule exec[[ 'return' ';' ]] = return(null)
+Rule exec[[ E ';' ]] = eval[[ E ]]
+Rule exec[[ 'print' '(' E ')' ';']] = print(eval[[ E ]])
+Rule exec[[ 'join' '(' E ')' ';' ]] =   thread-join lookup-index(eval[[ E ]])
+//Block
+Rule exec[[ '{' Stmts '}' ]] = exec[[ Stmts ]]
+Rule exec[[ '{' '}' ]] = null
+
+//Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
+//Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
+
+Syntax 
+	FunDef : function-definition ::= return-type id '(' params? ')' block
+	Param : param ::= basic-type id
+	Params : params ::= param (',' params)?
+
+Semantics
+  patts[[ _:params? ]] : patterns*
+Rule
+  patts[[ ]] = ( )
+Rule
+  patts[[ BasicType ID ]] =
+    pattern closure(bind(id[[ ID ]],
+                      allocate-initialised-variable(values, given)))
+Rule
+  patts[[ BasicType ID ',' Params ]] =
+    patts[[ BasicType ID ]] , patts[[ Params ]]
+    
+//Semantics init-param[[ _:param* ]] 
+Rule initialise[[ RetType ID '(' Params? ')' Block ]] = 
+	assign(
+      bound(id[[ ID ]]),
+      function closure(
+        scope(
+          match(given,tuple(patts[[ Params? ]])),
+          handle-return(exec[[ Block ]])))
+          )
+
+Rule
+  declare[[ RetType ID '(' Params? ')' Block ]] =
+    bind(id[[ ID ]],
+    allocate-variable(functions(tuples(values*),values)))
+//#6 Programs
+
+Syntax START:start ::= pgm
+
+Semantics start[[ _:start ]] : =>values
+
+Rule start[[ Pgm ]] =
+    initialise-binding
+    initialise-storing
+    initialise-giving
+//    initialise-memos
+    finalise-failing
+    finalise-throwing
+  multithread
+     postpone-after-effect run[[ Pgm ]]
+
+
+Syntax
+  Pgm : pgm ::= decls
+  
+Semantics
+  run[[ Decls:pgm ]] : =>values
+    = scope(
+        collateral(declarations[[ Decls ]]),
+        sequential(
+          initialisations[[ Decls ]],
+          apply(assigned(bound("main")), tuple
+           ( ))))
+Syntax
+  Decls : decls ::= decl decls?
+  
+Semantics
+  declarations[[ _:decls ]] : (=>environments)+
+Rule
+  declarations[[ Decl ]] = declare[[ Decl ]]
+Rule
+  declarations[[ Decl Decls ]] = declare[[ Decl ]], declarations[[ Decls ]]
+
+Semantics
+  initialisations[[ _:decls ]] : (=>null-type)+
+Rule
+  initialisations[[ Decl ]] = initialise[[ Decl ]]
+Rule
+  initialisations[[ Decl Decls ]] =
+    initialise[[ Decl ]], initialisations[[ Decls ]]
+Semantics
+  initialise[[ _:decl ]] : =>null-type
+Semantics
+  declare[[ _:decl ]] : =>environments

@@ -1,0 +1,5 @@
+initialise-binding initialise-storing finalise-failing sequential
+  (return
+     (decimal "1"),
+   return
+     (decimal "1"))

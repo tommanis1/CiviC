@@ -1,0 +1,118 @@
+module generate
+
+imports
+    libstratego-gpp
+    signatures/-
+    pp/CIVIC-parenthesize
+    pp/CIVIC-pp
+    pp/Funcons-pp-pp
+    cbs-gen/CIVIC-Start
+
+rules // Builder
+
+  // Generates a funcon term for selected AST.
+  generate-fct:
+    (selected, position, ast, path, project-path) -> (filename, result)
+      where <not(has-extension(|"fct"))> <debug> path
+      with
+        filename := <guarantee-extension(|"fct")> path;
+        funcons  := <to-funcons-top> selected;
+        result := <prettyprint-CIVIC-string> funcons
+
+  generate-fct:
+    (selected, position, ast, path, project-path) -> None()
+      where <has-extension(|"fct")> path
+
+  prettyprint-CIVIC-string =
+    parenthesize-CIVIC
+    ; prettyprint-CIVIC-Start
+    ; !V([], <id>)
+    ; box2text-string(|80)
+
+  to-funcons-start: START -> |[ start[: START :] ]|
+  
+  to-funcons-top =
+    to-funcons-start;
+    innermost(to-desugared <+ to-funcons <+ to-funcons-default);
+    bottomup(try(to-funcons-lex));
+    innermost(to-funcons-sequences <+ to-funcons-groups);
+    innermost(to-funcons-apps)
+        
+  to-funcons = fail
+  
+  to-funcons-default = fail
+  
+  to-desugared = fail
+
+// Funcons involved in simplification rules:
+
+rules
+
+  to-funcons-sequences:
+    FCTSequence(FCTEmpty(),seq) -> seq
+  
+  to-funcons-sequences:
+    FCTSequence(seq,FCTEmpty()) -> seq
+
+  to-funcons-sequences:
+    FCTApp("sequential",FCTGroup(FCTSequence(fct,FCTApp("sequential",FCTGroup(seq))))) ->
+    FCTApp("sequential",FCTGroup(FCTSequence(fct,seq)))
+    
+  to-funcons-groups:
+    FCTGroup(FCTGroup(seq)) -> FCTGroup(seq)
+
+  to-funcons-apps:
+    FCTApp(f1,FCTApp(f2,fct)) -> FCTAppComp([f1,f2],fct)
+
+  to-funcons-apps:
+    FCTApp(f,FCTAppComp(fs,fct)) -> FCTAppComp([f|fs],fct)
+
+  to-funcons-apps:
+    FCTApp(f,FCTGroup(seq)) -> FCTAppComp([f],FCTGroup(seq))
+  
+rules
+  
+  to-funcons-lex: 
+    FCTString(str) -> FCTString(<double-quote> str)
+
+  to-funcons-lex = ?FCTInt(_)
+
+  to-funcons-lex = ?FCTChar(_)
+  
+  to-funcons-lex: FCTApp("integer-add",FCTGroup(FCTSequence(FCTInt(s),FCTInt(t)))) -> 
+    FCTInt(<addi;int-to-string>(<string-to-int> s, <string-to-int> t))
+  
+  to-funcons-lex: FCTApp("string-append",FCTGroup(FCTSequence(FCTString(str1),FCTString(str2)))) -> 
+    FCTString(<concat-strings;double-quote> [<un-double-quote> str1, <un-double-quote> str2])
+  
+  to-funcons-lex: FCTApp("string-append",FCTGroup(FCTSequence(FCTString(str1),FCTSequence(FCTString(str2),FCTString(str3))))) -> 
+    FCTString(<concat-strings;double-quote> 
+      [<un-double-quote> str1, <un-double-quote> str2, <un-double-quote> str3])
+  // generalise to nested sequences      
+
+  to-funcons-lex: FCTList(seq) ->
+    FCTString(<concat-strings;double-quote> l)
+    where
+      <not(?FCTEmpty())> seq;
+      l := <to-funcons-string-list>(seq, []) 
+
+
+  // l accumulates a list of strings, initially []:
+  to-funcons-string-list: (FCTSequence(seq1, seq2), l) ->
+    <to-funcons-string-list>(seq1, <to-funcons-string-list>(seq2, l))
+    
+  to-funcons-string-list: (FCTEmpty(), l) -> l
+  
+  // 'C':
+  to-funcons-string-list: (FCTString(str), l) ->
+    [<un-single-quote>str | l]
+  
+  // ascii-character("C"):
+  to-funcons-string-list: 
+    (FCTApp("ascii-character", FCTGroup(FCTString(str))), l) ->
+    [<un-double-quote>str | l]
+
+  // ascii-character("\C"):
+  to-funcons-string-list:
+    (FCTApp("ascii-character", FCTApp("list-to-string", FCTList(seq))), l) ->
+    <to-funcons-string-list>(seq, l)

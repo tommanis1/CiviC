@@ -1,0 +1,9 @@
+module Funcons-pp
+
+imports Funcons
+
+context-free syntax
+
+  FCT.FCTAppComp = <
+    <{NAME " "}+>
+      <FCT> > // for pp only

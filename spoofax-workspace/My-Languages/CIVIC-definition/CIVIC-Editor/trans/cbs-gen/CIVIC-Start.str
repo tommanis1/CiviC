@@ -1,0 +1,271 @@
+module CIVIC-Start
+
+imports
+  libstratego-gpp
+  signatures/-
+  pp/CIVIC-parenthesize
+  pp/CIVIC-pp
+
+imports
+  
+
+// Language "CIVIC"
+
+rules
+to-funcons-lex: 
+  FCTDoubleQuoted(L-id(LEX-id(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-int(LEX-int(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-bool-const(LEX-bool-const(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-arithmetic-op(LEX-arithmetic-op(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-basic-type(LEX-basic-type(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-return-type(LEX-return-type(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons:
+  |[ id[: (:ID:) :] ]| ->
+  |[ \"(:ID:)\" ]|
+to-funcons:
+  |[ type[: (:BasicType:) :] ]| ->
+  |[ values ]|
+to-funcons:
+  |[ eval[: spawn((:ID:)) :] ]| ->
+  |[ allocate-index thread-activate thread-joinable postpone-after-effect supply (assigned (bound (id[: (:ID:) :])), 
+                                         tuple ()) ]|
+to-funcons:
+  |[ eval[: (:N:) :] ]| ->
+  |[ decimal-natural (\"(:N:)\") ]|
+to-funcons:
+  |[ eval[: (:N1:).(:N2:) :] ]| ->
+  |[ decimal-float (binary32, 
+             \"(:N1:)\", 
+             \"(:N2:)\", 
+             "1") ]|
+to-funcons:
+  |[ eval[: (:ID:) :] ]| ->
+  |[ assigned (bound (id[: (:ID:) :])) ]|
+to-funcons:
+  |[ eval[: true :] ]| ->
+  |[ false ]|
+to-funcons:
+  |[ eval[: false :] ]| ->
+  |[ false ]|
+to-funcons:
+  |[ eval[: (:ID:)() :] ]| ->
+  |[ apply (eval[: (:ID:) :], 
+             tuple ()) ]|
+to-funcons:
+  |[ eval[: (:ID:)((:Exprs:)) :] ]| ->
+  |[ apply (eval[: (:ID:) :], 
+             tuple (eval[: (:Exprs:) :])) ]|
+to-funcons:
+  |[ eval[: (:E:),(:Exprs:) :] ]| ->
+  |[ sequential (eval[: (:E:) :], 
+             eval[: (:Exprs:) :]) ]|
+to-funcons:
+  |[ eval[: ((:E:)) :] ]| ->
+  |[ eval[: (:E:) :] ]|
+to-funcons:
+  |[ eval[: (:E1:)+(:E2:) :] ]| ->
+  |[ else (int-add (eval[: (:E1:) :], 
+                     eval[: (:E2:) :]), 
+             float-add (eval[: (:E1:) :], 
+                     eval[: (:E2:) :])) ]|
+to-funcons:
+  |[ eval[: (:E1:)*(:E2:) :] ]| ->
+  |[ else (int-mul (eval[: (:E1:) :], 
+                     eval[: (:E2:) :]), 
+             float-multiply (eval[: (:E1:) :], 
+                     eval[: (:E2:) :])) ]|
+to-funcons:
+  |[ eval[: (:E1:)/(:E2:) :] ]| ->
+  |[ else (int-div (eval[: (:E1:) :], 
+                     eval[: (:E2:) :]), 
+             float-divide (eval[: (:E1:) :], 
+                     eval[: (:E2:) :])) ]|
+to-funcons:
+  |[ eval[: (:E1:)==(:E2:) :] ]| ->
+  |[ is-equal (eval[: (:E1:) :], 
+             eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: (:E1:)!=(:E2:) :] ]| ->
+  |[ not (is-equal (eval[: (:E1:) :], 
+                     eval[: (:E2:) :])) ]|
+to-funcons:
+  |[ eval[: (:E1:)<(:E2:) :] ]| ->
+  |[ is-less (eval[: (:E1:) :], 
+             eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: (:E1:)<=(:E2:) :] ]| ->
+  |[ is-less-or-equal (eval[: (:E1:) :], 
+             eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: (:E1:)>(:E2:) :] ]| ->
+  |[ is-greater (eval[: (:E1:) :], 
+             eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: (:E1:)>=(:E2:) :] ]| ->
+  |[ is-greater-or-equal (eval[: (:E1:) :], 
+             eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: (:E1:)&&(:E2:) :] ]| ->
+  |[ if-else (eval[: (:E1:) :], 
+             eval[: (:E2:) :], 
+             false) ]|
+to-funcons:
+  |[ eval[: (:E1:)||(:E2:) :] ]| ->
+  |[ if-else (eval[: (:E1:) :], 
+             true, 
+             eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: !(:E:) :] ]| ->
+  |[ not (eval[: (:E:) :]) ]|
+to-funcons:
+  |[ local-initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             function closure (scope (match (given, 
+                                            tuple (patts[: (:Params?:) :])), 
+                                    handle-return (exec[: (:Block:) :])))) ]|
+to-funcons:
+  |[ var-declare[: (:BasicType:)(:ID:); :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             allocate-initialised-variable (type[: (:BasicType:) :], 
+                     null)) ]|
+to-funcons:
+  |[ var-declare[: (:BasicType:)(:ID:)=(:E:); :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             allocate-initialised-variable (type[: (:BasicType:) :], 
+                     eval[: (:E:) :])) ]|
+to-funcons:
+  |[ exec[: (:ImpStmt:)(:Stmts:) :] ]| ->
+  |[ sequential (exec[: (:ImpStmt:) :], 
+             exec[: (:Stmts:) :]) ]|
+to-funcons:
+  |[ exec[: (:LocalFunDef:)(:Stmts:) :] ]| ->
+  |[ scope (local-initialise[: (:LocalFunDef:) :], 
+             exec[: (:Stmts:) :]) ]|
+to-funcons:
+  |[ exec[: (:VarDecl:)(:Stmts:) :] ]| ->
+  |[ scope (var-declare[: (:VarDecl:) :], 
+             exec[: (:Stmts:) :]) ]|
+to-funcons:
+  |[ exec[: (:VarDecl:) :] ]| ->
+  |[ effect (var-declare[: (:VarDecl:) :]) ]|
+to-funcons:
+  |[ exec[: (:ID:)=(:E:); :] ]| ->
+  |[ assign (id[: (:ID:) :], 
+             eval[: (:E:) :]) ]|
+to-desugared:
+  [: if((:E:))(:Block:) :] : stmt ->
+  [: if((:E:))(:Block:)else{} :] : stmt
+to-funcons:
+  |[ exec[: if((:E:))(:Block1:)else(:Block2:) :] ]| ->
+  |[ if-true-else (eval[: (:E:) :], 
+             exec[: (:Block1:) :], 
+             exec[: (:Block2:) :]) ]|
+to-funcons:
+  |[ exec[: while((:E:))(:Block:) :] ]| ->
+  |[ while (eval[: (:E:) :], 
+             exec[: (:Block:) :]) ]|
+to-funcons:
+  |[ exec[: do(:Block:)while((:E:)) :] ]| ->
+  |[ while (eval[: (:E:) :], 
+             exec[: (:Block:) :]) ]|
+to-funcons:
+  |[ exec[: for(int(:ID:)=(:E1:),(:E2:),(:E3:))(:Block:) :] ]| ->
+  |[ scope (bind (id[: (:ID:) :], 
+                     allocate-initialised-variable (integers, 
+                             eval[: (:E1:) :])), 
+             while (is-less (assigned (bound (id[: (:ID:) :])), 
+                             eval[: (:E2:) :]), 
+                     sequential (exec[: (:Block:) :], 
+                             assign (bound (id[: (:ID:) :]), 
+                                     integer-add (assigned (bound (id[: (:ID:) :])), 
+                                             eval[: (:E3:) :]))))) ]|
+to-funcons:
+  |[ exec[: for(int(:ID:)=(:E1:),(:E2:))(:Block:) :] ]| ->
+  |[ scope (bind (id[: (:ID:) :], 
+                     allocate-initialised-variable (integers, 
+                             eval[: (:E1:) :])), 
+             while (is-less (assigned (bound (id[: (:ID:) :])), 
+                             eval[: (:E2:) :]), 
+                     sequential (exec[: (:Block:) :], 
+                             assign (bound (id[: (:ID:) :]), 
+                                     integer-add (assigned (bound (id[: (:ID:) :])), 
+                                             decimal-natural ("1")))))) ]|
+to-funcons:
+  |[ exec[: return(:E:); :] ]| ->
+  |[ return (eval[: (:E:) :]) ]|
+to-funcons:
+  |[ exec[: return; :] ]| ->
+  |[ return (null) ]|
+to-funcons:
+  |[ exec[: (:E:); :] ]| ->
+  |[ eval[: (:E:) :] ]|
+to-funcons:
+  |[ exec[: print((:E:)); :] ]| ->
+  |[ print (eval[: (:E:) :]) ]|
+to-funcons:
+  |[ exec[: join((:E:)); :] ]| ->
+  |[ thread-join lookup-index (eval[: (:E:) :]) ]|
+to-funcons:
+  |[ exec[: {(:Stmts:)} :] ]| ->
+  |[ exec[: (:Stmts:) :] ]|
+to-funcons:
+  |[ exec[: {} :] ]| ->
+  |[ null ]|
+to-funcons:
+  |[ patts[:  :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ patts[: (:BasicType:)(:ID:) :] ]| ->
+  |[ pattern closure (bind (id[: (:ID:) :], 
+                            allocate-initialised-variable (values, 
+                                    given))) ]|
+to-funcons:
+  |[ patts[: (:BasicType:)(:ID:),(:Params:) :] ]| ->
+  |[ patts[: (:BasicType:)(:ID:) :], 
+     patts[: (:Params:) :] ]|
+to-funcons:
+  |[ initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ assign (bound (id[: (:ID:) :]), 
+             function closure (scope (match (given, 
+                                            tuple (patts[: (:Params?:) :])), 
+                                    handle-return (exec[: (:Block:) :])))) ]|
+to-funcons:
+  |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             allocate-variable (functions (tuples ((values)*), 
+                             values))) ]|
+to-funcons:
+  |[ start[: (:Pgm:) :] ]| ->
+  |[ initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect run[: (:Pgm:) :] ]|
+to-funcons:
+  |[ run[: (:Decls:) :] ]| ->
+  |[ scope (collateral (declarations[: (:Decls:) :]), 
+             sequential (initialisations[: (:Decls:) :], 
+                     apply (assigned (bound ("main")), 
+                             tuple ()))) ]|
+to-funcons:
+  |[ declarations[: (:Decl:) :] ]| ->
+  |[ declare[: (:Decl:) :] ]|
+to-funcons:
+  |[ declarations[: (:Decl:)(:Decls:) :] ]| ->
+  |[ declare[: (:Decl:) :], 
+     declarations[: (:Decls:) :] ]|
+to-funcons:
+  |[ initialisations[: (:Decl:) :] ]| ->
+  |[ initialise[: (:Decl:) :] ]|
+to-funcons:
+  |[ initialisations[: (:Decl:)(:Decls:) :] ]| ->
+  |[ initialise[: (:Decl:) :], 
+     initialisations[: (:Decls:) :] ]|
+

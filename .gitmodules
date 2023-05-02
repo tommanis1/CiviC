@@ -1,0 +1,6 @@
+[submodule "dependencies/CBS-beta"]
+	path = dependencies/CBS-beta
+	url = https://github.com/plancomps/CBS-beta
+[submodule "dependencies/funcons-tools"]
+	path = dependencies/funcons-tools
+	url = https://github.com/plancomps/funcons-tools

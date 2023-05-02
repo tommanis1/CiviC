@@ -1,0 +1,7 @@
+module Menus
+
+menus
+  
+  menu: "Generation"                   (openeditor) (realtime)
+    
+    action: "Generate Funcons"       = generate-fct

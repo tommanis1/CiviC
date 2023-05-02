@@ -1,0 +1,11 @@
+module Stratego-CIVIC
+
+imports 
+  Stratego 
+  CIVIC
+exports context-free syntax
+    Module            -> Start
+    "|[" FCT-SEQ "]|" -> Term {cons("ToTerm"),prefer}
+
+  variables
+    "START" -> L-start {prefer}

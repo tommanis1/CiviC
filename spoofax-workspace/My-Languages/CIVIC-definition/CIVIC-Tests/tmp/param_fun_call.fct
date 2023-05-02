@@ -1,0 +1,60 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing scope
+  (collateral
+     (bind
+        ("foo",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values))),
+      bind
+        ("main",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values)))),
+   sequential
+     (assign
+        (bound
+           ("foo"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    (pattern closure
+                       (bind
+                          ("a",
+                           allocate-initialised-variable
+                             (values,
+                              given))))),
+               handle-return
+                 (return
+                    (assigned
+                       (bound
+                          ("a"))))))),
+      assign
+        (bound
+           ("main"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (return
+                    (apply
+                       (assigned
+                          (bound
+                             ("foo")),
+                        tuple
+                          (decimal-natural
+                             ("1")))))))),
+      apply
+        (assigned
+           (bound
+              ("main")),
+         tuple
+           ( ))))

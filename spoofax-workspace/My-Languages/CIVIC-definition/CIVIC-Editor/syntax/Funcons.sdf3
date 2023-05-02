@@ -1,0 +1,87 @@
+module Funcons
+
+context-free start-symbols
+  Start
+      
+context-free syntax
+  Start = FCT {avoid}
+  
+  FCT-SEQ.FCTSequence = <
+    <FCT-SEQ>,
+    <FCT-SEQ>> {right}
+  FCT-SEQ.FCTEmpty = 
+  FCT-SEQ = FCT
+
+  FCT.FCTInt =
+    INT
+  FCT.FCTFloat =
+    FLOAT
+  FCT.FCTChar =
+    CHAR
+  FCT.FCTString =
+    STRING
+  FCT.FCTDoubleQuoted =
+    <\\"<FCT-Quoted>\\">
+  FCT.FCTVar
+    = VAR 
+  FCT.FCTName
+     = NAME 
+  FCT.FCTApp = <
+    <NAME> <FCT> >
+//  FCT.FCTSemantics = SEM-NAME PHRASE-FCT FCT?
+  FCT.FCTTyped = <
+    <FCT>:<FCT> > {non-assoc}
+  FCT.FCTComplement = <
+    ~ <FCT> >
+  FCT.FCTComputes = <
+    <FCT?> =\> <FCT> > {non-assoc}
+  FCT.FCTPostfix = <
+    <FCT><POSTFIX> > 
+  FCT.FCTUnion = <
+    <FCT> | <{FCT " | "}+> >
+  FCT.FCTIntersect = <
+    <FCT> & <{FCT " & "}+> >
+  FCT.FCTGroup = <
+    (<FCT-SEQ>) > 
+  FCT.FCTList = <
+    [<FCT-SEQ>] > 
+  FCT.FCTSet = <
+    {<FCT-SEQ>} > 
+  FCT.FCTMap = <
+    {<{FCT-POINT ",\n"}*>} > 
+
+  FCT-POINT.Point = <
+    <FCT> |-\> <FCT> > 
+      
+  FCT-Quoted.FCTQuotedEmpty =
+
+lexical syntax
+  INT = "-"? [0-9]+ 
+  FLOAT = "-"? [0-9]+ "." [0-9]+ 
+  CHAR = "'" ~[] "'" 
+  STRING = "\"" STRING-CHAR* "\"" 
+  STRING-CHAR = ~[\"\n] | "\\\"" | BACKSLASH 
+  BACKSLASH = "\\"
+  NAME = [a-z] [a-zA-Z0-9\-]*
+  VAR = [A-Z] [a-zA-Z]* ([\-] [a-zA-Z]+)* SUFFIX? POSTFIX?
+  SUFFIX = [0-9]+ | [\']+ | ([0-9]+ [\']+)
+  POSTFIX = "*" | "+" | "?"
+
+  LAYOUT = [\ \t\n\r]
+  LAYOUT = "/*" (~[\*] | STAR)* "*/"
+  STAR = "*"
+  LAYOUT = "//" ~[\n\r]* ([\n\r] | EOF)
+  EOF =
+
+lexical restrictions
+  INT -/- [0-9]
+  FLOAT -/- [0-9]
+  NAME -/- [a-zA-Z0-9\-]
+  BACKSLASH -/- [\"]
+  STAR -/- [\/]
+  EOF -/- ~[]
+
+context-free restrictions
+  LAYOUT? -/- [\ \t\n\r]
+  LAYOUT? -/- [\/].[\/]
+  LAYOUT? -/- [\/].[\*]
