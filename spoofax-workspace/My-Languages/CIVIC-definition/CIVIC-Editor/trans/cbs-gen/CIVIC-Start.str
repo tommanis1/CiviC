@@ -13,7 +13,7 @@ imports
 
 rules
 to-funcons-lex: 
-  FCTDoubleQuoted(L-id(LEX-id(str))) -> 
+  FCTDoubleQuoted(L-id-user-defined(LEX-id-user-defined(str))) -> 
   FCTString(<double-quote> str)
 to-funcons-lex: 
   FCTDoubleQuoted(L-int(LEX-int(str))) -> 
@@ -30,9 +30,15 @@ to-funcons-lex:
 to-funcons-lex: 
   FCTDoubleQuoted(L-return-type(LEX-return-type(str))) -> 
   FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-std-lib-id(LEX-std-lib-id(str))) -> 
+  FCTString(<double-quote> str)
 to-funcons:
-  |[ id[: (:ID:) :] ]| ->
-  |[ \"(:ID:)\" ]|
+  |[ id[: (:UID:) :] ]| ->
+  |[ \"(:UID:)\" ]|
+to-funcons:
+  |[ id[: (:STDLibID:) :] ]| ->
+  |[ \"(:STDLibID:)\" ]|
 to-funcons:
   |[ type[: (:BasicType:) :] ]| ->
   |[ values ]|
@@ -128,6 +134,18 @@ to-funcons:
 to-funcons:
   |[ eval[: !(:E:) :] ]| ->
   |[ not (eval[: (:E:) :]) ]|
+to-funcons:
+  |[ exec-std-lib-call[: printInt(:ID:) :] ]| ->
+  |[ print (eval[: (:ID:) :]) ]|
+to-funcons:
+  |[ exec-std-lib-call[: printFloat(:ID:) :] ]| ->
+  |[ print (eval[: (:ID:) :]) ]|
+to-funcons:
+  |[ exec-std-lib-call[: printSpaces(:ID:) :] ]| ->
+  |[ print (" ") ]|
+to-funcons:
+  |[ exec-std-lib-call[: printNewlines(:ID:) :] ]| ->
+  |[ print ("\n") ]|
 to-funcons:
   |[ local-initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
   |[ bind (id[: (:ID:) :], 
@@ -245,6 +263,17 @@ to-funcons:
   |[ bind (id[: (:ID:) :], 
              allocate-variable (functions (tuples ((values)*), 
                              values))) ]|
+to-funcons:
+  |[ declare[: extern(:RetType:)(:STDLibID:)((:BasicType:)(:ID:)); :] ]| ->
+  |[ bind (id[: (:STDLibID:) :], 
+             allocate-variable (functions (tuples ((values)*), 
+                             values))) ]|
+to-funcons:
+  |[ initialise[: extern(:RetType:)(:STDLibID:)((:BasicType:)(:ID:)); :] ]| ->
+  |[ assign (bound (id[: (:STDLibID:) :]), 
+             function closure (scope (match (given, 
+                                            tuple (patts[: (:BasicType:)(:ID:) :])), 
+                                    handle-return (exec-std-lib-call[: (:STDLibID:)(:ID:) :])))) ]|
 to-funcons:
   |[ start[: (:Pgm:) :] ]| ->
   |[ initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect run[: (:Pgm:) :] ]|

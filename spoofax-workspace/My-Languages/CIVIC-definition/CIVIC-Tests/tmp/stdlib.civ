@@ -1,0 +1,10 @@
+extern void printInt(int val) ;
+extern void printNewlines(int num) ;
+
+int main() {
+	int a = 1;
+	printInt(a);
+	printNewlines(10) ;
+	printInt(a);
+    return 0;
+}

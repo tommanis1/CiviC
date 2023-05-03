@@ -3,10 +3,10 @@ Language "CIVIC"
 Lexis SDF
 /*
 lexical syntax 
-  ``id`` = ``keyword`` {reject}
+  ``id-user-defined`` = ``keyword`` {reject}
 
 lexical restrictions
-  ``id`` -/- [A-Za-z0-9]
+  ``id-user-defined`` -/- [A-Za-z0-9]
 */
 Syntax SDF
 /*
@@ -56,13 +56,17 @@ context-free priorities
 */
 
 Lexis  
-		ID:id  ::= ('a'-'z')*
+		UID : id-user-defined ::= ('a'-'z')*
      
        N:int ::= ('0'-'9')+
        
        keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
                  | 'in'  | 'join' | 'print' 
                  | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false'
+//                 | 'extern' 
+//                 | 'printInt'
+//		| 'printFloat'
+
        Bool : bool-const ::= 'true' | 'false'
        AR : arithmetic-op ::= '+' | '*' | '/' // | '%'
        rel-op ::= '==' | '!=' | '<' | '<=' | '>'| '>='
@@ -70,16 +74,18 @@ Lexis
 	   mono-op ::=  '!' //'-' | '!'
 	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
 	   RetType : return-type ::= 'void' | basic-type
-	  std-lib ::= 'extern' 'void' 'printInt' '(' 'int' 'val' ')' ';'
-		| 'extern' 'void' 'printFloat' '(' 'float' 'val' ')' ';'
-		| 'extern' 'int' 'scanInt' '(' ')' ';'
-		| 'extern' 'float' 'scanFloat' '(' ')' ';'
-		| 'extern' 'void' 'printSpaces' '(' 'int' 'num' ')' ';'
-		| 'extern' 'void' 'printNewlines' '(' 'int' 'num' ')' ';'
+//	  STDLibImport : std-lib-import ::= 'extern' 'void' 'printInt' '(' 'int' 'val' ')' ';'
+	  STDLibID : std-lib-id ::= 'printInt' | 'printFloat'| 'printSpaces' | 'printNewlines'
+//		| 'extern' 'void' 'printFloat' '(' 'float' 'val' ')' ';'
+//		| 'extern' 'int' 'scanInt' '(' ')' ';'
+//		| 'extern' 'float' 'scanFloat' '(' ')' ';'
+//		| 'extern' 'void' 'printSpaces' '(' 'int' 'num' ')' ';'
+//		| 'extern' 'void' 'printNewlines' '(' 'int' 'num' ')' ';'
 	 	//	F: float-const ::= ('0'-'9')+ '.' ('0'-'9')+
 	 	
 Syntax 
 	F: float-const ::= int '.' int
+	ID : id ::= id-user-defined | std-lib-id
 //	int '.' int
 	
 /*		
@@ -101,24 +107,24 @@ Syntax E:exp ::= '(' exp ')'
 				| id
 				| const
 //				| 'Null'
-				| std-lib-call
+//				| std-lib-call
 
 				
 	Const : const ::= bool-const | int | float-const
 	Exprs : exprs ::= exp (',' exprs)?
-	StdLibCall : std-lib-call ::= 'printInt' '(' exp ')' ';'
-		| 'printFloat' '(' exp ';'
-//		| 'scanInt' '(' ')' ';'
-//		| 'scanFloat' '(' ')' ';'
-		| 'printSpaces' '(' exp ')' ';'
-		| 'printNewlines' '(' exp ')' ';'
+//	StdLibCall : std-lib-call ::= 'printInt' '(' exp ')'
+//		| 'printFloat' '(' exp ')'
+//		| 'scanInt' '(' ')'
+//		| 'scanFloat' '(' ')'
+//		| 'printSpaces' '(' exp ')'
+//		| 'printNewlines' '(' exp ')'
 
 
-Rule eval[[ 'printInt' '(' E ')' ';' ]] = print(eval[[ E ]])
-Rule eval[[ 'printFloat' '(' E ';' ]] = print(eval[[ E ]])
+//Rule eval[[ 'printInt' '(' E ')' ]] = print(eval[[ E ]])
+//Rule eval[[ 'printFloat' '(' E ')' ]] = print(eval[[ E ]])
 //TODO looop
-Rule eval[[ 'printSpaces' '(' E ')' ';' ]] = print(" ")
-Rule eval[[ 'printNewlines' '(' E ')' ';' ]] = print("\n")
+//Rule eval[[ 'printSpaces' '(' E ')' ]] = print(" ")
+//Rule eval[[ 'printNewlines' '(' E ')' ]] = print("\n")
 /*
   Expression evaluation:
 */
@@ -141,7 +147,8 @@ Semantics type[[ _:basic-type ]] : => basic-types
 Semantics
   id[[ _:id ]] : =>ids
 Rule
-  id[[ ID ]] = \"ID\"
+  id[[ UID ]] = \"UID\"
+Rule id[[ STDLibID ]] = \"STDLibID\"
 
 //TODO
 //Rule type[[ 'int' ]] = integers
@@ -212,7 +219,8 @@ Rule eval[[ '!' E ]]        = not(eval[[ E ]])
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
                         
 Syntax
-	Decl : decl ::= function-definition
+	Decl : decl ::= function-definition | std-lib-import
+	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' basic-type id ')' ';'
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
 	Stmts: stmts ::= stmt stmts?
 	Stmt: stmt ::= var-decl | imp-stmt | local-fun
@@ -231,10 +239,20 @@ Syntax
 
 	Block : block ::= '{' stmts?'}'
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
+	SLCall : l-call ::= std-lib-id id
 	
 Semantics
   local-initialise[[ _:local-fun ]] : =>null-type
    
+Semantics
+	exec-std-lib-call[[ _:l-call]] : =>null-type
+
+Rule exec-std-lib-call[[ 'printInt' ID ]] = print(eval[[ ID ]])
+Rule exec-std-lib-call[[ 'printFloat' ID ]] = print(eval[[ ID ]])
+//TODO looop
+Rule exec-std-lib-call[[ 'printSpaces' ID ]] = print(" ")
+Rule exec-std-lib-call[[ 'printNewlines' ID ]] = print("\n")
+
 Rule
   local-initialise[[ RetType ID '(' Params? ')' Block ]] = 
     bind(
@@ -345,6 +363,20 @@ Rule
   declare[[ RetType ID '(' Params? ')' Block ]] =
     bind(id[[ ID ]],
     allocate-variable(functions(tuples(values*),values)))
+
+Rule declare[[ 'extern' RetType STDLibID '(' BasicType ID ')' ';' ]] =  
+bind(id[[ STDLibID ]],
+    allocate-variable(functions(tuples(values*),values)))
+
+Rule initialise[[ 'extern' RetType STDLibID '(' BasicType ID ')' ';' ]] =  
+	assign(
+      bound(id[[ STDLibID ]]),
+      function closure(
+        scope(
+          match(given,tuple(patts[[ BasicType ID ]])),
+          handle-return(exec-std-lib-call[[ STDLibID ID ]])))
+          )
+
 //#6 Programs
 
 Syntax START:start ::= pgm

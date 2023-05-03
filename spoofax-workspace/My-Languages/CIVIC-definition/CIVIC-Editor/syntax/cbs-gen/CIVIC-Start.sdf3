@@ -7,7 +7,7 @@ imports
 // Language "CIVIC"
     
 lexical syntax // Language
-  LEX-id = ( [a-z] )*
+  LEX-id-user-defined = ( [a-z] )*
   LEX-int = ( [0-9] )+
   LEX-keyword = "do"
   LEX-keyword = "else"
@@ -39,12 +39,16 @@ lexical syntax // Language
   LEX-basic-type = "bool"
   LEX-return-type = "void"
   LEX-return-type = LEX-basic-type
+  LEX-std-lib-id = "printInt"
+  LEX-std-lib-id = "printFloat"
+  LEX-std-lib-id = "printSpaces"
+  LEX-std-lib-id = "printNewlines"
   
 syntax // Language
   
 context-free syntax // Language
-  L-id.LEX-id = 
-    LEX-id
+  L-id-user-defined.LEX-id-user-defined = 
+    LEX-id-user-defined
   L-int.LEX-int = 
     LEX-int
   L-keyword.LEX-keyword = 
@@ -63,8 +67,15 @@ context-free syntax // Language
     LEX-basic-type
   L-return-type.LEX-return-type = 
     LEX-return-type
+  L-std-lib-id.LEX-std-lib-id = 
+    LEX-std-lib-id
   L-float-const.L-float-const--L-int-DOT-L-int =
     L-int "." L-int
+  
+  L-id.L-id--L-id-user-defined =
+    L-id-user-defined
+  L-id.L-id--L-std-lib-id =
+    L-std-lib-id
   
   L-exp.L-exp--LPAREN-L-exp-RPAREN =
     "(" L-exp ")"
@@ -101,6 +112,11 @@ context-free syntax // Language
   
   L-decl.L-decl--L-function-definition =
     L-function-definition
+  L-decl.L-decl--L-std-lib-import =
+    L-std-lib-import
+  
+  L-std-lib-import.L-std-lib-import--R-extern-L-return-type-L-std-lib-id-LPAREN-L-basic-type-L-id-RPAREN-SEMI =
+    "extern" L-return-type L-std-lib-id "(" L-basic-type L-id ")" ";"
   
   L-var-decl.L-var-decl--L-basic-type-L-id-C-EQUALS-L-exp-D-Q-SEMI =
     L-basic-type L-id L-EQUALS-L-exp? ";"
@@ -154,6 +170,9 @@ context-free syntax // Language
   L-local-fun.L-local-fun--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
     L-return-type L-id "(" L-params? ")" L-block
   
+  L-l-call.L-l-call--L-std-lib-id-L-id =
+    L-std-lib-id L-id
+  
   L-function-definition.L-function-definition--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
     L-return-type L-id "(" L-params? ")" L-block
   
@@ -178,7 +197,7 @@ context-free syntax // Language
   
   
 context-free syntax // Semantics
-  FCT-Quoted.L-id = L-id
+  FCT-Quoted.L-id-user-defined = L-id-user-defined
   FCT-Quoted.L-int = L-int
   FCT-Quoted.LEX-keyword = LEX-keyword
   FCT-Quoted.L-bool-const = L-bool-const
@@ -188,6 +207,7 @@ context-free syntax // Semantics
   FCT-Quoted.LEX-mono-op = LEX-mono-op
   FCT-Quoted.L-basic-type = L-basic-type
   FCT-Quoted.L-return-type = L-return-type
+  FCT-Quoted.L-std-lib-id = L-std-lib-id
   FCT.T-eval =
     "eval" "[:" L-exprs ":]"
   FCT.T-exec-var =
@@ -198,6 +218,8 @@ context-free syntax // Semantics
     "id" "[:" L-id ":]"
   FCT.T-local-initialise =
     "local-initialise" "[:" L-local-fun ":]"
+  FCT.T-exec-std-lib-call =
+    "exec-std-lib-call" "[:" L-l-call ":]"
   FCT.T-var-declare =
     "var-declare" "[:" L-var-decl ":]"
   FCT.T-exec =
@@ -221,10 +243,10 @@ context-free syntax // Desugaring
   Term.ToTerm = "[:" L-stmt  ":]" ":" "stmt"
   
 variables // Meta-variables
-  L-id = "(:ID" [1-9]? ":)" {prefer}
-  L-id? = "(:ID" [1-9]? "?:)" {prefer}
-  L-id* = "(:ID" [1-9]? "*:)" {prefer}
-  L-id+ = "(:ID" [1-9]? "+:)" {prefer}
+  L-id-user-defined = "(:UID" [1-9]? ":)" {prefer}
+  L-id-user-defined? = "(:UID" [1-9]? "?:)" {prefer}
+  L-id-user-defined* = "(:UID" [1-9]? "*:)" {prefer}
+  L-id-user-defined+ = "(:UID" [1-9]? "+:)" {prefer}
   L-int = "(:N" [1-9]? ":)" {prefer}
   L-int? = "(:N" [1-9]? "?:)" {prefer}
   L-int* = "(:N" [1-9]? "*:)" {prefer}
@@ -245,10 +267,18 @@ variables // Meta-variables
   L-return-type? = "(:RetType" [1-9]? "?:)" {prefer}
   L-return-type* = "(:RetType" [1-9]? "*:)" {prefer}
   L-return-type+ = "(:RetType" [1-9]? "+:)" {prefer}
+  L-std-lib-id = "(:STDLibID" [1-9]? ":)" {prefer}
+  L-std-lib-id? = "(:STDLibID" [1-9]? "?:)" {prefer}
+  L-std-lib-id* = "(:STDLibID" [1-9]? "*:)" {prefer}
+  L-std-lib-id+ = "(:STDLibID" [1-9]? "+:)" {prefer}
   L-float-const = "(:F" [1-9]? ":)" {prefer}
   L-float-const? = "(:F" [1-9]? "?:)" {prefer}
   L-float-const* = "(:F" [1-9]? "*:)" {prefer}
   L-float-const+ = "(:F" [1-9]? "+:)" {prefer}
+  L-id = "(:ID" [1-9]? ":)" {prefer}
+  L-id? = "(:ID" [1-9]? "?:)" {prefer}
+  L-id* = "(:ID" [1-9]? "*:)" {prefer}
+  L-id+ = "(:ID" [1-9]? "+:)" {prefer}
   L-exp = "(:E" [1-9]? ":)" {prefer}
   L-exp? = "(:E" [1-9]? "?:)" {prefer}
   L-exp* = "(:E" [1-9]? "*:)" {prefer}
@@ -265,6 +295,10 @@ variables // Meta-variables
   L-decl? = "(:Decl" [1-9]? "?:)" {prefer}
   L-decl* = "(:Decl" [1-9]? "*:)" {prefer}
   L-decl+ = "(:Decl" [1-9]? "+:)" {prefer}
+  L-std-lib-import = "(:STDLibImport" [1-9]? ":)" {prefer}
+  L-std-lib-import? = "(:STDLibImport" [1-9]? "?:)" {prefer}
+  L-std-lib-import* = "(:STDLibImport" [1-9]? "*:)" {prefer}
+  L-std-lib-import+ = "(:STDLibImport" [1-9]? "+:)" {prefer}
   L-var-decl = "(:VarDecl" [1-9]? ":)" {prefer}
   L-var-decl? = "(:VarDecl" [1-9]? "?:)" {prefer}
   L-var-decl* = "(:VarDecl" [1-9]? "*:)" {prefer}
@@ -289,6 +323,10 @@ variables // Meta-variables
   L-local-fun? = "(:LocalFunDef" [1-9]? "?:)" {prefer}
   L-local-fun* = "(:LocalFunDef" [1-9]? "*:)" {prefer}
   L-local-fun+ = "(:LocalFunDef" [1-9]? "+:)" {prefer}
+  L-l-call = "(:SLCall" [1-9]? ":)" {prefer}
+  L-l-call? = "(:SLCall" [1-9]? "?:)" {prefer}
+  L-l-call* = "(:SLCall" [1-9]? "*:)" {prefer}
+  L-l-call+ = "(:SLCall" [1-9]? "+:)" {prefer}
   L-function-definition = "(:FunDef" [1-9]? ":)" {prefer}
   L-function-definition? = "(:FunDef" [1-9]? "?:)" {prefer}
   L-function-definition* = "(:FunDef" [1-9]? "*:)" {prefer}
@@ -317,10 +355,10 @@ variables // Meta-variables
 // SDF comments
   
   lexical syntax 
-    LEX-id = LEX-keyword {reject}
+    LEX-id-user-defined = LEX-keyword {reject}
   
   lexical restrictions
-    LEX-id -/- [A-Za-z0-9]
+    LEX-id-user-defined -/- [A-Za-z0-9]
   
   context-free syntax
   L-exp.L-exp--L-exp-STAR-L-exp =
