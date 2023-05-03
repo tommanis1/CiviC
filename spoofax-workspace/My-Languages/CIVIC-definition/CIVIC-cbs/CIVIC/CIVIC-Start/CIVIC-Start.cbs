@@ -70,6 +70,12 @@ Lexis
 	   mono-op ::=  '!' //'-' | '!'
 	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
 	   RetType : return-type ::= 'void' | basic-type
+	  std-lib ::= 'extern' 'void' 'printInt' '(' 'int' 'val' ')' ';'
+		| 'extern' 'void' 'printFloat' '(' 'float' 'val' ')' ';'
+		| 'extern' 'int' 'scanInt' '(' ')' ';'
+		| 'extern' 'float' 'scanFloat' '(' ')' ';'
+		| 'extern' 'void' 'printSpaces' '(' 'int' 'num' ')' ';'
+		| 'extern' 'void' 'printNewlines' '(' 'int' 'num' ')' ';'
 	 	//	F: float-const ::= ('0'-'9')+ '.' ('0'-'9')+
 	 	
 Syntax 
@@ -95,11 +101,24 @@ Syntax E:exp ::= '(' exp ')'
 				| id
 				| const
 //				| 'Null'
+				| std-lib-call
 
 				
 	Const : const ::= bool-const | int | float-const
 	Exprs : exprs ::= exp (',' exprs)?
+	StdLibCall : std-lib-call ::= 'printInt' '(' exp ')' ';'
+		| 'printFloat' '(' exp ';'
+//		| 'scanInt' '(' ')' ';'
+//		| 'scanFloat' '(' ')' ';'
+		| 'printSpaces' '(' exp ')' ';'
+		| 'printNewlines' '(' exp ')' ';'
 
+
+Rule eval[[ 'printInt' '(' E ')' ';' ]] = print(eval[[ E ]])
+Rule eval[[ 'printFloat' '(' E ';' ]] = print(eval[[ E ]])
+//TODO looop
+Rule eval[[ 'printSpaces' '(' E ')' ';' ]] = print(" ")
+Rule eval[[ 'printNewlines' '(' E ')' ';' ]] = print("\n")
 /*
   Expression evaluation:
 */
@@ -193,7 +212,7 @@ Rule eval[[ '!' E ]]        = not(eval[[ E ]])
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
                         
 Syntax
-	Decl : decl ::= function-definition 
+	Decl : decl ::= function-definition
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
 	Stmts: stmts ::= stmt stmts?
 	Stmt: stmt ::= var-decl | imp-stmt | local-fun
@@ -212,6 +231,7 @@ Syntax
 
 	Block : block ::= '{' stmts?'}'
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
+	
 Semantics
   local-initialise[[ _:local-fun ]] : =>null-type
    
