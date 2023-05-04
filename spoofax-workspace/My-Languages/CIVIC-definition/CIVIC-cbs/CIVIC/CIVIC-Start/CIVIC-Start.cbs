@@ -240,28 +240,14 @@ Syntax
 	Block : block ::= '{' stmts?'}'
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
 	SLCall : l-call ::= std-lib-id id
-	
-Semantics
-  local-initialise[[ _:local-fun ]] : =>null-type
-   
-Semantics
-	exec-std-lib-call[[ _:l-call]] : =>null-type
 
-Rule exec-std-lib-call[[ 'printInt' ID ]] = print(eval[[ ID ]])
-Rule exec-std-lib-call[[ 'printFloat' ID ]] = print(eval[[ ID ]])
-//TODO looop
-Rule exec-std-lib-call[[ 'printSpaces' ID ]] = print(" ")
-Rule exec-std-lib-call[[ 'printNewlines' ID ]] = print("\n")
+Semantics
+  local-fun-declare[[ _:local-fun ]] : =>null-type
+Rule local-fun-declare[[ RetType ID '(' Params? ')' Block ]] = declare[[ RetType ID '(' Params? ')' Block ]]
 
-Rule
-  local-initialise[[ RetType ID '(' Params? ')' Block ]] = 
-    bind(
-      id[[ ID ]],
-      function closure(
-        scope(
-          match(given, tuple(patts[[ Params? ]])),
-          handle-return(exec[[ Block ]])))
-          )
+Semantics initialise-local-fun[[ _:local-fun ]] : =>null-type
+Rule initialise-local-fun[[ RetType ID '(' Params? ')' Block ]] = initialise[[ RetType ID '(' Params? ')' Block ]]
+
 //					| stmt
 
 //Rule exec[[ ]] = null
@@ -280,8 +266,9 @@ Rule var-declare[[ BasicType ID '=' E ';' ]] =  bind(id[[ ID ]],  allocate-initi
 Semantics exec[[ _:stmts ]] : =>null-type
 // Stmts
 Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
-Rule exec[[ LocalFunDef Stmts ]] = scope(local-initialise[[ LocalFunDef ]], exec[[ Stmts ]])
+Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
 
+//TODO remove effect and scope
 Rule exec[[ VarDecl Stmts ]] = scope(var-declare[[ VarDecl ]], exec[[ Stmts ]])
 Rule exec[[ VarDecl ]] = effect(var-declare[[ VarDecl]])
 
@@ -356,7 +343,14 @@ Rule initialise[[ RetType ID '(' Params? ')' Block ]] =
       function closure(
         scope(
           match(given,tuple(patts[[ Params? ]])),
-          handle-return(exec[[ Block ]])))
+          handle-return(
+          	scope(
+          	collateral(declarations-local[[ Block ]]),
+          	sequential(
+          	initialisations-local[[ Block ]],
+          	exec[[ Block ]]
+          	))
+          )))
           )
 
 Rule
@@ -376,7 +370,33 @@ Rule initialise[[ 'extern' RetType STDLibID '(' BasicType ID ')' ';' ]] =
           match(given,tuple(patts[[ BasicType ID ]])),
           handle-return(exec-std-lib-call[[ STDLibID ID ]])))
           )
+Semantics
+	exec-std-lib-call[[ _:l-call]] : =>null-type
 
+Rule exec-std-lib-call[[ 'printInt' ID ]] = print(eval[[ ID ]])
+Rule exec-std-lib-call[[ 'printFloat' ID ]] = print(eval[[ ID ]])
+//TODO looop
+Rule exec-std-lib-call[[ 'printSpaces' ID ]] = print(" ")
+Rule exec-std-lib-call[[ 'printNewlines' ID ]] = print("\n")
+//TODO too many lines for what I want to do
+//Call local-fun-declare for every LocalFunDef in stmts
+Semantics declarations-local[[ _:stmts? ]] : => null-type
+Rule declarations-local[[ '{' Stmts '}' ]] = declarations-local[[ Stmts ]]
+Rule declarations-local[[ '{' '}' ]] = ()
+Rule declarations-local[[ ]] = ()
+
+Rule declarations-local[[ LocalFunDef Stmts? ]] = local-fun-declare[[ LocalFunDef ]], declarations-local[[ Stmts? ]]
+Rule declarations-local[[ ImpStmt Stmts? ]] = declarations-local[[ Stmts? ]]
+Rule declarations-local[[ VarDecl Stmts? ]] = declarations-local[[ Stmts? ]]
+
+Semantics initialisations-local[[ _:stmts? ]] : => null-type
+Rule initialisations-local[[ '{' Stmts '}' ]] = initialisations-local[[ Stmts ]]
+Rule initialisations-local[[ '{' '}' ]] = ()
+Rule initialisations-local[[ ]] = ()
+
+Rule initialisations-local[[ LocalFunDef Stmts? ]] = initialise-local-fun[[ LocalFunDef ]], initialisations-local[[ Stmts? ]]
+Rule initialisations-local[[ ImpStmt Stmts? ]] = initialisations-local[[ Stmts? ]]
+Rule initialisations-local[[ VarDecl Stmts? ]] = initialisations-local[[ Stmts? ]]
 //#6 Programs
 
 Syntax START:start ::= pgm

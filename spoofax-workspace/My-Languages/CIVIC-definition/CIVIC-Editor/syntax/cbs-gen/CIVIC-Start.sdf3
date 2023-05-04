@@ -216,16 +216,22 @@ context-free syntax // Semantics
     "type" "[:" L-basic-type ":]"
   FCT.T-id =
     "id" "[:" L-id ":]"
-  FCT.T-local-initialise =
-    "local-initialise" "[:" L-local-fun ":]"
-  FCT.T-exec-std-lib-call =
-    "exec-std-lib-call" "[:" L-l-call ":]"
+  FCT.T-local-fun-declare =
+    "local-fun-declare" "[:" L-local-fun ":]"
+  FCT.T-initialise-local-fun =
+    "initialise-local-fun" "[:" L-local-fun ":]"
   FCT.T-var-declare =
     "var-declare" "[:" L-var-decl ":]"
   FCT.T-exec =
     "exec" "[:" L-stmts ":]"
   FCT-SEQ.T-patts =
     "patts" "[:" L-params? ":]"
+  FCT.T-exec-std-lib-call =
+    "exec-std-lib-call" "[:" L-l-call ":]"
+  FCT.T-declarations-local =
+    "declarations-local" "[:" L-stmts? ":]"
+  FCT.T-initialisations-local =
+    "initialisations-local" "[:" L-stmts? ":]"
   FCT.T-start =
     "start" "[:" L-start ":]"
   FCT.T-run =

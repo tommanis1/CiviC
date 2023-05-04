@@ -135,23 +135,11 @@ to-funcons:
   |[ eval[: !(:E:) :] ]| ->
   |[ not (eval[: (:E:) :]) ]|
 to-funcons:
-  |[ exec-std-lib-call[: printInt(:ID:) :] ]| ->
-  |[ print (eval[: (:ID:) :]) ]|
+  |[ local-fun-declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
 to-funcons:
-  |[ exec-std-lib-call[: printFloat(:ID:) :] ]| ->
-  |[ print (eval[: (:ID:) :]) ]|
-to-funcons:
-  |[ exec-std-lib-call[: printSpaces(:ID:) :] ]| ->
-  |[ print (" ") ]|
-to-funcons:
-  |[ exec-std-lib-call[: printNewlines(:ID:) :] ]| ->
-  |[ print ("\n") ]|
-to-funcons:
-  |[ local-initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
-  |[ bind (id[: (:ID:) :], 
-             function closure (scope (match (given, 
-                                            tuple (patts[: (:Params?:) :])), 
-                                    handle-return (exec[: (:Block:) :])))) ]|
+  |[ initialise-local-fun[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
 to-funcons:
   |[ var-declare[: (:BasicType:)(:ID:); :] ]| ->
   |[ bind (id[: (:ID:) :], 
@@ -168,8 +156,7 @@ to-funcons:
              exec[: (:Stmts:) :]) ]|
 to-funcons:
   |[ exec[: (:LocalFunDef:)(:Stmts:) :] ]| ->
-  |[ scope (local-initialise[: (:LocalFunDef:) :], 
-             exec[: (:Stmts:) :]) ]|
+  |[ exec[: (:Stmts:) :] ]|
 to-funcons:
   |[ exec[: (:VarDecl:)(:Stmts:) :] ]| ->
   |[ scope (var-declare[: (:VarDecl:) :], 
@@ -257,7 +244,9 @@ to-funcons:
   |[ assign (bound (id[: (:ID:) :]), 
              function closure (scope (match (given, 
                                             tuple (patts[: (:Params?:) :])), 
-                                    handle-return (exec[: (:Block:) :])))) ]|
+                                    handle-return (scope (collateral (declarations-local[: (:Block:) :]), 
+                                                    sequential (initialisations-local[: (:Block:) :], 
+                                                            exec[: (:Block:) :])))))) ]|
 to-funcons:
   |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
   |[ bind (id[: (:ID:) :], 
@@ -274,6 +263,56 @@ to-funcons:
              function closure (scope (match (given, 
                                             tuple (patts[: (:BasicType:)(:ID:) :])), 
                                     handle-return (exec-std-lib-call[: (:STDLibID:)(:ID:) :])))) ]|
+to-funcons:
+  |[ exec-std-lib-call[: printInt(:ID:) :] ]| ->
+  |[ print (eval[: (:ID:) :]) ]|
+to-funcons:
+  |[ exec-std-lib-call[: printFloat(:ID:) :] ]| ->
+  |[ print (eval[: (:ID:) :]) ]|
+to-funcons:
+  |[ exec-std-lib-call[: printSpaces(:ID:) :] ]| ->
+  |[ print (" ") ]|
+to-funcons:
+  |[ exec-std-lib-call[: printNewlines(:ID:) :] ]| ->
+  |[ print ("\n") ]|
+to-funcons:
+  |[ declarations-local[: {(:Stmts:)} :] ]| ->
+  |[ declarations-local[: (:Stmts:) :] ]|
+to-funcons:
+  |[ declarations-local[: {} :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ declarations-local[:  :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ declarations-local[: (:LocalFunDef:)(:Stmts?:) :] ]| ->
+  |[ local-fun-declare[: (:LocalFunDef:) :], 
+     declarations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ declarations-local[: (:ImpStmt:)(:Stmts?:) :] ]| ->
+  |[ declarations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ declarations-local[: (:VarDecl:)(:Stmts?:) :] ]| ->
+  |[ declarations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ initialisations-local[: {(:Stmts:)} :] ]| ->
+  |[ initialisations-local[: (:Stmts:) :] ]|
+to-funcons:
+  |[ initialisations-local[: {} :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ initialisations-local[:  :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ initialisations-local[: (:LocalFunDef:)(:Stmts?:) :] ]| ->
+  |[ initialise-local-fun[: (:LocalFunDef:) :], 
+     initialisations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ initialisations-local[: (:ImpStmt:)(:Stmts?:) :] ]| ->
+  |[ initialisations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ initialisations-local[: (:VarDecl:)(:Stmts?:) :] ]| ->
+  |[ initialisations-local[: (:Stmts?:) :] ]|
 to-funcons:
   |[ start[: (:Pgm:) :] ]| ->
   |[ initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect run[: (:Pgm:) :] ]|

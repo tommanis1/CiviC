@@ -1,0 +1,4 @@
+int main() {
+int foo(int a) {return a;}
+return foo(1);
+}
