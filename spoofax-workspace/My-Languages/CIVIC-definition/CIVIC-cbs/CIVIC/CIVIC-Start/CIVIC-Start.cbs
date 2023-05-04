@@ -311,8 +311,11 @@ Rule exec[[ '{' '}' ]] = null
 //Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
 //Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
 
+Rule initialise[[ 'export' RetType ID '(' Params? ')' Block ]] = initialise[[ RetType ID '(' Params? ')' Block ]]
+Rule declare[[ 'export' RetType ID '(' Params? ')' Block ]] = declare[[ RetType ID '(' Params? ')' Block ]]
+
 Syntax 
-	FunDef : function-definition ::= return-type id '(' params? ')' block
+	FunDef : function-definition ::= 'export'? return-type id '(' params? ')' block
 	Param : param ::= basic-type id
 	Params : params ::= param (',' params)?
 
