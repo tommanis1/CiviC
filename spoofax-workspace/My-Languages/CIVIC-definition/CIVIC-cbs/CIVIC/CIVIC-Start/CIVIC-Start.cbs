@@ -74,13 +74,7 @@ Lexis
 	   mono-op ::=  '-' | '!'
 	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
 	   RetType : return-type ::= 'void' | basic-type
-//	  STDLibImport : std-lib-import ::= 'extern' 'void' 'printInt' '(' 'int' 'val' ')' ';'
-	  STDLibID : std-lib-id ::= 'printInt' | 'printFloat'| 'printSpaces' | 'printNewlines'
-//		| 'extern' 'void' 'printFloat' '(' 'float' 'val' ')' ';'
-//		| 'extern' 'int' 'scanInt' '(' ')' ';'
-//		| 'extern' 'float' 'scanFloat' '(' ')' ';'
-//		| 'extern' 'void' 'printSpaces' '(' 'int' 'num' ')' ';'
-//		| 'extern' 'void' 'printNewlines' '(' 'int' 'num' ')' ';'
+	  STDLibID : std-lib-id ::= 'printInt' | 'printFloat'| 'printSpaces' | 'printNewlines' | 'scanInt' | 'scanFloat'
 	 	//	F: float-const ::= ('0'-'9')+ '.' ('0'-'9')+
 	 	
 Syntax 
@@ -113,19 +107,7 @@ Syntax E:exp ::= '(' exp ')'
 				
 	Const : const ::= bool-const | int | float-const
 	Exprs : exprs ::= exp (',' exprs)?
-//	StdLibCall : std-lib-call ::= 'printInt' '(' exp ')'
-//		| 'printFloat' '(' exp ')'
-//		| 'scanInt' '(' ')'
-//		| 'scanFloat' '(' ')'
-//		| 'printSpaces' '(' exp ')'
-//		| 'printNewlines' '(' exp ')'
 
-
-//Rule eval[[ 'printInt' '(' E ')' ]] = print(eval[[ E ]])
-//Rule eval[[ 'printFloat' '(' E ')' ]] = print(eval[[ E ]])
-//TODO looop
-//Rule eval[[ 'printSpaces' '(' E ')' ]] = print(" ")
-//Rule eval[[ 'printNewlines' '(' E ')' ]] = print("\n")
 /*
   Expression evaluation:
 */
@@ -230,7 +212,7 @@ Rule eval[[ '!' E ]]        = not(eval[[ E ]])
                         
 Syntax
 	Decl : decl ::= function-definition | std-lib-import
-	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' basic-type id ')' ';'
+	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' (basic-type id)? ')' ';'
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
 	Stmts: stmts ::= stmt stmts?
 	Stmt: stmt ::= var-decl | imp-stmt | local-fun
@@ -249,7 +231,7 @@ Syntax
 
 	Block : block ::= '{' stmts?'}'
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
-	SLCall : l-call ::= std-lib-id id
+	SLCall : l-call ::= std-lib-id id?
 
 Semantics
   local-fun-declare[[ _:local-fun ]] : =>null-type
@@ -380,12 +362,27 @@ Rule initialise[[ 'extern' RetType STDLibID '(' BasicType ID ')' ';' ]] =
           match(given,tuple(patts[[ BasicType ID ]])),
           handle-return(exec-std-lib-call[[ STDLibID ID ]])))
           )
+Rule declare[[ 'extern' RetType STDLibID '(' ')' ';' ]] =  
+bind(id[[ STDLibID ]],
+    allocate-variable(functions(tuples(values*),values)))
+
+Rule initialise[[ 'extern' RetType STDLibID '(' ')' ';' ]] =  
+	assign(
+      bound(id[[ STDLibID ]]),
+      function closure(
+        scope(
+          match(given,tuple(())),
+          handle-return(exec-std-lib-call[[ STDLibID ]])))
+          )
 Semantics
 	exec-std-lib-call[[ _:l-call]] : =>null-type
 
 Rule exec-std-lib-call[[ 'printInt' ID ]] = print(eval[[ ID ]])
 Rule exec-std-lib-call[[ 'printFloat' ID ]] = print(eval[[ ID ]])
 //TODO looop
+Rule exec-std-lib-call[[ 'scanInt' ]] = null
+Rule exec-std-lib-call[[ 'scanFloat' ]] = null
+
 Rule exec-std-lib-call[[ 'printSpaces' ID ]] = print(" ")
 Rule exec-std-lib-call[[ 'printNewlines' ID ]] = print("\n")
 //TODO too many lines for what I want to do
