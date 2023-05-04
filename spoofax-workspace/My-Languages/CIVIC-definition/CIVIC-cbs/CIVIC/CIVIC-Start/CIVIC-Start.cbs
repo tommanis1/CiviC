@@ -274,7 +274,7 @@ Rule exec[[ VarDecl ]] = effect(var-declare[[ VarDecl]])
 
 
 //ImpStmt
-Rule exec[[ ID '=' E ';' ]] = assign(id[[ ID ]], eval[[ E ]])
+Rule exec[[ ID '=' E ';' ]] = assign(bound(id[[ ID ]]), eval[[ E ]])
 
 Rule [[ 'if' '(' E ')' Block ]] : stmt = [[ 'if' '(' E ')' Block 'else' '{' '}' ]]
 Rule exec[[ 'if' '(' E ')' Block1 'else' Block2 ]] = if-true-else( eval[[ E ]], exec[[ Block1 ]], exec[[ Block2 ]] )

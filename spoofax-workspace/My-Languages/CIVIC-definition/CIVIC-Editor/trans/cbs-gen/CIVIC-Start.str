@@ -166,7 +166,7 @@ to-funcons:
   |[ effect (var-declare[: (:VarDecl:) :]) ]|
 to-funcons:
   |[ exec[: (:ID:)=(:E:); :] ]| ->
-  |[ assign (id[: (:ID:) :], 
+  |[ assign (bound (id[: (:ID:) :]), 
              eval[: (:E:) :]) ]|
 to-desugared:
   [: if((:E:))(:Block:) :] : stmt ->

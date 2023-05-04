@@ -1,0 +1,13 @@
+void test() {
+for(int i = 1, 10){
+print(i);
+}}
+int main () {
+int t = spawn(test);
+//int tt = spawn(test);
+
+print(1); // TODO current req
+join(t);
+print(11);
+return 1;
+}

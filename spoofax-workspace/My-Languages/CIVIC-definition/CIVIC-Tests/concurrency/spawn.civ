@@ -1,0 +1,4 @@
+void test() {print(1);}
+int main () {
+int t = spawn(test);
+}

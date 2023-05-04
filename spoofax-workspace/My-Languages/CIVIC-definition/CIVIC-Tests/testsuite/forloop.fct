@@ -126,27 +126,30 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                        (( ),
                         scope
                           (bind
-                             ("m",
+                             ("a",
                               allocate-initialised-variable
                                 (values,
-                                 decimal-natural
-                                   ("10"))),
+                                 null)),
                            scope
                              (bind
-                                ("n",
+                                ("m",
                                  allocate-initialised-variable
                                    (values,
                                     decimal-natural
-                                      ("5"))),
+                                      ("10"))),
                               scope
                                 (bind
-                                   ("a",
+                                   ("n",
                                     allocate-initialised-variable
                                       (values,
                                        decimal-natural
-                                         ("10"))),
+                                         ("5"))),
                                  sequential
                                    (assign
+                                      ("a",
+                                       decimal-natural
+                                         ("10")),
+                                    assign
                                       ("m",
                                        decimal-natural
                                          ("5")),
@@ -156,15 +159,14 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                                           allocate-initialised-variable
                                             (integers,
                                              decimal-natural
-                                               ("0"))),
+                                               ("1"))),
                                        while
                                          (is-less
                                             (assigned
                                                (bound
                                                   ("i")),
-                                             assigned
-                                               (bound
-                                                  ("m"))),
+                                             decimal-natural
+                                               ("10")),
                                           sequential
                                             (sequential
                                                (apply

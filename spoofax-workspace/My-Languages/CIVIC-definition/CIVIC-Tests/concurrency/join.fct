@@ -1,0 +1,106 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (collateral
+     (bind
+        ("test",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values))),
+      bind
+        ("main",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values)))),
+   sequential
+     (assign
+        (bound
+           ("test"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        scope
+                          (bind
+                             ("i",
+                              allocate-initialised-variable
+                                (integers,
+                                 decimal-natural
+                                   ("1"))),
+                           while
+                             (is-less
+                                (assigned
+                                   (bound
+                                      ("i")),
+                                 decimal-natural
+                                   ("10")),
+                              sequential
+                                (print
+                                   (assigned
+                                      (bound
+                                         ("i"))),
+                                 assign
+                                   (bound
+                                      ("i"),
+                                    integer-add
+                                      (assigned
+                                         (bound
+                                            ("i")),
+                                       decimal-natural
+                                         ("1")))))))))))),
+      assign
+        (bound
+           ("main"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        scope
+                          (bind
+                             ("t",
+                              allocate-initialised-variable
+                                (values,
+                                 allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                   (assigned
+                                      (bound
+                                         ("test")),
+                                    tuple
+                                      ( )))),
+                           sequential
+                             (print
+                                (decimal-natural
+                                   ("1")),
+                              thread-join lookup-index
+                                (assigned
+                                   (bound
+                                      ("t"))),
+                              print
+                                (decimal-natural
+                                   ("11")),
+                              return
+                                (decimal-natural
+                                   ("1")))))))))),
+      apply
+        (assigned
+           (bound
+              ("main")),
+         tuple
+           ( ))))
