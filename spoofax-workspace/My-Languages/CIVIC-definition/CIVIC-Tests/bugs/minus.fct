@@ -1,0 +1,43 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (collateral
+     (bind
+        ("main",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values)))),
+   sequential
+     (assign
+        (bound
+           ("main"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        return
+                          (else
+                             (integer-subtract
+                                (decimal-natural
+                                   ("1"),
+                                 decimal-natural
+                                   ("1")),
+                              float-subtract
+                                (decimal-natural
+                                   ("1"),
+                                 decimal-natural
+                                   ("1")))))))))),
+      apply
+        (assigned
+           (bound
+              ("main")),
+         tuple
+           ( ))))

@@ -33,7 +33,7 @@ lexical syntax // Language
   LEX-rel-op = ">="
   LEX-logic-op = "&&"
   LEX-logic-op = "||"
-  LEX-mono-op = [\!]
+  LEX-mono-op = [\-\!]
   LEX-basic-type = "int"
   LEX-basic-type = "float"
   LEX-basic-type = "bool"
@@ -83,6 +83,12 @@ context-free syntax // Language
     "spawn" "(" L-id ")"
   L-exp.L-exp--L-exp-PLUS-L-exp =
     L-exp "+" L-exp
+  L-exp.L-exp--L-exp-DASH-L-exp =
+    L-exp "-" L-exp
+  L-exp.L-exp--L-exp-STAR-L-exp =
+    L-exp "*" L-exp
+  L-exp.L-exp--L-exp-SLASH-L-exp =
+    L-exp "/" L-exp
   L-exp.L-exp--L-exp-L-rel-op-L-exp =
     L-exp L-rel-op L-exp
   L-exp.L-exp--L-exp-L-logic-op-L-exp =

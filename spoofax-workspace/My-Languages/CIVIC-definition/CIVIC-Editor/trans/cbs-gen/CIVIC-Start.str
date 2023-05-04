@@ -86,6 +86,12 @@ to-funcons:
              float-add (eval[: (:E1:) :], 
                      eval[: (:E2:) :])) ]|
 to-funcons:
+  |[ eval[: (:E1:)-(:E2:) :] ]| ->
+  |[ else (integer-subtract (eval[: (:E1:) :], 
+                     eval[: (:E2:) :]), 
+             float-subtract (eval[: (:E1:) :], 
+                     eval[: (:E2:) :])) ]|
+to-funcons:
   |[ eval[: (:E1:)*(:E2:) :] ]| ->
   |[ else (int-mul (eval[: (:E1:) :], 
                      eval[: (:E2:) :]), 
@@ -131,6 +137,9 @@ to-funcons:
   |[ if-else (eval[: (:E1:) :], 
              true, 
              eval[: (:E2:) :]) ]|
+to-funcons:
+  |[ eval[: -(:E:) :] ]| ->
+  |[ else (integer-negate (eval[: (:E:) :])) ]|
 to-funcons:
   |[ eval[: !(:E:) :] ]| ->
   |[ not (eval[: (:E:) :]) ]|

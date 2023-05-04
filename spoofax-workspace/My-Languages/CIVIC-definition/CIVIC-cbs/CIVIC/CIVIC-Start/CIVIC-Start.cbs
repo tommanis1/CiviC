@@ -71,7 +71,7 @@ Lexis
        AR : arithmetic-op ::= '+' | '*' | '/' // | '%'
        rel-op ::= '==' | '!=' | '<' | '<=' | '>'| '>='
 	   logic-op ::= '&&' | '||'
-	   mono-op ::=  '!' //'-' | '!'
+	   mono-op ::=  '-' | '!'
 	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
 	   RetType : return-type ::= 'void' | basic-type
 //	  STDLibImport : std-lib-import ::= 'extern' 'void' 'printInt' '(' 'int' 'val' ')' ';'
@@ -97,8 +97,9 @@ Syntax E:exp ::= '(' exp ')'
 // Arithmetic Operator:
 //               | exp arithmetic-op exp
                | exp '+' exp
-//               | exp '*' exp
-//               | exp '/' exp
+               | exp '-' exp
+               | exp '*' exp
+               | exp '/' exp
 				| exp rel-op exp
 				| exp logic-op exp
 				| mono-op exp
@@ -187,6 +188,11 @@ Rule eval[[ E1 '+' E2 ]] = else(
 	int-add(eval[[ E1 ]], eval[[ E2 ]]),
 	float-add(eval[[ E1 ]], eval[[ E2 ]])
 )
+//TODO float
+Rule eval[[ E1 '-' E2 ]] = else(
+	 integer-subtract(eval[[ E1 ]], eval[[ E2 ]]),
+	 float-subtract(eval[[ E1 ]], eval[[ E2 ]])
+)
 
 Rule eval[[ E1 '*' E2 ]] = else(
 	int-mul(eval[[ E1 ]], eval[[ E2 ]]),
@@ -212,7 +218,11 @@ Rule eval[[ E1 '&&' E2 ]] = if-else(eval[[ E1 ]],eval[[ E2 ]],false)
 Rule eval[[ E1 '||' E2 ]] = if-else(eval[[ E1 ]],true,eval[[ E2 ]])
 
 //mono-op
-//Rule eval[[ '-' E ]] = integer-negate(eval[[ E ]])
+//TODO
+Rule eval[[ '-' E ]] = else(
+	integer-negate(eval[[ E ]])
+//	float-negate(eval[[ E1 ]], eval[[ E2 ]])
+)
 Rule eval[[ '!' E ]]        = not(eval[[ E ]])
 
 

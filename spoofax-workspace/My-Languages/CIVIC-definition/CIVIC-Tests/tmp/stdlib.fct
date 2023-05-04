@@ -126,28 +126,38 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                        (( ),
                         scope
                           (bind
-                             ("m",
+                             ("a",
                               allocate-initialised-variable
                                 (values,
-                                 decimal-natural
-                                   ("10"))),
+                                 null)),
                            scope
                              (bind
-                                ("n",
+                                ("m",
                                  allocate-initialised-variable
                                    (values,
                                     decimal-natural
-                                      ("5"))),
+                                      ("10"))),
                               scope
                                 (bind
-                                   ("a",
+                                   ("n",
                                     allocate-initialised-variable
                                       (values,
                                        decimal-natural
-                                         ("10"))),
+                                         ("5"))),
                                  sequential
                                    (assign
-                                      ("m",
+                                      (bound
+                                         ("a"),
+                                       decimal-natural
+                                         ("10")),
+                                    assign
+                                      (bound
+                                         ("m"),
+                                       decimal-natural
+                                         ("5")),
+                                    assign
+                                      (bound
+                                         ("m"),
                                        decimal-natural
                                          ("5")),
                                     scope
@@ -156,7 +166,7 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                                           allocate-initialised-variable
                                             (integers,
                                              decimal-natural
-                                               ("0"))),
+                                               ("10"))),
                                        while
                                          (is-less
                                             (assigned
@@ -167,7 +177,23 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                                                   ("m"))),
                                           sequential
                                             (sequential
-                                               (apply
+                                               (assign
+                                                  (bound
+                                                     ("a"),
+                                                   else
+                                                     (integer-subtract
+                                                        (assigned
+                                                           (bound
+                                                              ("a")),
+                                                         decimal-natural
+                                                           ("1")),
+                                                      float-subtract
+                                                        (assigned
+                                                           (bound
+                                                              ("a")),
+                                                         decimal-natural
+                                                           ("1")))),
+                                                apply
                                                   (assigned
                                                      (bound
                                                         ("printInt")),
@@ -189,8 +215,19 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                                                   (assigned
                                                      (bound
                                                         ("i")),
-                                                   decimal-natural
-                                                     ("1")))))),
+                                                   else
+                                                     (integer-subtract
+                                                        (assigned
+                                                           (bound
+                                                              ("")),
+                                                         decimal-natural
+                                                           ("1")),
+                                                      float-subtract
+                                                        (assigned
+                                                           (bound
+                                                              ("")),
+                                                         decimal-natural
+                                                           ("1")))))))),
                                     apply
                                       (assigned
                                          (bound
