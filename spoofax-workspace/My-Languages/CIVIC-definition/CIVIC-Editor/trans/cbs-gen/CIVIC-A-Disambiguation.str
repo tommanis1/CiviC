@@ -1,0 +1,19 @@
+module CIVIC-A-Disambiguation
+
+imports
+  libstratego-gpp
+  signatures/-
+  pp/CIVIC-parenthesize
+  pp/CIVIC-pp
+
+imports
+  cbs-gen/CIVIC-Start
+
+// Language "CIVIC"
+
+rules
+
+// #A Disambiguation
+              
+
+

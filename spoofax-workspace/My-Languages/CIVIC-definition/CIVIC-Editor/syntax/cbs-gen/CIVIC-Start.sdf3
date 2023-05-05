@@ -1,13 +1,13 @@
 module CIVIC-Start
             
 imports 
-  
+  CIVIC-A-Disambiguation
   Funcons
 
 // Language "CIVIC"
     
 lexical syntax // Language
-  LEX-id-user-defined = ( [a-z] )*
+  LEX-id-user-defined = ( [a-z] )+
   LEX-int = ( [0-9] )+
   LEX-keyword = "do"
   LEX-keyword = "else"
@@ -24,16 +24,6 @@ lexical syntax // Language
   LEX-keyword = "false"
   LEX-bool-const = "true"
   LEX-bool-const = "false"
-  LEX-arithmetic-op = [\+\*\/]
-  LEX-rel-op = "=="
-  LEX-rel-op = "!="
-  LEX-rel-op = "<"
-  LEX-rel-op = "<="
-  LEX-rel-op = ">"
-  LEX-rel-op = ">="
-  LEX-logic-op = "&&"
-  LEX-logic-op = "||"
-  LEX-mono-op = [\-\!]
   LEX-basic-type = "int"
   LEX-basic-type = "float"
   LEX-basic-type = "bool"
@@ -43,6 +33,9 @@ lexical syntax // Language
   LEX-std-lib-id = "printFloat"
   LEX-std-lib-id = "printSpaces"
   LEX-std-lib-id = "printNewlines"
+  LEX-std-lib-id = "scanInt"
+  LEX-std-lib-id = "scanFloat"
+  LEX-R-export = "export"
   
 syntax // Language
   
@@ -55,14 +48,6 @@ context-free syntax // Language
     LEX-keyword
   L-bool-const.LEX-bool-const = 
     LEX-bool-const
-  L-arithmetic-op.LEX-arithmetic-op = 
-    LEX-arithmetic-op
-  L-rel-op.LEX-rel-op = 
-    LEX-rel-op
-  L-logic-op.LEX-logic-op = 
-    LEX-logic-op
-  L-mono-op.LEX-mono-op = 
-    LEX-mono-op
   L-basic-type.LEX-basic-type = 
     LEX-basic-type
   L-return-type.LEX-return-type = 
@@ -77,10 +62,15 @@ context-free syntax // Language
   L-id.L-id--L-std-lib-id =
     L-std-lib-id
   
+  L-negative-num.L-negative-num--DASH-L-int =
+    "-" L-int
+  
   L-exp.L-exp--LPAREN-L-exp-RPAREN =
     "(" L-exp ")"
   L-exp.L-exp--R-spawn-LPAREN-L-id-RPAREN =
     "spawn" "(" L-id ")"
+  L-exp.L-exp--BANG-L-exp =
+    "!" L-exp
   L-exp.L-exp--L-exp-PLUS-L-exp =
     L-exp "+" L-exp
   L-exp.L-exp--L-exp-DASH-L-exp =
@@ -89,12 +79,22 @@ context-free syntax // Language
     L-exp "*" L-exp
   L-exp.L-exp--L-exp-SLASH-L-exp =
     L-exp "/" L-exp
-  L-exp.L-exp--L-exp-L-rel-op-L-exp =
-    L-exp L-rel-op L-exp
-  L-exp.L-exp--L-exp-L-logic-op-L-exp =
-    L-exp L-logic-op L-exp
-  L-exp.L-exp--L-mono-op-L-exp =
-    L-mono-op L-exp
+  L-exp.L-exp--L-exp-EQUALS-EQUALS-L-exp =
+    L-exp "==" L-exp
+  L-exp.L-exp--L-exp-BANG-EQUALS-L-exp =
+    L-exp "!=" L-exp
+  L-exp.L-exp--L-exp-LESS-L-exp =
+    L-exp "<" L-exp
+  L-exp.L-exp--L-exp-LESS-EQUALS-L-exp =
+    L-exp "<=" L-exp
+  L-exp.L-exp--L-exp-GREATER-L-exp =
+    L-exp ">" L-exp
+  L-exp.L-exp--L-exp-GREATER-EQUALS-L-exp =
+    L-exp ">=" L-exp
+  L-exp.L-exp--L-exp-AMPERSAND-AMPERSAND-L-exp =
+    L-exp "&&" L-exp
+  L-exp.L-exp--L-exp-BAR-BAR-L-exp =
+    L-exp "||" L-exp
   L-exp.L-exp--L-id-LPAREN-L-exprs-Q-RPAREN =
     L-id "(" L-exprs? ")"
   L-exp.L-exp--L-id =
@@ -108,6 +108,8 @@ context-free syntax // Language
     L-int
   L-const.L-const--L-float-const =
     L-float-const
+  L-const.L-const--L-negative-num =
+    L-negative-num
   
   L-exprs.L-exprs--L-exp-C-COMMA-L-exprs-D-Q =
     L-exp L-COMMA-L-exprs?
@@ -121,8 +123,12 @@ context-free syntax // Language
   L-decl.L-decl--L-std-lib-import =
     L-std-lib-import
   
-  L-std-lib-import.L-std-lib-import--R-extern-L-return-type-L-std-lib-id-LPAREN-L-basic-type-L-id-RPAREN-SEMI =
-    "extern" L-return-type L-std-lib-id "(" L-basic-type L-id ")" ";"
+  L-std-lib-import.L-std-lib-import--R-extern-L-return-type-L-std-lib-id-LPAREN-C-L-basic-type-L-id-D-Q-RPAREN-SEMI =
+    "extern" L-return-type L-std-lib-id "(" L-L-basic-type-L-id? ")" ";"
+  
+  L-L-basic-type-L-id.L-L-basic-type-L-id--L-basic-type-L-id =
+    L-basic-type L-id
+  
   
   L-var-decl.L-var-decl--L-basic-type-L-id-C-EQUALS-L-exp-D-Q-SEMI =
     L-basic-type L-id L-EQUALS-L-exp? ";"
@@ -176,11 +182,11 @@ context-free syntax // Language
   L-local-fun.L-local-fun--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
     L-return-type L-id "(" L-params? ")" L-block
   
-  L-l-call.L-l-call--L-std-lib-id-L-id =
-    L-std-lib-id L-id
+  L-l-call.L-l-call--L-std-lib-id-L-id-Q =
+    L-std-lib-id L-id?
   
-  L-function-definition.L-function-definition--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
-    L-return-type L-id "(" L-params? ")" L-block
+  L-function-definition.L-function-definition--R-export-Q-L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
+    LEX-R-export? L-return-type L-id "(" L-params? ")" L-block
   
   L-param.L-param--L-basic-type-L-id =
     L-basic-type L-id
@@ -207,10 +213,6 @@ context-free syntax // Semantics
   FCT-Quoted.L-int = L-int
   FCT-Quoted.LEX-keyword = LEX-keyword
   FCT-Quoted.L-bool-const = L-bool-const
-  FCT-Quoted.L-arithmetic-op = L-arithmetic-op
-  FCT-Quoted.LEX-rel-op = LEX-rel-op
-  FCT-Quoted.LEX-logic-op = LEX-logic-op
-  FCT-Quoted.LEX-mono-op = LEX-mono-op
   FCT-Quoted.L-basic-type = L-basic-type
   FCT-Quoted.L-return-type = L-return-type
   FCT-Quoted.L-std-lib-id = L-std-lib-id
@@ -267,10 +269,6 @@ variables // Meta-variables
   L-bool-const? = "(:Bool" [1-9]? "?:)" {prefer}
   L-bool-const* = "(:Bool" [1-9]? "*:)" {prefer}
   L-bool-const+ = "(:Bool" [1-9]? "+:)" {prefer}
-  L-arithmetic-op = "(:AR" [1-9]? ":)" {prefer}
-  L-arithmetic-op? = "(:AR" [1-9]? "?:)" {prefer}
-  L-arithmetic-op* = "(:AR" [1-9]? "*:)" {prefer}
-  L-arithmetic-op+ = "(:AR" [1-9]? "+:)" {prefer}
   L-basic-type = "(:BasicType" [1-9]? ":)" {prefer}
   L-basic-type? = "(:BasicType" [1-9]? "?:)" {prefer}
   L-basic-type* = "(:BasicType" [1-9]? "*:)" {prefer}
@@ -291,6 +289,10 @@ variables // Meta-variables
   L-id? = "(:ID" [1-9]? "?:)" {prefer}
   L-id* = "(:ID" [1-9]? "*:)" {prefer}
   L-id+ = "(:ID" [1-9]? "+:)" {prefer}
+  L-negative-num = "(:NN" [1-9]? ":)" {prefer}
+  L-negative-num? = "(:NN" [1-9]? "?:)" {prefer}
+  L-negative-num* = "(:NN" [1-9]? "*:)" {prefer}
+  L-negative-num+ = "(:NN" [1-9]? "+:)" {prefer}
   L-exp = "(:E" [1-9]? ":)" {prefer}
   L-exp? = "(:E" [1-9]? "?:)" {prefer}
   L-exp* = "(:E" [1-9]? "*:)" {prefer}
@@ -365,96 +367,6 @@ variables // Meta-variables
   L-decls+ = "(:Decls" [1-9]? "+:)" {prefer}
   
 // SDF comments
-  
-  lexical syntax 
-    LEX-id-user-defined = LEX-keyword {reject}
-  
-  lexical restrictions
-    LEX-id-user-defined -/- [A-Za-z0-9]
-  
-  context-free syntax
-  L-exp.L-exp--L-exp-STAR-L-exp =
-    L-exp "*" L-exp
-   {left}
-  L-exp.L-exp--L-exp-SLASH-L-exp =
-    L-exp "/" L-exp
-   {left}
-  L-exp.L-exp--L-exp-PERCENT-L-exp =
-    L-exp "%" L-exp
-   {left}
-    
-  L-exp.L-exp--L-exp-PLUS-L-exp =
-    L-exp "+" L-exp
-   {left}
-  //L-exp.L-exp--L-exp-DASH-L-exp =
-    L-exp "-" L-exp
-   {left}
-    
-  L-exp.L-exp--L-exp-AMPERSAND-AMPERSAND-L-exp =
-    L-exp "&&" L-exp
-   {left}
-  L-exp.L-exp--L-exp-BAR-BAR-L-exp =
-    L-exp "||" L-exp
-   {left}
-  
-  context-free priorities
-  {
-  //L-exp.L-exp--DASH-L-exp =
-    "-" L-exp
-  
-  L-exp.L-exp--BANG-L-exp =
-    "!" L-exp
-  
-  } >
-  {left: 
-  L-exp.L-exp--L-exp-STAR-L-exp =
-    L-exp "*" L-exp
-  
-  L-exp.L-exp--L-exp-SLASH-L-exp =
-    L-exp "/" L-exp
-  
-  L-exp.L-exp--L-exp-PERCENT-L-exp =
-    L-exp "%" L-exp
-  
-  } >
-  {left: 
-  L-exp.L-exp--L-exp-PLUS-L-exp =
-    L-exp "+" L-exp
-  
-  L-exp.L-exp--L-exp-DASH-L-exp =
-    L-exp "-" L-exp
-  
-  } >
-  {non-assoc: 
-  L-exp.L-exp--L-exp-LESS-L-exp =
-    L-exp "<" L-exp
-  
-  L-exp.L-exp--L-exp-LESS-EQUALS-L-exp =
-    L-exp "<=" L-exp
-  
-  L-exp.L-exp--L-exp-GREATER-L-exp =
-    L-exp ">" L-exp
-  
-  L-exp.L-exp--L-exp-GREATER-EQUALS-L-exp =
-    L-exp ">=" L-exp
-  
-  L-exp.L-exp--L-exp-EQUALS-EQUALS-L-exp =
-    L-exp "==" L-exp
-  
-  L-exp.L-exp--L-exp-BANG-EQUALS-L-exp =
-    L-exp "!=" L-exp
-  
-  } >
-  {assoc: 
-  L-exp.L-exp--L-exp-AMPERSAND-AMPERSAND-L-exp =
-    L-exp "&&" L-exp
-  
-  } >
-  {assoc: 
-  L-exp.L-exp--L-exp-BAR-BAR-L-exp =
-    L-exp "||" L-exp
-  
-  }
   
 sorts // ASTs
   T-start

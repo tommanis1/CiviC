@@ -1,14 +1,13 @@
 Language "CIVIC"
 [
-# A Disambiguation
+#A Disambiguation
+//#1 Start
 ]
 
-/* 
-  Lexical syntax: 
-*/
+//#1 Start
 
 Lexis  
-		UID : id-user-defined ::= ('a'-'z')*
+		UID : id-user-defined ::= ('a'-'z')+
      
        N:int ::= ('0'-'9')+
        
@@ -20,10 +19,9 @@ Lexis
 //		| 'printFloat'
 
        Bool : bool-const ::= 'true' | 'false'
-       AR : arithmetic-op ::= '+' | '*' | '/' // | '%'
-       rel-op ::= '==' | '!=' | '<' | '<=' | '>'| '>='
-	   logic-op ::= '&&' | '||'
-	   mono-op ::=  '-' | '!'
+//       AR : arithmetic-op ::= '+' | '*' | '/' // | '%'
+//       rel-op ::= '==' | '!=' | '<' | '<=' | '>'| '>='
+//	   mono-op ::=  '-' | '!'
 	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
 	   RetType : return-type ::= 'void' | basic-type
 	  STDLibID : std-lib-id ::= 'printInt' | 'printFloat'| 'printSpaces' | 'printNewlines' | 'scanInt' | 'scanFloat'
@@ -32,6 +30,8 @@ Lexis
 Syntax 
 	F: float-const ::= int '.' int
 	ID : id ::= id-user-defined | std-lib-id
+	NN:negative-num ::= '-' int
+	
 //	int '.' int
 	
 /*		
@@ -42,13 +42,20 @@ Syntax E:exp ::= '(' exp ')'
 				| 'spawn' '(' id ')'
 // Arithmetic Operator:
 //               | exp arithmetic-op exp
+				| '!' exp
                | exp '+' exp
                | exp '-' exp
                | exp '*' exp
                | exp '/' exp
-				| exp rel-op exp
-				| exp logic-op exp
-				| mono-op exp
+               | exp '==' exp
+               | exp '!=' exp
+               | exp '<' exp
+               | exp '<=' exp
+               | exp '>' exp
+               | exp '>=' exp
+				|exp '&&' exp 
+				| exp '||' exp
+//				ssssss
 				| id '(' exprs? ')'
 //				| id '('')'
 				| id
@@ -57,7 +64,7 @@ Syntax E:exp ::= '(' exp ')'
 //				| std-lib-call
 
 				
-	Const : const ::= bool-const | int | float-const
+	Const : const ::= bool-const | int | float-const | negative-num
 	Exprs : exprs ::= exp (',' exprs)?
 
 /*
@@ -100,11 +107,13 @@ Rule eval[[ 'spawn' '(' ID ')' ]] = allocate-index
 
 Rule eval[[ N ]] = decimal-natural(\"N\")
 Rule eval[[ N1 '.' N2 ]] = decimal-float(binary32, \"N1\", \"N2\", "1")
+Rule eval[[ '-' N ]] = 	integer-negate(decimal-natural(\"N\"))
+
 //Rule eval[[ F ]] = float(\"F\")
 
 
 Rule eval[[ ID ]] = assigned(bound(id[[ ID ]]))
-Rule eval[[ 'true' ]] = false
+Rule eval[[ 'true' ]] = true
 
 Rule eval[[ 'false' ]] = false
 
@@ -152,11 +161,7 @@ Rule eval[[ E1 '&&' E2 ]] = if-else(eval[[ E1 ]],eval[[ E2 ]],false)
 Rule eval[[ E1 '||' E2 ]] = if-else(eval[[ E1 ]],true,eval[[ E2 ]])
 
 //mono-op
-//TODO
-Rule eval[[ '-' E ]] = else(
-	integer-negate(eval[[ E ]])
-//	float-negate(eval[[ E1 ]], eval[[ E2 ]])
-)
+
 Rule eval[[ '!' E ]]        = not(eval[[ E ]])
 
 

@@ -1,5 +1,7 @@
 Language "CIVIC"
-# A Disambiguation
+
+#A Disambiguation
+
 Lexis SDF
 /*
 lexical syntax 
@@ -16,14 +18,13 @@ context-free syntax
 ``exp ::= exp '%' exp`` {left}
   
 ``exp ::= exp '+' exp`` {left}
-//``exp ::= exp '-' exp`` {left}
-  
+``exp ::= exp '-' exp`` {left}
+
 ``exp ::= exp '&&' exp`` {left}
 ``exp ::= exp '||' exp`` {left}
 
 context-free priorities
 {
-//``exp ::= '-' exp``
 ``exp ::= '!' exp``
 } >
 {left: 
@@ -34,14 +35,6 @@ context-free priorities
 {left: 
 ``exp ::= exp '+' exp``
 ``exp ::= exp '-' exp``
-} >
-{non-assoc: 
-``exp ::= exp '<' exp``
-``exp ::= exp '<=' exp``
-``exp ::= exp '>' exp``
-``exp ::= exp '>=' exp``
-``exp ::= exp '==' exp``
-``exp ::= exp '!=' exp``
 } >
 {assoc: 
 ``exp ::= exp '&&' exp``

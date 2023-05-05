@@ -7,7 +7,7 @@ imports
   pp/CIVIC-pp
 
 imports
-  
+  cbs-gen/CIVIC-A-Disambiguation
 
 // Language "CIVIC"
 
@@ -20,9 +20,6 @@ to-funcons-lex:
   FCTString(<double-quote> str)
 to-funcons-lex: 
   FCTDoubleQuoted(L-bool-const(LEX-bool-const(str))) -> 
-  FCTString(<double-quote> str)
-to-funcons-lex: 
-  FCTDoubleQuoted(L-arithmetic-op(LEX-arithmetic-op(str))) -> 
   FCTString(<double-quote> str)
 to-funcons-lex: 
   FCTDoubleQuoted(L-basic-type(LEX-basic-type(str))) -> 
@@ -56,11 +53,14 @@ to-funcons:
              \"(:N2:)\", 
              "1") ]|
 to-funcons:
+  |[ eval[: -(:N:) :] ]| ->
+  |[ integer-negate (decimal-natural (\"(:N:)\")) ]|
+to-funcons:
   |[ eval[: (:ID:) :] ]| ->
   |[ assigned (bound (id[: (:ID:) :])) ]|
 to-funcons:
   |[ eval[: true :] ]| ->
-  |[ false ]|
+  |[ true ]|
 to-funcons:
   |[ eval[: false :] ]| ->
   |[ false ]|
@@ -137,9 +137,6 @@ to-funcons:
   |[ if-else (eval[: (:E1:) :], 
              true, 
              eval[: (:E2:) :]) ]|
-to-funcons:
-  |[ eval[: -(:E:) :] ]| ->
-  |[ else (integer-negate (eval[: (:E:) :])) ]|
 to-funcons:
   |[ eval[: !(:E:) :] ]| ->
   |[ not (eval[: (:E:) :]) ]|
@@ -237,6 +234,12 @@ to-funcons:
   |[ exec[: {} :] ]| ->
   |[ null ]|
 to-funcons:
+  |[ initialise[: export(:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
+to-funcons:
+  |[ declare[: export(:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
+  |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
+to-funcons:
   |[ patts[:  :] ]| ->
   |[ () ]|
 to-funcons:
@@ -273,11 +276,28 @@ to-funcons:
                                             tuple (patts[: (:BasicType:)(:ID:) :])), 
                                     handle-return (exec-std-lib-call[: (:STDLibID:)(:ID:) :])))) ]|
 to-funcons:
+  |[ declare[: extern(:RetType:)(:STDLibID:)(); :] ]| ->
+  |[ bind (id[: (:STDLibID:) :], 
+             allocate-variable (functions (tuples ((values)*), 
+                             values))) ]|
+to-funcons:
+  |[ initialise[: extern(:RetType:)(:STDLibID:)(); :] ]| ->
+  |[ assign (bound (id[: (:STDLibID:) :]), 
+             function closure (scope (match (given, 
+                                            tuple (())), 
+                                    handle-return (exec-std-lib-call[: (:STDLibID:) :])))) ]|
+to-funcons:
   |[ exec-std-lib-call[: printInt(:ID:) :] ]| ->
   |[ print (eval[: (:ID:) :]) ]|
 to-funcons:
   |[ exec-std-lib-call[: printFloat(:ID:) :] ]| ->
   |[ print (eval[: (:ID:) :]) ]|
+to-funcons:
+  |[ exec-std-lib-call[: scanInt :] ]| ->
+  |[ null ]|
+to-funcons:
+  |[ exec-std-lib-call[: scanFloat :] ]| ->
+  |[ null ]|
 to-funcons:
   |[ exec-std-lib-call[: printSpaces(:ID:) :] ]| ->
   |[ print (" ") ]|
