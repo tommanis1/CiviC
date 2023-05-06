@@ -7,14 +7,15 @@ Language "CIVIC"
 //#1 Start
 
 Lexis  
-		UID : id-user-defined ::= ('a'-'z')+
+		UID : id-user-defined ::= ('a'-'z')+ 
+//		('a'-'z' | '_')*
      
        N:int ::= ('0'-'9')+
        
        keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
                  | 'in'  | 'join' | 'print' 
                  | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false' 
-                 | 'stdthread'
+                 | 'stdthread' | 'mutex'
 //                 | 'extern' 
 //                 | 'printInt'
 //		| 'printFloat'
@@ -167,6 +168,7 @@ Syntax
 	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' (basic-type id)? ')' ';'
 	GlobalDef : glob-var-decl ::= 'export'? var-decl //TODO 'export'?
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
+							| 'mutex' id ';'
 	Stmts: stmts ::= stmt stmts?
 	Stmt: stmt ::= var-decl | imp-stmt | local-fun | thread-stmt
 	ImpStmt : imp-stmt ::= id '=' exp ';'
@@ -210,6 +212,7 @@ Semantics var-declare[[ _:var-decl ]] : =>environments
 //initialize
 Rule var-declare[[ BasicType ID ';' ]] =   bind(id[[ ID ]], allocate-initialised-variable( type[[ BasicType ]] ,  null))
 Rule var-declare[[ BasicType ID '=' E ';' ]] =  bind(id[[ ID ]],  allocate-initialised-variable( type[[ BasicType ]] ,  eval[[ E ]]))
+Rule var-declare[[ 'mutex' ID ';']] =  memo-value(id[[ ID ]],  exclusive-lock-create)
 
 //TODO stmts?
 Semantics exec[[ _:stmts ]] : =>null-type
