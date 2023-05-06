@@ -210,16 +210,21 @@ Semantics var-declare[[ _:var-decl ]] : =>environments
 Rule var-declare[[ BasicType ID ';' ]] =   bind(id[[ ID ]], allocate-initialised-variable( type[[ BasicType ]] ,  null))
 Rule var-declare[[ BasicType ID '=' E ';' ]] =  bind(id[[ ID ]],  allocate-initialised-variable( type[[ BasicType ]] ,  eval[[ E ]]))
 
+//TODO stmts?
 Semantics exec[[ _:stmts ]] : =>null-type
 // Stmts
+
 Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
-Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
 Rule exec[[ ThreadStmt Stmts ]] = sequential(exec[[ ThreadStmt ]], exec[[ Stmts ]])
+
+Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
+Rule exec[[ VarDecl Stmts ]] = exec[[ Stmts ]]
+Rule exec[[ VarDecl ]] = ()
 
 
 //TODO remove effect and scope
-Rule exec[[ VarDecl Stmts ]] = scope(var-declare[[ VarDecl ]], exec[[ Stmts ]])
-Rule exec[[ VarDecl ]] = effect(var-declare[[ VarDecl]])
+//Rule exec[[ VarDecl Stmts ]] = scope(var-declare[[ VarDecl ]], exec[[ Stmts ]])
+//Rule exec[[ VarDecl ]] = effect(var-declare[[ VarDecl]])
 
 
 //ImpStmt
@@ -366,7 +371,7 @@ Rule declarations-local[[ ]] = ()
 
 Rule declarations-local[[ LocalFunDef Stmts? ]] = local-fun-declare[[ LocalFunDef ]], declarations-local[[ Stmts? ]]
 Rule declarations-local[[ ImpStmt Stmts? ]] = declarations-local[[ Stmts? ]]
-Rule declarations-local[[ VarDecl Stmts? ]] = declarations-local[[ Stmts? ]]
+Rule declarations-local[[ VarDecl Stmts? ]] = var-declare[[ VarDecl ]], declarations-local[[ Stmts? ]]
 Rule declarations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 
 Semantics initialisations-local[[ _:stmts? ]] : => null-type
