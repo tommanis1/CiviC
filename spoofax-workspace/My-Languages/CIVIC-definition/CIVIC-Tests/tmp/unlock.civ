@@ -1,0 +1,24 @@
+int gnum = 0;  // protected by g_num_mutex
+//int gnummutex = 0;
+mutex gnummutex;
+
+void slowincrement(int id) 
+{
+    gnummutex.lock();
+    for (int i = 0, 10) {
+        gnum = gnum + 1;
+        print(gnum);
+       	print(id);
+    }
+    gnummutex.unlock();
+    print(-1);
+   
+}
+
+int main(){
+    stdthread t(slowincrement, 0);
+    stdthread tt(slowincrement, 1);
+//    t.join();
+//    tt.join();
+return 0;
+}

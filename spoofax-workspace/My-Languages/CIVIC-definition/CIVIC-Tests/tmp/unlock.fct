@@ -1,0 +1,155 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (collateral
+     (bind
+        ("gnum",
+         allocate-initialised-variable
+           (values,
+            decimal-natural
+              ("0"))),
+      bind
+        ("gnummutex",
+         allocate-initialised-variable
+           (syncs,
+            exclusive-lock-create)),
+      bind
+        ("slowincrement",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values))),
+      bind
+        ("main",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values)))),
+   sequential
+     (( ),
+      ( ),
+      assign
+        (bound
+           ("slowincrement"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    (pattern closure
+                       (bind
+                          ("id",
+                           allocate-initialised-variable
+                             (values,
+                              given))))),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        exclusive-lock-sync-else-wait
+                          (assigned
+                             (bound
+                                ("gnummutex"))),
+                        scope
+                          (bind
+                             ("i",
+                              allocate-initialised-variable
+                                (integers,
+                                 decimal-natural
+                                   ("0"))),
+                           while
+                             (is-less
+                                (assigned
+                                   (bound
+                                      ("i")),
+                                 decimal-natural
+                                   ("10")),
+                              sequential
+                                (sequential
+                                   (assign
+                                      (bound
+                                         ("gnum"),
+                                       else
+                                         (int-add
+                                            (assigned
+                                               (bound
+                                                  ("gnum")),
+                                             decimal-natural
+                                               ("1")),
+                                          float-add
+                                            (assigned
+                                               (bound
+                                                  ("gnum")),
+                                             decimal-natural
+                                               ("1")))),
+                                    print
+                                      (assigned
+                                         (bound
+                                            ("gnum"))),
+                                    print
+                                      (assigned
+                                         (bound
+                                            ("id")))),
+                                 assign
+                                   (bound
+                                      ("i"),
+                                    integer-add
+                                      (assigned
+                                         (bound
+                                            ("i")),
+                                       decimal-natural
+                                         ("1")))))),
+                        exclusive-lock-release
+                          (assigned
+                             (bound
+                                ("gnummutex"))),
+                        print
+                          (integer-negate
+                             (decimal-natural
+                                ("1"))))))))),
+      assign
+        (bound
+           ("main"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        scope
+                          (bind
+                             ("t",
+                              thread-activate thread-joinable postpone-after-effect supply
+                                (assigned
+                                   (bound
+                                      ("slowincrement")),
+                                 tuple
+                                   (decimal-natural
+                                      ("0")))),
+                           scope
+                             (bind
+                                ("tt",
+                                 thread-activate thread-joinable postpone-after-effect supply
+                                   (assigned
+                                      (bound
+                                         ("slowincrement")),
+                                    tuple
+                                      (decimal-natural
+                                         ("1")))),
+                              return
+                                (decimal-natural
+                                   ("0")))))))))),
+      apply
+        (assigned
+           (bound
+              ("main")),
+         tuple
+           ( ))))

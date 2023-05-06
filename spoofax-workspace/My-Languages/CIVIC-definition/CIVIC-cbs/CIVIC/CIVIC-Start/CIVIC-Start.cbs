@@ -190,6 +190,8 @@ Syntax
 	
 	ThreadStmt : thread-stmt ::= 'stdthread' id '(' id (',' exprs)? ')' ';'
 								| id '.' 'join' '(' ')' ';'
+								| id '.' 'lock' '(' ')' ';'
+								| id '.' 'unlock' '(' ')' ';'
 
 Semantics
   local-fun-declare[[ _:local-fun ]] : =>null-type
@@ -212,7 +214,7 @@ Semantics var-declare[[ _:var-decl ]] : =>environments
 //initialize
 Rule var-declare[[ BasicType ID ';' ]] =   bind(id[[ ID ]], allocate-initialised-variable( type[[ BasicType ]] ,  null))
 Rule var-declare[[ BasicType ID '=' E ';' ]] =  bind(id[[ ID ]],  allocate-initialised-variable( type[[ BasicType ]] ,  eval[[ E ]]))
-Rule var-declare[[ 'mutex' ID ';']] =  memo-value(id[[ ID ]],  exclusive-lock-create)
+Rule var-declare[[ 'mutex' ID ';']] = bind(id[[ ID ]], allocate-initialised-variable( syncs ,   exclusive-lock-create))
 
 //TODO stmts?
 Semantics exec[[ _:stmts ]] : =>null-type
@@ -294,6 +296,8 @@ Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';' Stmts]] =
 	), exec[[Stmts]])
 
 Rule exec[[ ID '.' 'join' '(' ')' ';' Stmts]] =  sequential( effect(thread-join(bound (id[[ ID ]]) )), exec[[ Stmts ]] )
+Rule exec[[ ID '.' 'lock' '(' ')' ';' Stmts]] =  sequential( exclusive-lock-sync-else-wait(eval[[ ID ]]), exec[[ Stmts ]] )
+Rule exec[[ ID '.' 'unlock' '(' ')' ';' Stmts]] =  sequential( exclusive-lock-release(eval[[ ID ]]), exec[[ Stmts ]] )
 
 //Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
 //Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
@@ -411,7 +415,7 @@ Rule start[[ Pgm ]] =
     initialise-binding
     initialise-storing
     initialise-giving
-//    initialise-memos
+    initialise-memos
     finalise-failing
     finalise-throwing
   multithread
