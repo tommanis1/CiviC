@@ -7,7 +7,7 @@ Language "CIVIC"
 //#1 Start
 
 Lexis  
-		UID : id-user-defined ::= ('a'-'z')+ 
+		UID : id-user-defined ::= ('A'-'Z'|'a'-'z'|'_') ('0'-'9'|'A'-'Z'|'a'-'z'|'_')*
 //		('a'-'z' | '_')*
      
        N:int ::= ('0'-'9')+
