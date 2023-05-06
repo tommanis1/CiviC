@@ -1,0 +1,7 @@
+extern void printInt( int val);
+
+int a = 1;
+export int main () {
+	printInt(a);
+	return 0;
+}

@@ -163,8 +163,9 @@ Rule eval[[ '!' E ]]        = not(eval[[ E ]])
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
                         
 Syntax
-	Decl : decl ::= function-definition | std-lib-import
+	Decl : decl ::= function-definition | std-lib-import | glob-var-decl
 	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' (basic-type id)? ')' ';'
+	GlobalDef : glob-var-decl ::= 'export'? var-decl //TODO 'export'?
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
 	Stmts: stmts ::= stmt stmts?
 	Stmt: stmt ::= var-decl | imp-stmt | local-fun | thread-stmt
@@ -283,9 +284,6 @@ Rule exec[[ ID '.' 'join' '(' ')' ';' Stmts]] =  sequential( effect(thread-join(
 //Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
 //Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
 
-Rule initialise[[ 'export' RetType ID '(' Params? ')' Block ]] = initialise[[ RetType ID '(' Params? ')' Block ]]
-Rule declare[[ 'export' RetType ID '(' Params? ')' Block ]] = declare[[ RetType ID '(' Params? ')' Block ]]
-
 Syntax 
 	FunDef : function-definition ::= 'export'? return-type id '(' params? ')' block
 	Param : param ::= basic-type id
@@ -302,7 +300,14 @@ Rule
 Rule
   patts[[ BasicType ID ',' Params ]] =
     patts[[ BasicType ID ]] , patts[[ Params ]]
-    
+
+Rule initialise[[ 'export' RetType ID '(' Params? ')' Block ]] = initialise[[ RetType ID '(' Params? ')' Block ]]
+Rule declare[[ 'export' RetType ID '(' Params? ')' Block ]] = declare[[ RetType ID '(' Params? ')' Block ]]
+
+Rule [[ 'export' VarDecl ]]: glob-var-decl = [[ VarDecl ]]
+Rule initialise[[ VarDecl ]] = ()
+Rule declare[[ VarDecl ]] = var-declare[[ VarDecl ]]
+
 //Semantics init-param[[ _:param* ]] 
 Rule initialise[[ RetType ID '(' Params? ')' Block ]] = 
 	assign(
