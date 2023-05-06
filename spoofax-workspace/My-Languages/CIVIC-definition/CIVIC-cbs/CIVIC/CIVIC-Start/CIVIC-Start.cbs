@@ -13,7 +13,8 @@ Lexis
        
        keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
                  | 'in'  | 'join' | 'print' 
-                 | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false'
+                 | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false' 
+                 | 'stdthread'
 //                 | 'extern' 
 //                 | 'printInt'
 //		| 'printFloat'
@@ -39,7 +40,7 @@ Syntax
 */
 
 Syntax E:exp ::= '(' exp ')'
-				| 'spawn' '(' id ')'
+//				| 'spawn' '(' id ')'
 // Arithmetic Operator:
 //               | exp arithmetic-op exp
 				| '!' exp
@@ -98,12 +99,6 @@ Rule id[[ STDLibID ]] = \"STDLibID\"
 Rule type[[ BasicType ]] = values
 
 //#1 Lexical constructs
-
-Rule eval[[ 'spawn' '(' ID ')' ]] = allocate-index
-      thread-activate thread-joinable
-          postpone-after-effect
-            supply(assigned(bound(id[[ ID ]])), tuple
-           ( ))
 
 Rule eval[[ N ]] = decimal-natural(\"N\")
 Rule eval[[ N1 '.' N2 ]] = decimal-float(binary32, \"N1\", \"N2\", "1")
@@ -172,7 +167,7 @@ Syntax
 	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' (basic-type id)? ')' ';'
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
 	Stmts: stmts ::= stmt stmts?
-	Stmt: stmt ::= var-decl | imp-stmt | local-fun
+	Stmt: stmt ::= var-decl | imp-stmt | local-fun | thread-stmt
 	ImpStmt : imp-stmt ::= id '=' exp ';'
 					| exp ';'
 					| 'if' '(' exp')' block ('else' block)?
@@ -183,12 +178,15 @@ Syntax
 					| 'return' exp? ';'
 					| block // Needed to be able to exec[[ Block ]] needs a workaround
 					| 'print' '(' exp ')' ';' // TODO: standard library?
-					| 'join''(' exp ')' ';'
+//					| 'join''(' exp ')' ';'
 //					| 'threadjoin' id ';'
 
 	Block : block ::= '{' stmts?'}'
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
 	SLCall : l-call ::= std-lib-id id?
+	
+	ThreadStmt : thread-stmt ::= 'stdthread' id '(' id ')' ';'
+								| id '.' 'join' '(' ')' ';'
 
 Semantics
   local-fun-declare[[ _:local-fun ]] : =>null-type
@@ -216,6 +214,8 @@ Semantics exec[[ _:stmts ]] : =>null-type
 // Stmts
 Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
 Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
+Rule exec[[ ThreadStmt Stmts ]] = sequential(exec[[ ThreadStmt ]], exec[[ Stmts ]])
+
 
 //TODO remove effect and scope
 Rule exec[[ VarDecl Stmts ]] = scope(var-declare[[ VarDecl ]], exec[[ Stmts ]])
@@ -260,10 +260,22 @@ Rule exec[[ 'return' E ';' ]] = return(eval[[ E ]])
 Rule exec[[ 'return' ';' ]] = return(null)
 Rule exec[[ E ';' ]] = eval[[ E ]]
 Rule exec[[ 'print' '(' E ')' ';']] = print(eval[[ E ]])
-Rule exec[[ 'join' '(' E ')' ';' ]] =   thread-join lookup-index(eval[[ E ]])
 //Block
 Rule exec[[ '{' Stmts '}' ]] = exec[[ Stmts ]]
-Rule exec[[ '{' '}' ]] = null
+Rule exec[[ '{' '}' ]] = null //()
+
+
+Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';']] = 
+//	TODO type
+	bind(id[[ ID1 ]], allocate-initialised-variable( values ,  
+	allocate-index
+      thread-activate thread-joinable
+          postpone-after-effect
+            supply(assigned(bound(id[[ ID2 ]])), tuple
+           ( ))
+	))
+
+Rule exec[[ ID '.' 'join' '(' ')' ';' ]] =   thread-join lookup-index(eval[[ ID ]])
 
 //Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
 //Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
@@ -355,6 +367,7 @@ Rule declarations-local[[ ]] = ()
 Rule declarations-local[[ LocalFunDef Stmts? ]] = local-fun-declare[[ LocalFunDef ]], declarations-local[[ Stmts? ]]
 Rule declarations-local[[ ImpStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 Rule declarations-local[[ VarDecl Stmts? ]] = declarations-local[[ Stmts? ]]
+Rule declarations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 
 Semantics initialisations-local[[ _:stmts? ]] : => null-type
 Rule initialisations-local[[ '{' Stmts '}' ]] = initialisations-local[[ Stmts ]]
@@ -364,6 +377,8 @@ Rule initialisations-local[[ ]] = ()
 Rule initialisations-local[[ LocalFunDef Stmts? ]] = initialise-local-fun[[ LocalFunDef ]], initialisations-local[[ Stmts? ]]
 Rule initialisations-local[[ ImpStmt Stmts? ]] = initialisations-local[[ Stmts? ]]
 Rule initialisations-local[[ VarDecl Stmts? ]] = initialisations-local[[ Stmts? ]]
+Rule initialisations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
+
 //#6 Programs
 
 Syntax START:start ::= pgm
