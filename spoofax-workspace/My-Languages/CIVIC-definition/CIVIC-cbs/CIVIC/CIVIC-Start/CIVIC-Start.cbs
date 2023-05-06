@@ -186,7 +186,7 @@ Syntax
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
 	SLCall : l-call ::= std-lib-id id?
 	
-	ThreadStmt : thread-stmt ::= 'stdthread' id '(' id ')' ';'
+	ThreadStmt : thread-stmt ::= 'stdthread' id '(' id (',' exprs)? ')' ';'
 								| id '.' 'join' '(' ')' ';'
 
 Semantics
@@ -268,6 +268,17 @@ Rule exec[[ 'print' E ';']] = print(eval[[ E ]])
 Rule exec[[ '{' Stmts '}' ]] = exec[[ Stmts ]]
 Rule exec[[ '{' '}' ]] = null //()
 
+//TODO fix this desugaring 
+//Rule [[ 'stdthread' ID1 '(' ID2 ')' ';']]:thread-stmt = [[ 'stdthread' ID1 '(' ID2 ',' ')' ';' ]]
+Rule exec[[ 'stdthread' ID1 '(' ID2 ',' Exprs ')' ';' Stmts]] = 
+//	TODO type
+	scope(
+	bind(id[[ ID1 ]],
+      thread-activate thread-joinable
+          postpone-after-effect
+            supply(assigned(bound(id[[ ID2 ]])), tuple
+           (eval[[ Exprs ]]))
+	), exec[[Stmts]])
 
 Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';' Stmts]] = 
 //	TODO type
@@ -276,7 +287,7 @@ Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';' Stmts]] =
       thread-activate thread-joinable
           postpone-after-effect
             supply(assigned(bound(id[[ ID2 ]])), tuple
-           ( ))
+           ())
 	), exec[[Stmts]])
 
 Rule exec[[ ID '.' 'join' '(' ')' ';' Stmts]] =  sequential( effect(thread-join(bound (id[[ ID ]]) )), exec[[ Stmts ]] )
