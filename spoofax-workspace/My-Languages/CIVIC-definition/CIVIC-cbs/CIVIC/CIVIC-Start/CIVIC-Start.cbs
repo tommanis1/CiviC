@@ -215,8 +215,6 @@ Semantics exec[[ _:stmts ]] : =>null-type
 // Stmts
 
 Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
-Rule exec[[ ThreadStmt Stmts ]] = sequential(exec[[ ThreadStmt ]], exec[[ Stmts ]])
-
 Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
 Rule exec[[ VarDecl Stmts ]] = exec[[ Stmts ]]
 Rule exec[[ VarDecl ]] = ()
@@ -270,17 +268,17 @@ Rule exec[[ '{' Stmts '}' ]] = exec[[ Stmts ]]
 Rule exec[[ '{' '}' ]] = null //()
 
 
-Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';']] = 
+Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';' Stmts]] = 
 //	TODO type
-	bind(id[[ ID1 ]], allocate-initialised-variable( values ,  
-	allocate-index
+	scope(
+	bind(id[[ ID1 ]],
       thread-activate thread-joinable
           postpone-after-effect
             supply(assigned(bound(id[[ ID2 ]])), tuple
            ( ))
-	))
+	), exec[[Stmts]])
 
-Rule exec[[ ID '.' 'join' '(' ')' ';' ]] =   thread-join lookup-index(eval[[ ID ]])
+Rule exec[[ ID '.' 'join' '(' ')' ';' Stmts]] =  sequential( effect(thread-join(bound (id[[ ID ]]) )), exec[[ Stmts ]] )
 
 //Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
 //Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
