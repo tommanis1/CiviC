@@ -178,7 +178,7 @@ Syntax
 //					| 'for' '(' 'int' id '=' exp ',' exp ')' block
 					| 'return' exp? ';'
 					| block // Needed to be able to exec[[ Block ]] needs a workaround
-					| 'print' '(' exp ')' ';' // TODO: standard library?
+					| 'print'  exp  ';' // TODO: standard library?
 //					| 'join''(' exp ')' ';'
 //					| 'threadjoin' id ';'
 
@@ -218,7 +218,7 @@ Semantics exec[[ _:stmts ]] : =>null-type
 Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
 Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
 Rule exec[[ VarDecl Stmts ]] = exec[[ Stmts ]]
-Rule exec[[ VarDecl ]] = ()
+//Rule exec[[ VarDecl ]] = ()
 
 
 //TODO remove effect and scope
@@ -263,7 +263,7 @@ Rule exec[[ 'for' '(' 'int' ID '=' E1 ',' E2 ')' Block ]] =
 Rule exec[[ 'return' E ';' ]] = return(eval[[ E ]])
 Rule exec[[ 'return' ';' ]] = return(null)
 Rule exec[[ E ';' ]] = eval[[ E ]]
-Rule exec[[ 'print' '(' E ')' ';']] = print(eval[[ E ]])
+Rule exec[[ 'print' E ';']] = print(eval[[ E ]])
 //Block
 Rule exec[[ '{' Stmts '}' ]] = exec[[ Stmts ]]
 Rule exec[[ '{' '}' ]] = null //()
