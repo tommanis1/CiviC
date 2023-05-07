@@ -59,6 +59,7 @@ Syntax E:exp ::= '(' exp ')'
 				| exp '||' exp
 //				ssssss
 				| id '(' exprs? ')'
+				| '(' basic-type ')' exp
 //				| id '('')'
 				| id
 				| const
@@ -109,10 +110,11 @@ Rule eval[[ '-' N ]] = 	integer-negate(decimal-natural(\"N\"))
 
 
 Rule eval[[ ID ]] = assigned(bound(id[[ ID ]]))
-Rule eval[[ 'true' ]] = true
+Semantics eval-bool[[ _:bool-const ]] : => bool
+Rule eval-bool[[ 'true' ]] = true
 
-Rule eval[[ 'false' ]] = false
-
+Rule eval-bool[[ 'false' ]] = false
+Rule eval[[ Bool ]] = eval-bool[[Bool]]
 Rule eval[[ ID '(' ')' ]] = apply(eval[[ ID ]], tuple() )
 Rule eval[[ ID '(' Exprs ')' ]] = apply(eval[[ ID ]], tuple(eval[[ Exprs ]]) )
 
@@ -159,6 +161,7 @@ Rule eval[[ E1 '||' E2 ]] = if-else(eval[[ E1 ]],true,eval[[ E2 ]])
 //mono-op
 
 Rule eval[[ '!' E ]]        = not(eval[[ E ]])
+Rule eval[[ '(' BasicType ')' E ]] = cast-to-type(eval[[ E ]], type[[ BasicType ]])
 
 
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
