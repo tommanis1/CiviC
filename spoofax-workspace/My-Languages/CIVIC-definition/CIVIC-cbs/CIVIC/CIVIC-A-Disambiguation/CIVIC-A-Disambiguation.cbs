@@ -25,6 +25,12 @@ context-free syntax
 
 context-free priorities
 {
+``exp ::= exp '++'``
+}>
+{
+``exp ::= '++' exp``
+}>
+{
 ``exp ::= '!' exp``
 } >
 {left: 

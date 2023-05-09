@@ -1,7 +1,7 @@
 Language "CIVIC"
 [
 #A Disambiguation
-//#1 Start
+#B Cpp
 ]
 
 //#1 Start
@@ -13,9 +13,9 @@ Lexis
        N:int ::= ('0'-'9')+
        
        keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
-                 | 'in'  | 'join' | 'print' 
+                 | 'in'  | 'join' | 'print' | 'return'
                  | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false' 
-                 | 'stdthread' | 'mutex'
+                 | 'stdthread' | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex' 
 //                 | 'extern' 
 //                 | 'printInt'
 //		| 'printFloat'
@@ -63,6 +63,9 @@ Syntax E:exp ::= '(' exp ')'
 //				| id '('')'
 				| id
 				| const
+				| cpp-expr
+				
+//				| string
 //				| 'Null'
 //				| std-lib-call
 
@@ -86,7 +89,7 @@ Type basic-types ~> integers
                 | booleans
                 | floats
 
-Semantics eval[[ _:exprs ]] : => ld-values
+Semantics eval[[ _:exprs ]] : => values
 Semantics exec-var[[ _:var-decl ]] : => ld-values
 Semantics type[[ _:basic-type ]] : => basic-types
 Semantics
@@ -167,13 +170,13 @@ Rule eval[[ '(' BasicType ')' E ]] = cast-to-type(eval[[ E ]], type[[ BasicType 
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
                         
 Syntax
-	Decl : decl ::= function-definition | std-lib-import | glob-var-decl
+	Decl : decl ::= function-definition | std-lib-import | glob-var-decl | cpp-decl
 	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' (basic-type id)? ')' ';'
 	GlobalDef : glob-var-decl ::= 'export'? var-decl //TODO 'export'?
 	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
 							| 'mutex' id ';'
 	Stmts: stmts ::= stmt stmts?
-	Stmt: stmt ::= var-decl | imp-stmt | local-fun | thread-stmt
+	Stmt: stmt ::= var-decl | imp-stmt | local-fun | thread-stmt | cpp-stmt
 	ImpStmt : imp-stmt ::= id '=' exp ';'
 					| exp ';'
 					| 'if' '(' exp')' block ('else' block)?
@@ -431,7 +434,10 @@ Syntax
 Semantics
   run[[ Decls:pgm ]] : =>values
     = scope(
-        collateral(declarations[[ Decls ]]),
+        collateral(
+        	bind("_std", allocate-initialised-variable(environments,map())), //Holds std lib defs
+        	declarations[[ Decls ]]
+        ),
         sequential(
           initialisations[[ Decls ]],
           apply(assigned(bound("main")), tuple

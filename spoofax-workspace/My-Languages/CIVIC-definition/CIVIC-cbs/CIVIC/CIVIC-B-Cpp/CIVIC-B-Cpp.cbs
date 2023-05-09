@@ -1,0 +1,45 @@
+Language "CIVIC"
+
+#B Cpp
+
+Lexis
+	CPP-Lib: cpp-std-lib ::= 'iostream' | 'chrono' | 'thread' | 'mutex' 
+	CPPLibLoc : lib-loc ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
+Syntax
+	CPPE : cpp-expr ::= lib-loc
+//					| '++' exp | exp '++'
+Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
+//Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
+//Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
+
+Syntax
+	CPPDDecl : cpp-decl ::= 'include' '<' cpp-std-lib '>'
+Rule declare[[ CPPDDecl ]] = ()
+//Rule declare[[ CPPDDecl ]] = ()
+Rule initialise[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+{
+	"std::endl" |-> "\n"
+}))
+
+Rule initialise[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+{
+	std::mutex |-> allocate-initialised-variable(syncs , exclusive-lock-create)
+}))
+Syntax
+	Insert : insert ::= '<<' exp
+	Inserts : inserts ::= insert inserts?
+	CPPStmt : cpp-stmt ::= 'std' ':' ':' 'cout' inserts ';' //TODO should be in library
+//						| 'for' '(' vardecl ';' exp ';' exp ')' block
+
+Semantics concat[[ _:inserts?]] : =>null-type
+Rule concat[[ '<<' E Inserts? ]] = string-append(to-string (eval[[ E ]]), concat[[ Inserts?]])
+Rule concat[[ ]] = ()
+//Rule exec[[ 'std' ':' ':' 'cout' Inserts ';']] = print(concat[[ Inserts ]]')
+//Rule exec[[ 'for' '(' VarDecl E1' ';' E2 ')' Block ]] = 
+//scope(
+//var-declare[[ VarDecl ]], 
+//while(eval[[ E1 ]], sequential(exec[[E2 ';' ]], exec[[ Block ]]))
+//)
+	
+Rule initialisations-local[[ CPPStmt ]] = ()
+Rule declarations-local[[ CPPStmt ]] = ()
