@@ -15,31 +15,93 @@ Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
 Syntax
 	CPPDDecl : cpp-decl ::= 'include' '<' cpp-std-lib '>'
 Rule declare[[ CPPDDecl ]] = ()
+Rule initialise[[ CPPDDecl ]] = ()
 //Rule declare[[ CPPDDecl ]] = ()
-Rule initialise[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-	"std::endl" |-> "\n"
+	"std::endl" |-> "\n",
+	"std::cout" |-> print
 }))
 
-Rule initialise[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-	std::mutex |-> allocate-initialised-variable(syncs , exclusive-lock-create)
+	"std::mutex" |-> allocate-initialised-variable(syncs , exclusive-lock-create)
 }))
+
+Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = ()
+Otherwise initialise-lib[[ Decl ]] = ()
+
+//assign(bound "_std", map-unite(assigned(bound("_std")),
+//{
+//	"std::thread" |-> allocate-index
+//}))
+
 Syntax
 	Insert : insert ::= '<<' exp
 	Inserts : inserts ::= insert inserts?
-	CPPStmt : cpp-stmt ::= 'std' ':' ':' 'cout' inserts ';' //TODO should be in library
+	CPPStmt : cpp-stmt ::= insertstmt
+							| id '.' 'lock' '(' ')' ';'
+							| id '.' 'unlock' '(' ')' ';'
 //						| 'for' '(' vardecl ';' exp ';' exp ')' block
+	InsertStmt : insertstmt ::= 	lib-loc inserts ';'
+	CPPVarDecl : cpp-var-decl ::=  lib-loc id ';'
+									| lib-loc id '{' id (',' exprs)? '}' ';' //thread decl
 
 Semantics concat[[ _:inserts?]] : =>null-type
 Rule concat[[ '<<' E Inserts? ]] = string-append(to-string (eval[[ E ]]), concat[[ Inserts?]])
 Rule concat[[ ]] = ()
-//Rule exec[[ 'std' ':' ':' 'cout' Inserts ';']] = print(concat[[ Inserts ]]')
+//for each Inserts run CPPLibLoc on 
+//Rule [[ CPPLibLoc '<<' E Inserts ';' ]] : insertstmt = [[ CPPLibLoc '<<' E ';' CPPLibLoc Inserts ';' ]]
+Rule exec[[ CPPLibLoc '<<' E Inserts ';']] = 
+//sequential(
+//												lookup(assigned(bound("_std")), \"CPPLibLoc\"), 
+												print eval[[ E]],
+												exec[[ CPPLibLoc  Inserts ';']]
+//												)
+Rule exec[[ CPPLibLoc '<<' E ';']] = print eval[[ E]]
+
+Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
+
+//Todo, else for other lock types
+Rule exec[[ ID '.' 'lock' '(' ')' ';']] =  exclusive-lock-sync-else-wait(eval[[ ID ]])
+Rule exec[[ ID '.' 'unlock' '(' ')' ';']] = exclusive-lock-release(eval[[ ID ]])
+
 //Rule exec[[ 'for' '(' VarDecl E1' ';' E2 ')' Block ]] = 
 //scope(
 //var-declare[[ VarDecl ]], 
 //while(eval[[ E1 ]], sequential(exec[[E2 ';' ]], exec[[ Block ]]))
 //)
-	
+
+Rule var-declare[[ CPPLibLoc ID ';']] = bind(id[[ ID ]], lookup(assigned(bound("_std")), \"CPPLibLoc\"))
+Rule var-declare[[ CPPLibLoc ID1 '{' ID2 '}' ';' ]] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
+Rule var-declare[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
+
+//Rule exec[[ CPPLibLoc ID1 '{' ID2 (',' Exprs)? '}' ';' Stmts]] = sequential(exec[[ CPPLibLoc ID1 '{' ID2 (',' Exprs)? '}' ';' ]], exec[[ Stmts ]]) 
+//Otherwise
+Rule exec[[ CPPVarDecl Stmts]] = sequential(exec[[CPPVarDecl]], exec[[ Stmts]])
+
+Rule exec[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = 
+//	TODO type
+	assign(bound(id[[ ID1 ]]),
+	allocate-index thread-activate thread-joinable postpone-after-effect
+//    		lookup(assigned(bound("_std")), \"CPPLibLoc\"),
+            supply(assigned(bound(id[[ ID2 ]])), tuple
+           (eval[[ Exprs ]]))
+	)
+
+Rule exec[[ CPPLibLoc ID1 '{' ID2 '}' ';']] = 
+	assign(bound(id[[ ID1 ]]),
+	allocate-index thread-activate thread-joinable postpone-after-effect
+//    	lookup(assigned(bound("_std")), \"CPPLibLoc\"),
+            supply(assigned(bound(id[[ ID2 ]])), tuple
+           ())
+	)
+Rule exec[[ CPPLibLoc ID ';' ]] = ()
+Rule initialisations-local[[ CPPVarDecl Stmts? ]] = initialisations-local[[ Stmts? ]]
+Rule declarations-local[[ CPPVarDecl Stmts? ]] = var-declare[[ CPPVarDecl ]], declarations-local[[ Stmts? ]]
+
 Rule initialisations-local[[ CPPStmt ]] = ()
 Rule declarations-local[[ CPPStmt ]] = ()
+
+Rule initialise[[ CPPVarDecl ]] = ()
+Rule declare[[ CPPVarDecl ]] = var-declare[[ CPPVarDecl]]

@@ -15,8 +15,8 @@ Lexis
        keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
                  | 'in'  | 'join' | 'print' | 'return'
                  | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false' 
-                 | 'stdthread' | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex' 
-//                 | 'extern' 
+                 | 'stdthread' | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex' | 'lock' | 'unlock'
+                 | 'extern' 
 //                 | 'printInt'
 //		| 'printFloat'
 
@@ -170,13 +170,13 @@ Rule eval[[ '(' BasicType ')' E ]] = cast-to-type(eval[[ E ]], type[[ BasicType 
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
                         
 Syntax
-	Decl : decl ::= function-definition | std-lib-import | glob-var-decl | cpp-decl
+	Decl : decl ::= cpp-decl | function-definition | std-lib-import | glob-var-decl
 	STDLibImport : std-lib-import ::= 'extern' return-type std-lib-id '(' (basic-type id)? ')' ';'
 	GlobalDef : glob-var-decl ::= 'export'? var-decl //TODO 'export'?
-	VarDecl : var-decl ::= basic-type id ('=' exp)? ';'
-							| 'mutex' id ';'
+	CiviCVarDecl : civic-var-decl ::= basic-type id ('=' exp)? ';' 
+	VarDecl : var-decl ::= civic-var-decl | cpp-var-decl
 	Stmts: stmts ::= stmt stmts?
-	Stmt: stmt ::= var-decl | imp-stmt | local-fun | thread-stmt | cpp-stmt
+	Stmt: stmt ::= civic-var-decl | imp-stmt | local-fun | cpp-stmt | cpp-var-decl //| thread-stmt
 	ImpStmt : imp-stmt ::= id '=' exp ';'
 					| exp ';'
 					| 'if' '(' exp')' block ('else' block)?
@@ -194,10 +194,8 @@ Syntax
 	LocalFunDef : local-fun ::= return-type id '(' params? ')' block
 	SLCall : l-call ::= std-lib-id id?
 	
-	ThreadStmt : thread-stmt ::= 'stdthread' id '(' id (',' exprs)? ')' ';'
-								| id '.' 'join' '(' ')' ';'
-								| id '.' 'lock' '(' ')' ';'
-								| id '.' 'unlock' '(' ')' ';'
+//	ThreadStmt : thread-stmt ::= 'stdthread' id '(' id (',' exprs)? ')' ';'
+//								| id '.' 'join' '(' ')' ';'
 
 Semantics
   local-fun-declare[[ _:local-fun ]] : =>null-type
@@ -217,10 +215,10 @@ Rule initialise-local-fun[[ RetType ID '(' Params? ')' Block ]] = initialise[[ R
 
 
 Semantics var-declare[[ _:var-decl ]] : =>environments
+Semantics var-initialise[[ _:var-decl ]] : => null-type
 //initialize
 Rule var-declare[[ BasicType ID ';' ]] =   bind(id[[ ID ]], allocate-initialised-variable( type[[ BasicType ]] ,  null))
 Rule var-declare[[ BasicType ID '=' E ';' ]] =  bind(id[[ ID ]],  allocate-initialised-variable( type[[ BasicType ]] ,  eval[[ E ]]))
-Rule var-declare[[ 'mutex' ID ';']] = bind(id[[ ID ]], allocate-initialised-variable( syncs ,   exclusive-lock-create))
 
 //TODO stmts?
 Semantics exec[[ _:stmts ]] : =>null-type
@@ -228,7 +226,7 @@ Semantics exec[[ _:stmts ]] : =>null-type
 
 Rule exec[[ ImpStmt Stmts ]] = sequential(exec[[ ImpStmt ]], exec[[ Stmts ]])
 Rule exec[[ LocalFunDef Stmts ]] = exec[[ Stmts ]]
-Rule exec[[ VarDecl Stmts ]] = exec[[ Stmts ]]
+Rule exec[[ CiviCVarDecl Stmts ]] = exec[[ Stmts ]]
 //Rule exec[[ VarDecl ]] = ()
 
 
@@ -281,29 +279,27 @@ Rule exec[[ '{' '}' ]] = null //()
 
 //TODO fix this desugaring 
 //Rule [[ 'stdthread' ID1 '(' ID2 ')' ';']]:thread-stmt = [[ 'stdthread' ID1 '(' ID2 ',' ')' ';' ]]
-Rule exec[[ 'stdthread' ID1 '(' ID2 ',' Exprs ')' ';' Stmts]] = 
-//	TODO type
-	scope(
-	bind(id[[ ID1 ]],
-      thread-activate thread-joinable
-          postpone-after-effect
-            supply(assigned(bound(id[[ ID2 ]])), tuple
-           (eval[[ Exprs ]]))
-	), exec[[Stmts]])
+//Rule exec[[ 'stdthread' ID1 '(' ID2 ',' Exprs ')' ';' Stmts]] = 
+////	TODO type
+//	scope(
+//	bind(id[[ ID1 ]],
+//      thread-activate thread-joinable
+//          postpone-after-effect
+//            supply(assigned(bound(id[[ ID2 ]])), tuple
+//           (eval[[ Exprs ]]))
+//	), exec[[Stmts]])
+//
+//Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';' Stmts]] = 
+////	TODO type
+//	scope(
+//	bind(id[[ ID1 ]],
+//      thread-activate thread-joinable
+//          postpone-after-effect
+//            supply(assigned(bound(id[[ ID2 ]])), tuple
+//           ())
+//	), exec[[Stmts]])
 
-Rule exec[[ 'stdthread' ID1 '(' ID2 ')' ';' Stmts]] = 
-//	TODO type
-	scope(
-	bind(id[[ ID1 ]],
-      thread-activate thread-joinable
-          postpone-after-effect
-            supply(assigned(bound(id[[ ID2 ]])), tuple
-           ())
-	), exec[[Stmts]])
-
-Rule exec[[ ID '.' 'join' '(' ')' ';' Stmts]] =  sequential( effect(thread-join(bound (id[[ ID ]]) )), exec[[ Stmts ]] )
-Rule exec[[ ID '.' 'lock' '(' ')' ';' Stmts]] =  sequential( exclusive-lock-sync-else-wait(eval[[ ID ]]), exec[[ Stmts ]] )
-Rule exec[[ ID '.' 'unlock' '(' ')' ';' Stmts]] =  sequential( exclusive-lock-release(eval[[ ID ]]), exec[[ Stmts ]] )
+//Rule exec[[ ID '.' 'join' '(' ')' ';' Stmts]] =  sequential( effect(thread-join(bound (id[[ ID ]]) )), exec[[ Stmts ]] )
 
 //Rule exec[[ 'threadjoin' ID ';' ]] = thread-join eval [[ ID ]]
 //Rule exec[[ 'thread_detach' E ';']] =   thread-detach eval[[ E ]]
@@ -329,8 +325,8 @@ Rule initialise[[ 'export' RetType ID '(' Params? ')' Block ]] = initialise[[ Re
 Rule declare[[ 'export' RetType ID '(' Params? ')' Block ]] = declare[[ RetType ID '(' Params? ')' Block ]]
 
 Rule [[ 'export' VarDecl ]]: glob-var-decl = [[ VarDecl ]]
-Rule initialise[[ VarDecl ]] = ()
-Rule declare[[ VarDecl ]] = var-declare[[ VarDecl ]]
+Rule initialise[[ CiviCVarDecl ]] = ()
+Rule declare[[ CiviCVarDecl ]] = var-declare[[ CiviCVarDecl ]]
 
 //Semantics init-param[[ _:param* ]] 
 Rule initialise[[ RetType ID '(' Params? ')' Block ]] = 
@@ -398,8 +394,8 @@ Rule declarations-local[[ ]] = ()
 
 Rule declarations-local[[ LocalFunDef Stmts? ]] = local-fun-declare[[ LocalFunDef ]], declarations-local[[ Stmts? ]]
 Rule declarations-local[[ ImpStmt Stmts? ]] = declarations-local[[ Stmts? ]]
-Rule declarations-local[[ VarDecl Stmts? ]] = var-declare[[ VarDecl ]], declarations-local[[ Stmts? ]]
-Rule declarations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
+Rule declarations-local[[ CiviCVarDecl Stmts? ]] = var-declare[[ CiviCVarDecl ]], declarations-local[[ Stmts? ]]
+//Rule declarations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 
 Semantics initialisations-local[[ _:stmts? ]] : => null-type
 Rule initialisations-local[[ '{' Stmts '}' ]] = initialisations-local[[ Stmts ]]
@@ -408,8 +404,8 @@ Rule initialisations-local[[ ]] = ()
 
 Rule initialisations-local[[ LocalFunDef Stmts? ]] = initialise-local-fun[[ LocalFunDef ]], initialisations-local[[ Stmts? ]]
 Rule initialisations-local[[ ImpStmt Stmts? ]] = initialisations-local[[ Stmts? ]]
-Rule initialisations-local[[ VarDecl Stmts? ]] = initialisations-local[[ Stmts? ]]
-Rule initialisations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
+Rule initialisations-local[[ CiviCVarDecl Stmts? ]] = initialisations-local[[ Stmts? ]]
+//Rule initialisations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 
 //#6 Programs
 
@@ -434,14 +430,17 @@ Syntax
 Semantics
   run[[ Decls:pgm ]] : =>values
     = scope(
+    	bind("_std", allocate-initialised-variable(environments,map())), //Holds std lib defs
+    	sequential(
+    	initialisations-lib[[ Decls ]],
+        scope(
         collateral(
-        	bind("_std", allocate-initialised-variable(environments,map())), //Holds std lib defs
         	declarations[[ Decls ]]
         ),
         sequential(
           initialisations[[ Decls ]],
           apply(assigned(bound("main")), tuple
-           ( ))))
+           ( ))))))
 Syntax
   Decls : decls ::= decl decls?
   
@@ -460,6 +459,15 @@ Rule
   initialisations[[ Decl Decls ]] =
     initialise[[ Decl ]], initialisations[[ Decls ]]
 Semantics
+  initialisations-lib[[ _:decls ]] : (=>null-type)+
+Rule
+  initialisations-lib[[ Decl ]] = initialise-lib[[ Decl ]]
+Rule
+  initialisations-lib[[ Decl Decls ]] =
+    initialise-lib[[ Decl ]], initialisations-lib[[ Decls ]]
+Semantics
   initialise[[ _:decl ]] : =>null-type
+Semantics
+  initialise-lib[[ _:decl ]] : =>null-type
 Semantics
   declare[[ _:decl ]] : =>environments
