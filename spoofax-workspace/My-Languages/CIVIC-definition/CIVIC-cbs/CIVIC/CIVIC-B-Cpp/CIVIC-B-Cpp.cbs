@@ -13,10 +13,10 @@ Syntax
 	CPPE : cpp-expr ::= lib-loc '.' id '(' ')'
 //					| '++' exp | exp '++'
 //Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
-Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
- scope-closed(object-feature-map obj eval[[ ID1 ]], 
-      else(
-      apply(assigned local-variable id[[ID]], tuple()), null-value))
+//Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
+// scope-closed(object-feature-map obj eval[[ ID1 ]], 
+//      else(
+//      apply(assigned local-variable id[[ID]], tuple()), null-value))
 //Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
 //Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
 
@@ -33,13 +33,15 @@ Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map
 
 Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-	"std::mutex" |-> object(fresh-atom, "Object", scope(
-						initialise-local-variables,
-						sequential(
-						local-variable-initialise("_self", exclusive-lock-create)
-						,
-						local-variable-initialise("lock",
-												     function closure(
+	"std::mutex" |-> 
+	 class (
+        thunk closure           // class instantiator
+          reference
+	object(fresh-atom, "std::mutex",
+scope(
+						initialise-local-variables)
+          ),
+          {"lock" |-> function closure(
         scope(
           match(given,tuple()),
           handle-return(
@@ -52,9 +54,10 @@ Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-un
           	))
           ))
           )
-						
-						)
-          )))}))
+          }
+          )
+          
+          }))
           
 
 Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = ()
@@ -92,7 +95,7 @@ Rule exec[[ CPPLibLoc '<<' E ';']] = print eval[[ E]]
 Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 
 //Rule exec[[ CPPLibLoc 
-/Todo, else for other lock types
+//Todo, else for other lock types
 //Rule exec[[ ID '.' 'lock' '(' ')' ';']] =  exclusive-lock-sync-else-wait(eval[[ ID ]])
 //Rule exec[[ ID '.' 'unlock' '(' ')' ';']] = exclusive-lock-release(eval[[ ID ]])
 
