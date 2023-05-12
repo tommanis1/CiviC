@@ -2,13 +2,21 @@ Language "CIVIC"
 
 #B Cpp
 
+Type all-values ~> functions(tuples(values*),values)
+						| values
+						| syncs
+
 Lexis
 	CPP-Lib: cpp-std-lib ::= 'iostream' | 'chrono' | 'thread' | 'mutex' 
 	CPPLibLoc : lib-loc ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
 Syntax
-	CPPE : cpp-expr ::= lib-loc
+	CPPE : cpp-expr ::= lib-loc '.' id '(' ')'
 //					| '++' exp | exp '++'
-Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
+//Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
+Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
+ scope-closed(object-feature-map obj eval[[ ID1 ]], 
+      else(
+      apply(assigned local-variable id[[ID]], tuple()), null-value))
 //Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
 //Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
 
@@ -25,8 +33,29 @@ Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map
 
 Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-	"std::mutex" |-> allocate-initialised-variable(syncs , exclusive-lock-create)
-}))
+	"std::mutex" |-> object(fresh-atom, "Object", scope(
+						initialise-local-variables,
+						sequential(
+						local-variable-initialise("_self", exclusive-lock-create)
+						,
+						local-variable-initialise("lock",
+												     function closure(
+        scope(
+          match(given,tuple()),
+          handle-return(
+          	scope(
+          	collateral(()),
+          	sequential(
+  				exclusive-lock-sync-else-wait(local-variable("self")),
+  				return(null),
+          	()
+          	))
+          ))
+          )
+						
+						)
+          )))}))
+          
 
 Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = ()
 Otherwise initialise-lib[[ Decl ]] = ()
@@ -40,8 +69,8 @@ Syntax
 	Insert : insert ::= '<<' exp
 	Inserts : inserts ::= insert inserts?
 	CPPStmt : cpp-stmt ::= insertstmt
-							| id '.' 'lock' '(' ')' ';'
-							| id '.' 'unlock' '(' ')' ';'
+//							| id '.' 'lock' '(' ')' ';'
+//							| id '.' 'unlock' '(' ')' ';'
 //						| 'for' '(' vardecl ';' exp ';' exp ')' block
 	InsertStmt : insertstmt ::= 	lib-loc inserts ';'
 	CPPVarDecl : cpp-var-decl ::=  lib-loc id ';'
@@ -62,9 +91,10 @@ Rule exec[[ CPPLibLoc '<<' E ';']] = print eval[[ E]]
 
 Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 
-//Todo, else for other lock types
-Rule exec[[ ID '.' 'lock' '(' ')' ';']] =  exclusive-lock-sync-else-wait(eval[[ ID ]])
-Rule exec[[ ID '.' 'unlock' '(' ')' ';']] = exclusive-lock-release(eval[[ ID ]])
+//Rule exec[[ CPPLibLoc 
+/Todo, else for other lock types
+//Rule exec[[ ID '.' 'lock' '(' ')' ';']] =  exclusive-lock-sync-else-wait(eval[[ ID ]])
+//Rule exec[[ ID '.' 'unlock' '(' ')' ';']] = exclusive-lock-release(eval[[ ID ]])
 
 //Rule exec[[ 'for' '(' VarDecl E1' ';' E2 ')' Block ]] = 
 //scope(
@@ -72,7 +102,9 @@ Rule exec[[ ID '.' 'unlock' '(' ')' ';']] = exclusive-lock-release(eval[[ ID ]])
 //while(eval[[ E1 ]], sequential(exec[[E2 ';' ]], exec[[ Block ]]))
 //)
 
-Rule var-declare[[ CPPLibLoc ID ';']] = bind(id[[ ID ]], lookup(assigned(bound("_std")), \"CPPLibLoc\"))
+Rule var-declare[[ CPPLibLoc ID ';']] = 
+
+bind(id[[ ID ]],  object(fresh-atom, "Object", initialise-local-variables))
 Rule var-declare[[ CPPLibLoc ID1 '{' ID2 '}' ';' ]] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
 Rule var-declare[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
 

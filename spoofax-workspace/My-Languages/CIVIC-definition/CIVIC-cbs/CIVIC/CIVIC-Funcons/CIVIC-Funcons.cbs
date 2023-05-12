@@ -1,0 +1,151 @@
+Language "CIVIC"
+
+[
+  // SL-specific funcons
+  Funcon sl-to-string
+  Funcon integer-add-else-string-append
+  
+  // Abbreviations
+  Funcon int
+  Funcon bool
+  Funcon str
+  Funcon obj
+  Funcon fun
+  
+  // Further funcons
+  
+  //   Binding
+  Funcon scope-closed
+  
+  //   Local variables
+  Funcon initialise-local-variables
+  Funcon local-variable
+  Funcon local-variable-initialise
+  Funcon local-variable-assign
+  
+  //   Global bindings
+  Funcon initialise-global-bindings
+  Funcon override-global-bindings
+  Funcon global-bound
+  
+  //   Composite input and output
+  Funcon read-line
+  Funcon print-line
+]
+
+# SL-specific funcons
+
+Funcon
+  sl-to-string(V:sl-values) : => strings
+Rule
+  sl-to-string(null-value) ~> "null"
+Rule
+  sl-to-string(V:~null-type) ~> to-string(V)
+
+Funcon 
+  integer-add-else-string-append(V1:sl-values, V2:sl-values) : => sl-values
+   ~> else(
+        integer-add(int V1, int V2),
+        string-append(sl-to-string V1, sl-to-string V2))
+
+# Abbreviations
+
+Funcon
+  int(V:sl-values) : => integers
+    ~> checked cast-to-type(V, integers)
+
+Funcon
+  bool(V:sl-values) : => booleans
+    ~> checked cast-to-type(V, booleans)
+
+Funcon
+  str(V:sl-values) : => strings
+    ~> checked cast-to-type(V, strings)
+
+Funcon
+  obj(V:sl-values) : => objects
+    ~> checked cast-to-type(V, objects)
+
+Funcon
+  fun(V:values) : => functions(_, _)
+    ~> checked cast-to-type(V, functions(_, _))
+
+# Further funcons
+
+/*
+  Some of the funcons defined below might be sufficiently reuseful for
+  inclusion in Funcons-beta.
+*/
+
+## Binding
+
+Funcon
+  scope-closed(Env:envs, X:=>T) : => T
+   ~> closed scope(Env, X)
+/*
+  `scope-closed(D, X)` evaluates `D` in the current environment, then
+  evaluates `X` in the resulting environment. Note the difference between
+  `scope-closed(D, X)` and `closed(scope(D, X))`: the latter is equivalent
+  to `closed(scope(closed D, X))`, where `D` cannot reference any bindings.
+*/
+
+## Local variables
+
+/*
+  The local variable map is stored in a variable bound to "local-variables".
+  Initialising a local variable updates the stored local variable map. 
+  Subsequent assignments to a local variable do not change the stored map.
+  
+  Local variables Type all-values ~> functions(tuples(values*),values)
+						| values
+						| syncs
+So functions and values of objects share name space
+*/
+
+Funcon
+  initialise-local-variables : => environments
+   ~> bind("local-variables", 
+        allocate-initialised-variable(environments, map( )))
+
+Funcon
+  local-variable(I:ids) : => variables
+   ~> checked lookup(assigned bound "local-variables", I)
+
+Funcon
+  local-variable-initialise(I:ids, V:all-values) : => null-type
+   ~> assign(bound "local-variables", 
+        map-override(
+          { I |-> allocate-initialised-variable(all-values, V) },
+          assigned bound "local-variables"))
+
+Funcon
+  local-variable-assign(I:ids, V:all-values) : => null-type
+   ~> else(
+        assign(local-variable I, V),
+        local-variable-initialise(I, V))
+
+## Local methods
+
+
+//Funcon
+//  initialise-local-methods : => environments
+//   ~> bind("local-methods", 
+//        allocate-initialised-variable(environments, map( )))
+////
+//Funcon
+//  local-variable(I:ids) : => variables
+//   ~> checked lookup(assigned bound "local-variables", I)
+//
+//Funcon
+//  local-method-declare(I:ids, F:functions(tuples(values*),values)) : => null-type
+//   ~> assign(bound "local-methods", 
+//        map-override(
+//          { I |-> allocate-initialised-variable(functions(tuples(values*),values), F)},
+//          assigned bound "local-methods"))
+
+//Funcon
+//  local-variable-assign(I:ids, V:values) : => null-type
+//   ~> else(
+//        assign(local-variable I, V),
+//        local-variable-initialise(I, V))
+//        
