@@ -4,3 +4,9 @@
 [submodule "dependencies/funcons-tools"]
 	path = dependencies/funcons-tools
 	url = https://github.com/plancomps/funcons-tools
+[submodule "dependencies/funcons-intgen"]
+	path = dependencies/funcons-intgen
+	url = https://github.com/plancomps/funcons-intgen
+[submodule "dependencies/uu-cco"]
+	path = dependencies/uu-cco
+	url = https://github.com/ltbinsbe/uu-cco
