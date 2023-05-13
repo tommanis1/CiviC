@@ -30,7 +30,7 @@ Lexis
 	 	//	F: float-const ::= ('0'-'9')+ '.' ('0'-'9')+
 	 	
 Syntax 
-	F: float-const ::= int '.' int
+//	F: float-const ::= int '.' int
 	ID : id ::= id-user-defined | std-lib-id
 	NN:negative-num ::= '-' int
 	
@@ -70,7 +70,7 @@ Syntax E:exp ::= '(' exp ')'
 //				| std-lib-call
 
 				
-	Const : const ::= bool-const | int | float-const | negative-num
+	Const : const ::= bool-const | int | negative-num //float-const 
 	Exprs : exprs ::= exp (',' exprs)?
 
 /*
@@ -106,7 +106,7 @@ Rule type[[ BasicType ]] = values
 //#1 Lexical constructs
 
 Rule eval[[ N ]] = decimal-natural(\"N\")
-Rule eval[[ N1 '.' N2 ]] = decimal-float(binary32, \"N1\", \"N2\", "1")
+//Rule eval[[ N1 '.' N2 ]] = decimal-float(binary32, \"N1\", \"N2\", "1")
 Rule eval[[ '-' N ]] = 	integer-negate(decimal-natural(\"N\"))
 
 //Rule eval[[ F ]] = float(\"F\")

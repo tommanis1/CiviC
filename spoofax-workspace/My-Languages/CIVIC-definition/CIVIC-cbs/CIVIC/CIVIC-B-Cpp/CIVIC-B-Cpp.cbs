@@ -10,13 +10,14 @@ Lexis
 	CPP-Lib: cpp-std-lib ::= 'iostream' | 'chrono' | 'thread' | 'mutex' 
 	CPPLibLoc : lib-loc ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
 Syntax
-	CPPE : cpp-expr ::= lib-loc '.' id '(' ')'
+	CPPE : cpp-expr ::= id '.' id '(' ')'
 //					| '++' exp | exp '++'
 //Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
-//Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
-// scope-closed(object-feature-map obj eval[[ ID1 ]], 
-//      else(
-//      apply(assigned local-variable id[[ID]], tuple()), null-value))
+Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
+ scope-closed(object-feature-map obj eval[[ ID1 ]], 
+ 	sequential(      else(
+      apply(assigned local-variable id[[ID2]], tuple()), null-value)))
+
 //Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
 //Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
 
@@ -39,9 +40,12 @@ Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-un
           reference
 	object(fresh-atom, "std::mutex",
 scope(
-						initialise-local-variables)
-          ),
-          {"lock" |-> function closure(
+						initialise-local-variables,
+						sequential(
+						local-variable-initialise("_self", exclusive-lock-create)
+						,
+						local-variable-initialise("lock",
+												     function closure(
         scope(
           match(given,tuple()),
           handle-return(
@@ -54,6 +58,11 @@ scope(
           	))
           ))
           )
+						
+						)
+          ))
+          ),
+          {
           }
           )
           
@@ -107,7 +116,7 @@ Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 
 Rule var-declare[[ CPPLibLoc ID ';']] = 
 
-bind(id[[ ID ]],  object(fresh-atom, "Object", initialise-local-variables))
+bind(id[[ ID ]],  object(fresh-atom, \"CPPLibLoc\", {}))
 Rule var-declare[[ CPPLibLoc ID1 '{' ID2 '}' ';' ]] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
 Rule var-declare[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
 

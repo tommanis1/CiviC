@@ -36,14 +36,14 @@ Language "CIVIC"
 # SL-specific funcons
 
 Funcon
-  sl-to-string(V:sl-values) : => strings
+  sl-to-string(V:all-values) : => strings
 Rule
   sl-to-string(null-value) ~> "null"
 Rule
   sl-to-string(V:~null-type) ~> to-string(V)
 
 Funcon 
-  integer-add-else-string-append(V1:sl-values, V2:sl-values) : => sl-values
+  integer-add-else-string-append(V1:all-values, V2:all-values) : => all-values
    ~> else(
         integer-add(int V1, int V2),
         string-append(sl-to-string V1, sl-to-string V2))
@@ -51,19 +51,19 @@ Funcon
 # Abbreviations
 
 Funcon
-  int(V:sl-values) : => integers
+  int(V:all-values) : => integers
     ~> checked cast-to-type(V, integers)
 
 Funcon
-  bool(V:sl-values) : => booleans
+  bool(V:all-values) : => booleans
     ~> checked cast-to-type(V, booleans)
 
 Funcon
-  str(V:sl-values) : => strings
+  str(V:all-values) : => strings
     ~> checked cast-to-type(V, strings)
 
 Funcon
-  obj(V:sl-values) : => objects
+  obj(V:all-values) : => objects
     ~> checked cast-to-type(V, objects)
 
 Funcon
