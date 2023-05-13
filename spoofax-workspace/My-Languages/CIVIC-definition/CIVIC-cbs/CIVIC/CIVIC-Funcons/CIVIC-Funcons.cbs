@@ -31,8 +31,14 @@ Language "CIVIC"
   //   Composite input and output
   Funcon read-line
   Funcon print-line
+  
+  Type all-values
 ]
 
+Type all-values ~> functions(tuples(values*),values)
+						| values
+						| syncs
+						
 # SL-specific funcons
 
 Funcon

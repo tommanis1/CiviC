@@ -2,22 +2,30 @@ Language "CIVIC"
 
 #B Cpp
 
-Type all-values ~> functions(tuples(values*),values)
-						| values
-						| syncs
+
 
 Lexis
 	CPP-Lib: cpp-std-lib ::= 'iostream' | 'chrono' | 'thread' | 'mutex' 
 	CPPLibLoc : lib-loc ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
 Syntax
-	CPPE : cpp-expr ::= id '.' id '(' ')'
+	CPPE : cpp-expr ::= id '.' id '(' ')' | id '.' id
 //					| '++' exp | exp '++'
 //Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
 Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
- scope-closed(object-feature-map obj eval[[ ID1 ]], 
- 	sequential(      else(
-      apply(assigned local-variable id[[ID2]], tuple()), null-value)))
+ give ( bound(id[[ ID1]]),
+      apply (
+        lookup (
+//        lookup the method
+          class-feature-map lookup
+                                   (assigned
+                                      (bound
+                                         ("_std")),
+                                    object-class-name checked dereference given),   //class name                                  
+          id[[ID2]] ),
+        tuple ( given, () ) ) )
 
+Rule eval[[ ID1 '.' ID2 ]] = 
+        lookup(object-feature-map dereference bound (id[[ ID1 ]] ), id[[ ID1 ]])
 //Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
 //Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
 
@@ -39,31 +47,16 @@ Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-un
         thunk closure           // class instantiator
           reference
 	object(fresh-atom, "std::mutex",
-scope(
-						initialise-local-variables,
-						sequential(
-						local-variable-initialise("_self", exclusive-lock-create)
-						,
-						local-variable-initialise("lock",
-												     function closure(
-        scope(
-          match(given,tuple()),
-          handle-return(
-          	scope(
-          	collateral(()),
-          	sequential(
-  				exclusive-lock-sync-else-wait(local-variable("self")),
-  				return(null),
-          	()
-          	))
-          ))
-          )
-						
-						)
-          ))
+{
+"self" |-> allocate-initialised-variable(syncs, exclusive-lock-create)
+}
           ),
-          {
-          }
+             { "lock" |->
+      function closure
+        sequential ( print("1"), print(
+        lookup(object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given, "self")
+            ) ) }
           )
           
           }))
@@ -115,8 +108,9 @@ Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 //)
 
 Rule var-declare[[ CPPLibLoc ID ';']] = 
+//force class-instantiator bound id[[ID]]
 
-bind(id[[ ID ]],  object(fresh-atom, \"CPPLibLoc\", {}))
+bind(id[[ ID ]],  force class-instantiator lookup(assigned(bound("_std")), \"CPPLibLoc\")  )
 Rule var-declare[[ CPPLibLoc ID1 '{' ID2 '}' ';' ]] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
 Rule var-declare[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
 
