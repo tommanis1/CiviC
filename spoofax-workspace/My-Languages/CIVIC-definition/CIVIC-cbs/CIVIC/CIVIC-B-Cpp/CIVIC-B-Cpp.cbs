@@ -53,15 +53,45 @@ Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-un
           ),
              { "lock" |->
       function closure
-        sequential ( print("1"), print(
-        lookup(object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given, "self")
-            ) ) }
+        sequential ( print("1"), 
+        exclusive-lock-sync-else-wait(assigned( lookup(object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given, "self")))
+ ) ,
+ "unlock" |->
+      function closure
+        sequential ( print("1"), 
+        exclusive-lock-release(assigned( lookup(object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given, "self")))
+ )
+ }
           )
           
           }))
           
 
+//Rule initialise-lib[[ 'include' '<' 'condition_variable' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+//{
+//	"std::condition_variable" |-> 
+//	 class (
+//        thunk closure           // class instantiator
+//          reference
+//	object(fresh-atom, "std::condition_variable",
+//{
+//"cv" |-> allocate-initialised-variable(syncs, condition-create)
+//}
+//          ),
+//             { "wait" |->
+//      function closure
+//        sequential (
+//        condition-wait-with-lock(SY:syncs, L:syncs)
+//        
+//        exclusive-lock-sync-else-wait(assigned( lookup(object-single-inheritance-feature-map 
+//            checked dereference first tuple-elements given, "cv")))
+// )
+// }
+//          )
+//          
+//          }))
 Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = ()
 Otherwise initialise-lib[[ Decl ]] = ()
 
@@ -80,6 +110,7 @@ Syntax
 	InsertStmt : insertstmt ::= 	lib-loc inserts ';'
 	CPPVarDecl : cpp-var-decl ::=  lib-loc id ';'
 									| lib-loc id '{' id (',' exprs)? '}' ';' //thread decl
+									| 'promise' '<<' basic-type '>>' id ';'
 
 Semantics concat[[ _:inserts?]] : =>null-type
 Rule concat[[ '<<' E Inserts? ]] = string-append(to-string (eval[[ E ]]), concat[[ Inserts?]])
@@ -106,6 +137,8 @@ Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 //var-declare[[ VarDecl ]], 
 //while(eval[[ E1 ]], sequential(exec[[E2 ';' ]], exec[[ Block ]]))
 //)
+Rule var-declare[[ 'promise' '<<' BasicType '>>' ID ';']] = 
+bind(id[[ ID ]], allocate-initialised-variable(promise-feature-maps, promise-creae))
 
 Rule var-declare[[ CPPLibLoc ID ';']] = 
 //force class-instantiator bound id[[ID]]

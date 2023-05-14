@@ -16,7 +16,7 @@ Lexis
                  | 'in'  | 'join' | 'print' | 'return'
                  | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false' 
                  | 'stdthread' | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex' | 'lock' | 'unlock'
-                 | 'extern' 
+                 | 'extern' | 'promise'
 //                 | 'printInt'
 //		| 'printFloat'
 

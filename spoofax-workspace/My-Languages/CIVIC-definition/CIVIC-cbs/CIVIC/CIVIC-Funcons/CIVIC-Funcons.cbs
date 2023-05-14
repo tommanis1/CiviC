@@ -33,6 +33,10 @@ Language "CIVIC"
   Funcon print-line
   
   Type all-values
+  
+  Funcon promise-create
+  Funcon promise-get
+  Funcon promise-set
 ]
 
 Type all-values ~> functions(tuples(values*),values)
@@ -130,7 +134,103 @@ Funcon
         assign(local-variable I, V),
         local-variable-initialise(I, V))
 
-## Local methods
+## Future
+
+//Funcon
+//
+//async-fun-create(F:thunks(T)) : => promise(T)  
+//	~> 
+//	give(promise-create, 
+//		thread-activate thread-detached 
+//			 thunk(closure(
+//			promise-set-value(enact(F), given)
+//			))
+////			promise-set-value(handle-return force F, given)
+//	)
+
+//	promise = promise-create
+//	scope promose?
+//	spawn thread with promise in scope
+//	call thunk in thread with promise in scope
+//	allocate-index thread-activate thread-joinable postpone-after-effect 
+//	
+//	promise-set-value(return value, promise)
+//	handle-return(F) //gives value V
+	
+//
+//supply(_:functions(T, T′), _:T) : =>thunks(T′
+//	
+//
+//return promise 
+//
+//maps(id, values)
+
+Type values-or-syncs ~> values | syncs
+						
+//records(syncs)
+Datatype
+  promise-features ::=
+    cv |
+    mtx |
+    shared-state
+Auxiliary Type
+  promise-feature-maps ~> maps(promise-features, values-or-syncs)
+  
+ Funcon promise-create : =>  promise-feature-maps // promise
+  ~>
+  {
+  	cv |->  allocate-initialised-variable(syncs, condition-create),
+  	mtx |-> allocate-initialised-variable(syncs, exclusive-lock-create),
+  	shared-state |-> allocate-initialised-variable(values, null)
+  }
+
+  
+//  maps(identifiers, values-or-syncs) ~> {
+//   "cv" |-> condition-create
+//   "mtx" |-> exclusive-lock-create
+//   "shared_state" |-> exclusive-lock-create
+//   }
+//   
+//  
+//   
+//  
+//Funcon promise-feature (_:promise, _:promise-features) ~>
+//Rule
+//  promise-feature(sync(SFM:sync-feature-maps), SF:sync-features)
+//   ~> checked map-lookup(SFM, SF)
+   
+//checked map-lookup(SFM, SF)
+
+Funcon promise-get(P:promise) : => null-type ~>
+	sequential(
+		condition-wait-with-lock(checked map-lookup(P, cv), checked map-lookup(P, mtx)),
+		promise-feature(shared-state)
+	)
+
+Funcon promise-set(V:values, P:P:promise) : => null-type  ~> 
+	thread-atomic sequential (
+		exclusive-lock-sync-else-wait(checked map-lookup(P, mtx)),
+		assign(checked map-lookup(P, shared-state), V),
+//		set shared_state to value 
+		condition-notify-all(checked map-lookup(P, cv))
+	)
+		
+   
+//     exclusive-lock-create : =>syncs
+//   ~> sync-create(
+//        sync-feature-create sync-waiting-list,
+//        sync-feature-create sync-held,
+//        sync-feature-create sync-holder)
+        
+//   condition-create //create cv
+   
+   
+//   Funcon
+//  condition-create : =>syncs
+//   ~> sync-create(
+//        sync-feature-create sync-waiting-list)
+    
+//   condition-wait-with-lock(SY:syncs, L:syncs)
 
 
 //Funcon

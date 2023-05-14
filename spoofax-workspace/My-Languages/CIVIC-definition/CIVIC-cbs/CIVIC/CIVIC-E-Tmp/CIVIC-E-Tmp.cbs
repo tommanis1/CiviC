@@ -1,0 +1,10 @@
+Rule eval[[ ID ]] = assigned bound id[[ ID ]]
+Rule eval[[ ID '.' '(' ')' ]] = assigned bound id[[ ID ]]
+Rule eval[[ ID '.' 'wait' '(' E ')' ]] = condition-wait-with-lock(eval[[ ID ]] , eval[[ E ]])
+Rule eval[[ ID '.' 'notify_all' '(' ')' ]] = condition-notify-all(eval[[ ID ]])
+// wait_for wait_until
+eval[[ E ]]
+condition-notify-all
+
+
+assigned bound id[[ ID ]]
