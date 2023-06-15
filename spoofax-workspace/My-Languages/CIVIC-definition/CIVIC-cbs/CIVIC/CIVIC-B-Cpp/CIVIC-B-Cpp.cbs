@@ -5,14 +5,30 @@ Language "CIVIC"
 
 
 Lexis
-	CPP-Lib: cpp-std-lib ::= 'iostream' | 'chrono' | 'thread' | 'mutex' 
-	CPPLibLoc : lib-loc ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
+	CPP-Lib: cpp-std-lib ::= 'iostream' | 'thread' 	| 'mutex' | 'shared_mutex'	| 'future'
+	CPPLibId : lib-id ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
 Syntax
-	CPPE : cpp-expr ::= id '.' id '(' ')' | id '.' id
+	CPPE : cpp-expr ::= id '.' id '(' exprs? ')'| lib-id | lib-id '(' exprs? ')'
+//	id '.'  'set' '(' exp ')' |
+//						id '.'  'get' '(' ')' |
+//						| id '.'  'join' '(' ')'  
+//						| id '.' id '(' ')'
+	
+//	| id '.' id
 //					| '++' exp | exp '++'
-//Rule eval[[ CPPLibLoc ]] = lookup(assigned(bound("_std")), \"CPPLibLoc\")
+
+//Rule eval[[ ID '.'  'set' '(' E ')' ]] = promise-set(eval[[ ID ]], eval[[ E ]])
+//Rule eval[[ ID '.'  'get' '(' ')' ]] = promise-get eval[[ ID ]]
+//Rule eval[[ ID '.'  'join' '(' ')' ]] = sequential(thread-join lookup-index eval[[ ID ]], print())
+
+//'std::async' '(' ID ')' 
+//'std::async' '(' ID ',' Exprs ')'
+
+
+Rule eval[[ CPPLibId ]] = lookup(assigned(bound("_std")), \"CPPLibId\")
 Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
- give ( bound(id[[ ID1]]),
+
+ give ( assigned bound(id[[ ID1]]),
       apply (
         lookup (
 //        lookup the method
@@ -24,8 +40,31 @@ Rule eval[[ ID1 '.' ID2 '(' ')' ]] =
           id[[ID2]] ),
         tuple ( given, () ) ) )
 
-Rule eval[[ ID1 '.' ID2 ]] = 
-        lookup(object-feature-map dereference bound (id[[ ID1 ]] ), id[[ ID1 ]])
+Rule eval[[ ID1 '.' ID2 '(' Exprs ')' ]] = 
+ give ( assigned bound(id[[ ID1]]),
+      apply (
+        lookup (
+//        lookup the method
+          class-feature-map lookup
+                                   (assigned
+                                      (bound
+                                         ("_std")),
+                                    object-class-name checked dereference given),   //class name                                  
+          id[[ID2]] ),
+        tuple ( given, (eval[[ Exprs ]]) ) ) )
+        
+Rule eval [[ CPPLibId '(' Exprs ')' ]] = 
+apply(
+	lookup(assigned(bound("_std")),\"CPPLibId\"),
+	tuple(eval[[ Exprs ]]))
+
+Rule eval [[ CPPLibId '('  ')' ]] = 
+apply(
+	lookup(assigned(bound("_std")),\"CPPLibId\"),
+	tuple(()))
+//
+//Rule eval[[ ID1 '.' ID2 ]] = 
+//        lookup(object-feature-map dereference bound (id[[ ID1 ]] ), id[[ ID1 ]])
 //Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
 //Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
 
@@ -34,65 +73,324 @@ Syntax
 Rule declare[[ CPPDDecl ]] = ()
 Rule initialise[[ CPPDDecl ]] = ()
 //Rule declare[[ CPPDDecl ]] = ()
-Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
-{
-	"std::endl" |-> "\n",
-	"std::cout" |-> print
-}))
+//Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+//{
+//	"std::endl" |-> "\n",	"std::cout" |-> print
+//}))
 
 Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-	"std::mutex" |-> 
-	 class (
-        thunk closure           // class instantiator
-          reference
-	object(fresh-atom, "std::mutex",
+	"std::mutex" |-> simple-class("std::mutex", 
+		{ "mutex" |-> allocate-initialised-variable(syncs, exclusive-lock-create) },
+	    {
+	    	"lock" |-> method-zero-params(exclusive-lock-sync-else-wait(assigned self "mutex")),
+	    	"unlock" |-> method-zero-params(exclusive-lock-release(assigned self "mutex"))
+	    })
+    }))
+
+Rule initialise-lib[[ 'include' '<' 'shared_mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-"self" |-> allocate-initialised-variable(syncs, exclusive-lock-create)
+	"std::shared_mutex" |-> 
+	 class (
+        thunk closure           
+          reference
+	object(fresh-atom, "std::shared_mutex",
+{
+"rw-lock" |-> allocate-initialised-variable(syncs, rw-lock-create)
 }
           ),
-             { "lock" |->
-      function closure
-        sequential ( print("1"), 
-        exclusive-lock-sync-else-wait(assigned( lookup(object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given, "self")))
- ) ,
- "unlock" |->
-      function closure
-        sequential ( print("1"), 
-        exclusive-lock-release(assigned( lookup(object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given, "self")))
- )
+{
+ "lock" |->
+      function closure scope(
+        collateral ( // variables not allowed to shadow visible fields
+          match ( given,
+            tuple (
+              pattern abstraction
+                { "self" |->
+                  allocate-initialised-variable ( pointers(objects), given ) }
+                  ) ),
+          object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given
+            ),
+        thread-atomic sequential (
+      	rw-lock-sync-exclusive-else-wait assigned self("rw-lock")
+ )),
+ 
+ "lock_shared" |->
+      function closure scope(
+        collateral ( // variables not allowed to shadow visible fields
+          match ( given,
+            tuple (
+              pattern abstraction
+                { "self" |->
+                  allocate-initialised-variable ( pointers(objects), given ) }
+          
+                  ) ),
+          object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given
+            ),
+        thread-atomic sequential (
+      	rw-lock-sync-shared-else-wait assigned self("rw-lock")
+ )),
+ 
+  "unlock" |->
+      function closure scope(
+        collateral ( // variables not allowed to shadow visible fields
+          match ( given,
+            tuple (
+              pattern abstraction
+                { "self" |->
+                  allocate-initialised-variable ( pointers(objects), given ) }
+                  ) ),
+          object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given
+            ),
+        thread-atomic sequential (
+      	 rw-lock-release-exclusive assigned self("rw-lock")
+ )),
+ 
+ "unlock_shared" |->
+      function closure scope(
+        collateral ( // variables not allowed to shadow visible fields
+          match ( given,
+            tuple (
+              pattern abstraction
+                { "self" |->
+                  allocate-initialised-variable ( pointers(objects), given ) }
+          
+                  ) ),
+          object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given
+            ),
+        thread-atomic sequential (
+      	 rw-lock-release-shared assigned self("rw-lock")
+ ))
  }
           )
-          
-          }))
-          
 
-//Rule initialise-lib[[ 'include' '<' 'condition_variable' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
-//{
-//	"std::condition_variable" |-> 
-//	 class (
-//        thunk closure           // class instantiator
-//          reference
-//	object(fresh-atom, "std::condition_variable",
-//{
-//"cv" |-> allocate-initialised-variable(syncs, condition-create)
-//}
-//          ),
-//             { "wait" |->
-//      function closure
-//        sequential (
-//        condition-wait-with-lock(SY:syncs, L:syncs)
-//        
-//        exclusive-lock-sync-else-wait(assigned( lookup(object-single-inheritance-feature-map 
-//            checked dereference first tuple-elements given, "cv")))
-// )
-// }
-//          )
+          }))
+Rule initialise-lib[[ 'include' '<' 'future' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),{
+	"std::promise" |-> simple-class("std::promise",
+	{"promise" |-> allocate-initialised-variable(shared-state, shared-state-create)},
+	{
+		"get" |-> method-zero-params(shared-state-get assigned self "promise"),
+ "set" |->
+      function closure scope(
+        collateral ( // variables not allowed to shadow visible fields
+          match ( given,
+            tuple (
+              pattern abstraction
+                { "self" |->
+                  allocate-initialised-variable ( pointers(objects), given ) },
+                
+                 pattern abstraction
+      { "val" |->
+        allocate-initialised-variable ( values, given ) }
+          
+                  ) ),
+          object-single-inheritance-feature-map 
+            checked dereference first tuple-elements given
+            ),
+        sequential (
+      	shared-state-set(assigned self("promise"), assigned bound "val")
+ ))
+	
+	}),
+	"std::packaged_task" |->   simple-class("std::packaged_task", {
+		"shared-state" |-> allocate-initialised-variable(shared-state, shared-state-create),
+		"_init" |-> tuple(unpack "callable")
+		
+	},
+	{
+	"get_future" |-> method(
+		reference object(fresh-atom, "std::future", {"shared-state" |-> assigned self "shared-state"})),
+	"_call" |-> method(shared-state-set(assigned self "shared-state", apply(assigned self "callable", assigned bound "args")) , "args")
+	})
+	,
+	"std::future" |->simple-class("std::future",{"_init" |-> [unpack( "shared-state")]} ,{
+	"get"|-> method-zero-params(shared-state-get( self "shared-state")) 
+	})
+}))
+     
+Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),{
+	"std::this_thread::sleep_for" |->                function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure(bind("n",alloc-init(ints,given))))),
+                           sequential
+                             ( thread-sleep(cast(assigned bound "n", ints))
+                             ))),
+                             
+	"std::thread" |-> simple-class("std::thread", {
+	"detached" |-> alloc-init(booleans, false),
+	"_init" |->
+		// given is tuple of shape fun, arg*
+		pattern abstraction(
+		bind("index",
+		alloc-init(values, 
+			allocate-index thread-activate thread-joinable postpone-after-effect 
+			supply(
+				tuple-head given, tuple-tail given
+		)
+		))
+	
+	)},{
+		"join" |-> method sequential (if-else(assigned self "detached",
+			null,
+			sequential(thread-join lookup-index assigned self "index" , null))),
+		"detach" |-> method sequential(
+			assign( self "detached", true),
+			null
+		),
+		"(destructor)" |-> 
+		method sequential if-else(
+			or(
+				assigned self "detached",
+				is-thread-terminated lookup-index assigned self "index"
+			),
+			null,
+			throw "terminate called without an active exception"
+		)
+		
+//		sequential( 
+//		print(assigned self "index"),
+//		throw "terminate called without an active exception")
+		}), 
+//		thread-joinable
+	"std::jthread" |-> simple-class("std::jthread", {"_init" |->
+		// given is tuple of shape fun, arg*
+		pattern abstraction(bind("index",alloc-init(values, 
+			allocate-index thread-activate thread-joinable postpone-after-effect supply(
+				tuple-head given, tuple-tail given
+		)))
+	
+	)},{
+		"join" |-> method thread-join lookup-index assigned self "index"
+		})
+}))
+     
+//
+////Rule initialise-lib[[ 'include' '<' 'future' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+////{
+////	"std::promise" |-> 
+////	 class (
+////        thunk closure           // class instantiator
+////          reference
+////	object(fresh-atom, "std::promise",
+////{
+////"promise" |-> allocate-initialised-variable(promise-feature-maps, promise-create)
+////}
+////          ),
+////{
+//// "set" |->
+////      function closure scope(
+////        collateral ( // variables not allowed to shadow visible fields
+////          match ( given,
+////            tuple (
+////              pattern abstraction
+////                { "self" |->
+////                  allocate-initialised-variable ( pointers(objects), given ) },
+////                
+////                 pattern abstraction
+////      { "val" |->
+////        allocate-initialised-variable ( values, given ) }
+////          
+////                  ) ),
+////          object-single-inheritance-feature-map 
+////            checked dereference first tuple-elements given
+////            ),
+////        sequential (
+////      	promise-set(assigned self("promise"), assigned bound "val")
+//// )),
+//// 
+////  "get" |->
+////      function closure scope(
+////        collateral (
+////          match ( given,
+////            tuple (
+////              pattern abstraction
+////                { "self" |->
+////                  allocate-initialised-variable ( pointers(objects), given ) }
+////          
+////                  ) ),
+////          object-single-inheritance-feature-map 
+////            checked dereference first tuple-elements given
+////            ),
+////        sequential (
+////        promise-get assigned self "promise"
+//// ))
+//// }
+////          )
+////          ,
+//
+////	"std::packaged_task" |-> 
+////	 class (
+////        thunk closure           // class instantiator
+////          reference
+////	object(fresh-atom, "std::packaged_task",
+////{
+////"promise" |-> allocate-initialised-variable(promise-feature-maps, promise-create)
+////}
+////          ),
+////{
+//// "constructor" |->
+////      function closure scope(
+////        collateral ( // variables not allowed to shadow visible fields
+////          match ( given,
+////            tuple (
+////              pattern abstraction
+////                { "self" |->
+////                  allocate-initialised-variable ( pointers(objects), given ) },
+////                
+////                 pattern abstraction
+////      { "test" |->
+////        allocate-initialised-variable ( values, given ) }
+////          
+////                  ) ),
+////          object-single-inheritance-feature-map 
+////            checked dereference first tuple-elements given
+////            ),
+////        sequential (
+////      	promise-set(assigned self("promise"), assigned bound "val")
+//// ))
+//// }
+////          )
+////          ,
+////"std::async" |-> function closure scope(
+////
+////)
+//
 //          
-//          }))
-Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = ()
+////          }))
+//          
+//
+//          
+////Rule initialise-lib[[ 'include' '<' 'condition_variable' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+////{
+////	"std::condition_variable" |-> 
+////	 class (
+////        thunk closure           // class instantiator
+////          reference
+////	object(fresh-atom, "std::condition_variable",
+////{
+////"cv" |-> allocate-initialised-variable(syncs, condition-create)
+////}
+////          ),
+////             { "wait" |->
+////      function closure
+////        sequential (
+////        condition-wait-with-lock(SY:syncs, L:syncs)
+////        
+////        exclusive-lock-sync-else-wait(assigned( lookup(object-single-inheritance-feature-map 
+////            checked dereference first tuple-elements given, "cv")))
+//// )
+//// }
+////          )
+////          
+////          }))
+
 Otherwise initialise-lib[[ Decl ]] = ()
 
 //assign(bound "_std", map-unite(assigned(bound("_std")),
@@ -107,27 +405,32 @@ Syntax
 //							| id '.' 'lock' '(' ')' ';'
 //							| id '.' 'unlock' '(' ')' ';'
 //						| 'for' '(' vardecl ';' exp ';' exp ')' block
-	InsertStmt : insertstmt ::= 	lib-loc inserts ';'
-	CPPVarDecl : cpp-var-decl ::=  lib-loc id ';'
-									| lib-loc id '{' id (',' exprs)? '}' ';' //thread decl
-									| 'promise' '<<' basic-type '>>' id ';'
+	types ::= basic-type (',' types)?
+	FunSign : function-signature ::= return-type '(' types? ')'
+	InsertStmt : insertstmt ::= 	lib-id inserts ';'
+	CPPVarDecl : cpp-var-decl ::=  lib-id id ';'
+									| lib-id id '{' exprs? '}' ';' //thread decl
+//									| lib-id  id '' exp (',' exprs)? ')' ';'
+									| lib-id '<' basic-type '>' id '=' exp ';'
+//								| 'promise' '<<' basic-type '>>' id ';'
+									//| lib-id id '(' exprs ')' ';'
 
-Semantics concat[[ _:inserts?]] : =>null-type
-Rule concat[[ '<<' E Inserts? ]] = string-append(to-string (eval[[ E ]]), concat[[ Inserts?]])
-Rule concat[[ ]] = ()
-//for each Inserts run CPPLibLoc on 
-//Rule [[ CPPLibLoc '<<' E Inserts ';' ]] : insertstmt = [[ CPPLibLoc '<<' E ';' CPPLibLoc Inserts ';' ]]
-Rule exec[[ CPPLibLoc '<<' E Inserts ';']] = 
+//Semantics concat[[ _:inserts?]] : =>null-type
+//Rule concat[[ '<<' E Inserts? ]] = string-append(to-string (eval[[ E ]]), concat[[ Inserts?]])
+//Rule concat[[ ]] = ()
+//for each Inserts run CPPLibId on 
+//Rule [[ CPPLibId '<<' E Inserts ';' ]] : insertstmt = [[ CPPLibId '<<' E ';' CPPLibId Inserts ';' ]]
+Rule exec[[ CPPLibId '<<' E Inserts ';']] = 
 //sequential(
-//												lookup(assigned(bound("_std")), \"CPPLibLoc\"), 
+//												lookup(assigned(bound("_std")), \"CPPLibId\"), 
 												print eval[[ E]],
-												exec[[ CPPLibLoc  Inserts ';']]
+												exec[[ CPPLibId  Inserts ';']]
 //												)
-Rule exec[[ CPPLibLoc '<<' E ';']] = print eval[[ E]]
+Rule exec[[ CPPLibId '<<' E ';']] = print eval[[ E]]
 
 Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 
-//Rule exec[[ CPPLibLoc 
+//Rule exec[[ CPPLibId 
 //Todo, else for other lock types
 //Rule exec[[ ID '.' 'lock' '(' ')' ';']] =  exclusive-lock-sync-else-wait(eval[[ ID ]])
 //Rule exec[[ ID '.' 'unlock' '(' ')' ';']] = exclusive-lock-release(eval[[ ID ]])
@@ -137,42 +440,97 @@ Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 //var-declare[[ VarDecl ]], 
 //while(eval[[ E1 ]], sequential(exec[[E2 ';' ]], exec[[ Block ]]))
 //)
-Rule var-declare[[ 'promise' '<<' BasicType '>>' ID ';']] = 
-bind(id[[ ID ]], allocate-initialised-variable(promise-feature-maps, promise-creae))
+//Rule var-declare[[ 'promise' '<<' BasicType '>>' ID ';']] = 
+//bind(id[[ ID ]], allocate-initialised-variable(promise-feature-maps, promise-create))
 
-Rule var-declare[[ CPPLibLoc ID ';']] = 
-//force class-instantiator bound id[[ID]]
+Rule declare[[ CPPLibId ID ';']] = bind(id[[ ID ]], alloc( references(objects)))
+Rule initialise[[ CPPLibId ID ';']] = assign( bound id[[ ID ]], 
+	force class-instantiator lookup(assigned(bound("_std")), \"CPPLibId\") )
+// packaged task
+Rule declare[[ CPPLibId ID '{' Exprs '}' ';' ]] = bind(id[[ ID ]], alloc( references(objects)))
+Rule initialise[[ CPPLibId ID '{' Exprs '}' ';' ]] = assign(bound id[[ ID ]], reference give (
+	checked dereference force class-instantiator lookup(assigned(bound("_std")), \"CPPLibId\"), 
+	extend-object-map(given, 
+		match(tuple(eval[[Exprs]]), lookup (object-feature-map given, "_init"))
+	
+	)))
+//TODO clean 
 
-bind(id[[ ID ]],  force class-instantiator lookup(assigned(bound("_std")), \"CPPLibLoc\")  )
-Rule var-declare[[ CPPLibLoc ID1 '{' ID2 '}' ';' ]] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
-Rule var-declare[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
+Rule destruct[[ CPPLibId ID '{' Exprs '}' ';' ]] = give( 
+//Lookup the (destructor) member function
+else(
+	lookup (
+		class-feature-map lookup(
+			assigned(bound("_std")), 
+			object-class-name checked dereference assigned bound id[[ ID]]
+		),   //class name                                  
+	    "(destructor)" 
+	),
+	null
+),
+// If (destructor) a is member function call it otherwise do nothing
+if-else(is-equal(given, null),
+	null,
+	apply(given , tuple(assigned bound id[[ ID]]))
 
-//Rule exec[[ CPPLibLoc ID1 '{' ID2 (',' Exprs)? '}' ';' Stmts]] = sequential(exec[[ CPPLibLoc ID1 '{' ID2 (',' Exprs)? '}' ';' ]], exec[[ Stmts ]]) 
+))
+
+
+Otherwise destruct[[ Decl ]] = ()
+
+
+Rule exec[[CPPLibId ID '{' Exprs '}' ';']] = ()
+
+Rule declare[[ CPPLibId '<' BasicType '>' ID '=' E ';' ]] = bind(id[[ ID ]],  alloc values )
+Rule initialise[[ CPPLibId '<' BasicType '>' ID '=' E ';' ]] = assign(bound id[[ ID ]], eval[[ E ]])
+
+Rule exec[[ CPPLibId '<' BasicType '>' ID '=' E ';' ]] = ()
+
+//Rule declare[[ CPPLibId ID1 '{' ID2 '}' ';' ]] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
+//Rule initialise[[ CPPLibId ID1 '{' ID2 '}' ';' ]] = ()
+//Rule declare[[ CPPLibId ID1 '{' ID2 ',' Exprs '}' ';']] = bind(id[[ ID1 ]], allocate-initialised-variable(values ,  null))
+//Rule initialise[[ CPPLibId ID1 '{' ID2 ',' Exprs '}' ';']] = ()
+//Rule var-declare[[ CPPLibId ID '(' Exprs ')' ';']] = 
+//bind(id[[ ID ]],  force class-instantiator lookup(assigned(bound("_std")), \"CPPLibId\")  )
+//Rule exec [[ CPPLibId ID '(' Exprs ')' ';']] = 
+// give ( bound(id[[ ID]]),
+//      apply (
+//        lookup (
+////        lookup the method
+//          class-feature-map lookup
+//                                   (assigned
+//                                      (bound
+//                                         ("_std")),
+//                                    object-class-name checked dereference given),   //class name                                  
+//          "constructor" ),
+//        tuple ( given, (eval[[ Exprs ]]) ) ) )
+
+//Rule exec[[ CPPLibId ID1 '{' ID2 (',' Exprs)? '}' ';' Stmts]] = sequential(exec[[ CPPLibId ID1 '{' ID2 (',' Exprs)? '}' ';' ]], exec[[ Stmts ]]) 
 //Otherwise
 Rule exec[[ CPPVarDecl Stmts]] = sequential(exec[[CPPVarDecl]], exec[[ Stmts]])
 
-Rule exec[[ CPPLibLoc ID1 '{' ID2 ',' Exprs '}' ';']] = 
-//	TODO type
-	assign(bound(id[[ ID1 ]]),
-	allocate-index thread-activate thread-joinable postpone-after-effect
-//    		lookup(assigned(bound("_std")), \"CPPLibLoc\"),
-            supply(assigned(bound(id[[ ID2 ]])), tuple
-           (eval[[ Exprs ]]))
-	)
-
-Rule exec[[ CPPLibLoc ID1 '{' ID2 '}' ';']] = 
-	assign(bound(id[[ ID1 ]]),
-	allocate-index thread-activate thread-joinable postpone-after-effect
-//    	lookup(assigned(bound("_std")), \"CPPLibLoc\"),
-            supply(assigned(bound(id[[ ID2 ]])), tuple
-           ())
-	)
-Rule exec[[ CPPLibLoc ID ';' ]] = ()
-Rule initialisations-local[[ CPPVarDecl Stmts? ]] = initialisations-local[[ Stmts? ]]
-Rule declarations-local[[ CPPVarDecl Stmts? ]] = var-declare[[ CPPVarDecl ]], declarations-local[[ Stmts? ]]
-
-Rule initialisations-local[[ CPPStmt ]] = ()
-Rule declarations-local[[ CPPStmt ]] = ()
-
-Rule initialise[[ CPPVarDecl ]] = ()
-Rule declare[[ CPPVarDecl ]] = var-declare[[ CPPVarDecl]]
+//Rule exec[[ CPPLibId ID1 '{' ID2 ',' Exprs '}' ';']] = 
+////	TODO type
+//	assign(bound(id[[ ID1 ]]),
+//	allocate-index thread-activate thread-joinable postpone-after-effect
+////    		lookup(assigned(bound("_std")), \"CPPLibId\"),
+//            supply(assigned(bound(id[[ ID2 ]])), tuple
+//           (eval[[ Exprs ]]))
+//	)
+//
+//Rule exec[[ CPPLibId ID1 '{' ID2 '}' ';']] = 
+//	assign(bound(id[[ ID1 ]]),
+//	allocate-index thread-activate thread-joinable postpone-after-effect
+////    	lookup(assigned(bound("_std")), \"CPPLibId\"),
+//            supply(assigned(bound(id[[ ID2 ]])), tuple
+//           ())
+//	)
+Rule exec[[ CPPLibId ID ';' ]] = ()
+Rule initialisations-local[[ CPPVarDecl Stmts? ]] = initialise[[ CPPVarDecl ]], initialisations-local[[ Stmts? ]]
+Rule declarations-local[[ CPPVarDecl Stmts? ]] = declare[[ CPPVarDecl ]], declarations-local[[ Stmts? ]]
+//
+//Rule initialisations-local[[ CPPStmt ]] = ()
+//Rule declarations-local[[ CPPStmt ]] = ()
+//
+//Rule initialise[[ CPPVarDecl ]] = ()
+//Rule declare[[ CPPVarDecl ]] = var-declare[[ CPPVarDecl]]
