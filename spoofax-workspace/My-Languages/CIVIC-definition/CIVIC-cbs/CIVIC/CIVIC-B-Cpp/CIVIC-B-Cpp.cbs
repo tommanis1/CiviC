@@ -9,21 +9,6 @@ Lexis
 	CPPLibId : lib-id ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
 Syntax
 	CPPE : cpp-expr ::= id '.' id '(' exprs? ')'| lib-id | lib-id '(' exprs? ')'
-//	id '.'  'set' '(' exp ')' |
-//						id '.'  'get' '(' ')' |
-//						| id '.'  'join' '(' ')'  
-//						| id '.' id '(' ')'
-	
-//	| id '.' id
-//					| '++' exp | exp '++'
-
-//Rule eval[[ ID '.'  'set' '(' E ')' ]] = promise-set(eval[[ ID ]], eval[[ E ]])
-//Rule eval[[ ID '.'  'get' '(' ')' ]] = promise-get eval[[ ID ]]
-//Rule eval[[ ID '.'  'join' '(' ')' ]] = sequential(thread-join lookup-index eval[[ ID ]], print())
-
-//'std::async' '(' ID ')' 
-//'std::async' '(' ID ',' Exprs ')'
-
 
 Rule eval[[ CPPLibId ]] = lookup(assigned(bound("_std")), \"CPPLibId\")
 Rule eval[[ ID1 '.' ID2 '(' ')' ]] = 
@@ -62,140 +47,44 @@ Rule eval [[ CPPLibId '('  ')' ]] =
 apply(
 	lookup(assigned(bound("_std")),\"CPPLibId\"),
 	tuple(()))
-//
-//Rule eval[[ ID1 '.' ID2 ]] = 
-//        lookup(object-feature-map dereference bound (id[[ ID1 ]] ), id[[ ID1 ]])
-//Rule eval[[ '++' E ]] = nat-succ(eval[[E]])
-//Rule eval[[ E '++' ]] = nat-succ(eval[[E]])
 
 Syntax
 	CPPDDecl : cpp-decl ::= 'include' '<' cpp-std-lib '>'
 Rule declare[[ CPPDDecl ]] = ()
 Rule initialise[[ CPPDDecl ]] = ()
-//Rule declare[[ CPPDDecl ]] = ()
-//Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
-//{
-//	"std::endl" |-> "\n",	"std::cout" |-> print
-//}))
 
 Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
 	"std::mutex" |-> simple-class("std::mutex", 
 		{ "mutex" |-> allocate-initialised-variable(syncs, exclusive-lock-create) },
 	    {
-	    	"lock" |-> method-zero-params(exclusive-lock-sync-else-wait(assigned self "mutex")),
-	    	"unlock" |-> method-zero-params(exclusive-lock-release(assigned self "mutex"))
-	    })
-    }))
+	    	"lock" |-> method(exclusive-lock-sync-else-wait(assigned self "mutex")),
+	    	"unlock" |-> method(exclusive-lock-release(assigned self "mutex"))
+	    }
+	)
+}))
 
 Rule initialise-lib[[ 'include' '<' 'shared_mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
-	"std::shared_mutex" |-> 
-	 class (
-        thunk closure           
-          reference
-	object(fresh-atom, "std::shared_mutex",
-{
-"rw-lock" |-> allocate-initialised-variable(syncs, rw-lock-create)
-}
-          ),
-{
- "lock" |->
-      function closure scope(
-        collateral ( // variables not allowed to shadow visible fields
-          match ( given,
-            tuple (
-              pattern abstraction
-                { "self" |->
-                  allocate-initialised-variable ( pointers(objects), given ) }
-                  ) ),
-          object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given
-            ),
-        thread-atomic sequential (
-      	rw-lock-sync-exclusive-else-wait assigned self("rw-lock")
- )),
- 
- "lock_shared" |->
-      function closure scope(
-        collateral ( // variables not allowed to shadow visible fields
-          match ( given,
-            tuple (
-              pattern abstraction
-                { "self" |->
-                  allocate-initialised-variable ( pointers(objects), given ) }
-          
-                  ) ),
-          object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given
-            ),
-        thread-atomic sequential (
-      	rw-lock-sync-shared-else-wait assigned self("rw-lock")
- )),
- 
-  "unlock" |->
-      function closure scope(
-        collateral ( // variables not allowed to shadow visible fields
-          match ( given,
-            tuple (
-              pattern abstraction
-                { "self" |->
-                  allocate-initialised-variable ( pointers(objects), given ) }
-                  ) ),
-          object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given
-            ),
-        thread-atomic sequential (
-      	 rw-lock-release-exclusive assigned self("rw-lock")
- )),
- 
- "unlock_shared" |->
-      function closure scope(
-        collateral ( // variables not allowed to shadow visible fields
-          match ( given,
-            tuple (
-              pattern abstraction
-                { "self" |->
-                  allocate-initialised-variable ( pointers(objects), given ) }
-          
-                  ) ),
-          object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given
-            ),
-        thread-atomic sequential (
-      	 rw-lock-release-shared assigned self("rw-lock")
- ))
- }
-          )
-
-          }))
+	"std::shared_mutex" |->  simple-class( "std::shared_mutex",
+	{ "rw-lock" |-> allocate-initialised-variable(syncs, rw-lock-create) },
+	{
+		"lock" |-> method (rw-lock-sync-exclusive-else-wait assigned self("rw-lock")),
+	 	"lock_shared" |->method (rw-lock-sync-shared-else-wait assigned self("rw-lock")),
+	  	"unlock" |-> method( rw-lock-release-exclusive assigned self("rw-lock")),
+		"unlock_shared" |-> method( rw-lock-release-shared assigned self("rw-lock"))
+ 	}
+ 	)}))
 Rule initialise-lib[[ 'include' '<' 'future' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),{
 	"std::promise" |-> simple-class("std::promise",
 	{"promise" |-> allocate-initialised-variable(shared-state, shared-state-create)},
 	{
-		"get" |-> method-zero-params(shared-state-get assigned self "promise"),
- "set" |->
-      function closure scope(
-        collateral ( // variables not allowed to shadow visible fields
-          match ( given,
-            tuple (
-              pattern abstraction
-                { "self" |->
-                  allocate-initialised-variable ( pointers(objects), given ) },
-                
-                 pattern abstraction
-      { "val" |->
-        allocate-initialised-variable ( values, given ) }
-          
-                  ) ),
-          object-single-inheritance-feature-map 
-            checked dereference first tuple-elements given
-            ),
-        sequential (
-      	shared-state-set(assigned self("promise"), assigned bound "val")
- ))
-	
-	}),
+		"get" |-> method(shared-state-get assigned self "promise"),
+ 		"set" |->method(
+        	sequential (shared-state-set(assigned self("promise"), assigned bound "val")), 
+        	"val"
+ 		)
+ 	}),
 	"std::packaged_task" |->   simple-class("std::packaged_task", {
 		"shared-state" |-> allocate-initialised-variable(shared-state, shared-state-create),
 		"_init" |-> tuple(unpack "callable")
