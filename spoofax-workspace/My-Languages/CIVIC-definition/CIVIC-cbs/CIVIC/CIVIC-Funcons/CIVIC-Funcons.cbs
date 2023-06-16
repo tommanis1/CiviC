@@ -49,57 +49,25 @@ Rule
             while-true(or(is-some-thread-active, is-some-thread-sleeping),
 //            thread-atomic
            		sequential(
-           		print("ss"),
-//           		handle-abrupt( sequential(update-thread-stepping,thread-step),
-           		
-//           		print("updated ts")),
-           			if-else(is-some-thread-active,
-           				sequential(
-           					handle-abrupt(
+           			print "begin loop",
+					handle-abrupt(
            					sequential(
-           						update-thread-stepping, thread-step),print("gsagsfgsdfg")),
-           						
+           						update-thread-stepping, 
+           						thread-step, 
            						increment-n-steps,
            						foreach-thread-try-wake map-elements current-sleep-map
-//           					),
-//           					sequential( //deadlock in active-threads, but there 
-           					
-           					
-//           					)
+           					),
+           					sequential(
+           						if-else(
+           							is-some-thread-sleeping,
+           							force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map,
+           							abrupt(given)
+           						)
+           					)
            				),
-           				null
-           				),
-           			print(tuple("multi1", is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended)),
-           				
-	              	if-else(and(not is-some-thread-active, is-some-thread-sleeping),
-//	              		thread-atomic
-						sequential(
-							
-	              		 force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map
-//	              		 ,
-//	              		 update-thread-stepping, thread-step
-	              		 ),
-	              		null //TODO
-	              	)
-	              	,
-	print(tuple("multi2","thre:", current-thread-stepping, is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended))
-	              	
-	              	
-           				
-           				
-//           				foreach-thread-try-wake map-elements current-sleep-map,
-//           				force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map
-//              		thread-atomic if-else(is-some-thread-active,
-//              			sequential (
-//              				thread-atomic foreach-thread-try-wake map-elements current-sleep-map
-//              			),
-//              			thread-atomic force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map
-//              		)
-//              		,
-//              		update-thread-stepping, thread-step, increment-n-steps
-//              		,increment-n-steps
-//              	)
-              	)),
+           				print(tuple("multi2","thre:", current-thread-stepping, is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended))
+              		)
+              	),
               	check not is-some-thread-suspended, // deadlock
             thread-value given), // given is TI
           given) // given is the reason for abruption
