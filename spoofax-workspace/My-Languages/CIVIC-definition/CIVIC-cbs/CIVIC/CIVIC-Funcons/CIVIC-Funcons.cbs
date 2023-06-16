@@ -1,141 +1,412 @@
 Language "CIVIC"
 
 [
-  // SL-specific funcons
-  Funcon sl-to-string
-  Funcon integer-add-else-string-append
-  
-  // Abbreviations
-  Funcon int
-  Funcon bool
-  Funcon str
-  Funcon obj
-  Funcon fun
-  
-  // Further funcons
-  
-  //   Binding
-  Funcon scope-closed
-  
-  //   Local variables
-  Funcon initialise-local-variables
-  Funcon local-variable
-  Funcon local-variable-initialise
-  Funcon local-variable-assign
-  
-  //   Global bindings
-  Funcon initialise-global-bindings
-  Funcon override-global-bindings
-  Funcon global-bound
-  
-  //   Composite input and output
-  Funcon read-line
-  Funcon print-line
-  
   Type all-values
+  Funcon self
   
-  Funcon promise-create
-  Funcon promise-get
-  Funcon promise-set
+  Funcon thread-sleep
 ]
 
+//Funcon counter() :=> null-type ~>sync-create(
+//    sync-count,
+//    sync-waiting-map
+//    
+//	)
+//
+//Funcon
+//  sync-feature-create(_:sync-features) : =>sync-feature-maps
+//Rule
+//  sync-feature-create sync-waiting-list ~>
+//    { sync-waiting-map |-> 
+//       allocate-initialised-variable(maps(thread-ids,_), map()) }
+//       
+//        
+//Funcon
+//  sleep-sync(SY:syncs) : =>null-type
+//   ~> thread-atomic sequential(
+//        check-true not(assigned sync-feature(SY, sync-held)),
+//        assign(, map-unite(sync-feature(SY, sync-count), ))
+////        ,
+////        assign(sync-feature(SY, sync-holder), current-thread)
+//        )
+
+//Funcon sleep-increment(SY:syncs) : =>null-type ~> thread-atomic sequential(
+//	assign(sync-feature(SY, sync-count), nat-succ(sync-feature(SY, sync-count)))
+//)
+
+Funcon print-debug : => booleans ~> false
+Funcon
+  overload-multithread(_:=>values) : =>values
+  
+Rule
+  overload-multithread X ~>
+    sequential(
+      overload-initialise-multithreading,
+      give(
+        thread-activate thread-joinable thunk closure X, // gives TI
+        handle-abrupt(
+          sequential(
+            while-true(or(is-some-thread-active, is-some-thread-sleeping),
+//            thread-atomic
+           		sequential(
+           		print("ss"),
+//           		handle-abrupt( sequential(update-thread-stepping,thread-step),
+           		
+//           		print("updated ts")),
+           			if-else(is-some-thread-active,
+           				sequential(
+           					handle-abrupt(
+           					sequential(
+           						update-thread-stepping, thread-step),print("gsagsfgsdfg")),
+           						
+           						increment-n-steps,
+           						foreach-thread-try-wake map-elements current-sleep-map
+//           					),
+//           					sequential( //deadlock in active-threads, but there 
+           					
+           					
+//           					)
+           				),
+           				null
+           				),
+           			print(tuple("multi1", is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended)),
+           				
+	              	if-else(and(not is-some-thread-active, is-some-thread-sleeping),
+//	              		thread-atomic
+						sequential(
+							
+	              		 force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map
+//	              		 ,
+//	              		 update-thread-stepping, thread-step
+	              		 ),
+	              		null //TODO
+	              	)
+	              	,
+	print(tuple("multi2","thre:", current-thread-stepping, is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended))
+	              	
+	              	
+           				
+           				
+//           				foreach-thread-try-wake map-elements current-sleep-map,
+//           				force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map
+//              		thread-atomic if-else(is-some-thread-active,
+//              			sequential (
+//              				thread-atomic foreach-thread-try-wake map-elements current-sleep-map
+//              			),
+//              			thread-atomic force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map
+//              		)
+//              		,
+//              		update-thread-stepping, thread-step, increment-n-steps
+//              		,increment-n-steps
+//              	)
+              	)),
+              	check not is-some-thread-suspended, // deadlock
+            thread-value given), // given is TI
+          given) // given is the reason for abruption
+          ))
+          
+              		
+//              		thread-atomic 
+//              		sequential(
+////              		print(current-sleep-map),
+//					if-else(is-some-thread-sleeping,
+//              				foreach-thread-try-wake map-elements current-sleep-map, null
+//              		),
+//              				
+//              		if-else(and(not is-some-thread-active, is-some-thread-sleeping),
+//						force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map, 
+//						null
+//              		)
+//              		)
+//              		
+//              		,
+              		
+              		
+//              		increment-n-steps
+//              		update-thread-stepping, thread-step, 
+//              		increment-n-steps
+//              		,
+////              		thread-atomic 
+//              		sequential(
+//              		print(current-n-steps),
+////              		print("test"),
+//              		print(current-sleep-map),
+//              		,
+//              		print map-elements current-sleep-map,
+//              		foreach-thread-try-wake map-elements current-sleep-map
+//          			print("here")
+//              		),
+//              		print("tt")
+//              		,
+////              		,
+//////              		wakeup-sleeping-threads,
+//	              	if-else(and(not is-some-thread-active, is-some-thread-sleeping),
+////	              		set-n-steps-to()
+////	              		wakeup-
+//						force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map ,
+//              			null
+////              	)
+//              ))),
+//              
+              
+//            check not is-some-thread-suspended, // deadlock
+//            thread-value given), // given is TI
+//          given) // given is the reason for abruption
+//      ))
+
+
+Funcon
+  condition-wait-with-lock-overload(SY:syncs, L:syncs) : =>null-type
+   ~> sequential(
+         thread-atomic sequential(
+//          exclusive-lock-release(L),
+          sync-waiting-list-add(SY, current-thread),
+          thread-suspend current-thread),
+        exclusive-lock-sync-else-wait(L))
+        
+Funcon
+  overload-initialise-multithreading : =>null-type ~>
+  sequential(
+    initialise-thread-map,
+    initialise-active-thread-set,
+    initialise-thread-stepping,
+    initialise-terminated-thread-map,
+    initialise-thread-schedule,
+    initialise-n-steps,
+    initialise-sleep-map
+  )
+
+//Meta-variables
+//  GT <: ground-values
+//  T? <: values?
+//  
+ 
+ Type values-or-thread-ids ~> thread-ids
+						| values
+						
+Funcon foreach-thread-try-wake(_:(tuples(ints, syncs))*) : => null-type
+Rule foreach-thread-try-wake() ~> null
+Rule foreach-thread-try-wake(tuple(V:ints, S:syncs), T*:(tuples(ints, syncs))*) ~> 
+//	thread-atomic 
+	sequential(
+//		print(tuple("foreach-thread-try-wake", tuple(V, S), tuple(T*))),
+		try-wake(V,S), 
+//		if-else( print-debug,
+//		print("continueing"),
+//		null),
+		foreach-thread-try-wake(T*)
+	)
+
+						
+Funcon sleeping-threads-lowest-v(_:(tuples(ints, syncs))*) : => tuples(ints, syncs)
+Rule sleeping-threads-lowest-v() ~> tuple()
+
+Rule sleeping-threads-lowest-v(tuple(V:ints, S:syncs)) ~> tuple(V, S)
+Rule sleeping-threads-lowest-v(tuple(V1:ints, S1:syncs), tuple(V2:ints, S2:syncs), T*:(tuples(ints,syncs))* ) ~> 
+//	thread-atomic 
+	sequential(
+//	if-else( print-debug,
+//	print("tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map"),
+//	null),
+	if-else(is-less(V2, V1),
+		sleeping-threads-lowest-v(tuple(V2, S2), T*),
+		sleeping-threads-lowest-v(tuple(V1, S1), T*)
+	))
+
+
+
+Funcon try-wake(V:ints, S:syncs) :=> null-type ~>
+//	thread-atomic
+	 sequential(
+//	 print(tuple("woke", V)),
+//	print(tuple("try-wake", V, S, "\n")),
+	if-else(is-greater-or-equal(current-n-steps, V),
+		sequential(
+			thread-wake(V, S)
+		),
+		null
+	))
+
+//Funcon force-wake(_:thread-ids?, _:ints?) :=> null-type
+Funcon force-wake(_:ints _:syncs) :=> null-type
+
+//Rule  force-wake() ~> null
+Rule  force-wake(V:ints, S:syncs) ~>
+	thread-atomic sequential(
+//	 print("force-wake"),
+		n-steps-set(V),
+		thread-wake(V, S)
+	)
+//
+// Suspend I for V steps
+Funcon thread-sleep(V:ints) :=> null-type ~>
+	 thread-atomic
+	 sequential(
+closed( scope(
+	{
+		"wake-time" |-> integer-add(V, current-n-steps),
+		"condition" |-> condition-create
+	},
+//	thread-atomic 
+	sequential(
+//		if-else( true, print(tuple("start thread sleep fun" ,V," ATS is:", current-active-thread-set, and(is-equal(set-size-active-thread-set, decimal-natural("1")), not is-some-thread-sleeping))), null),
+//		if-else( true, print(""), null),
+		print "",
+//		if-else(and(is-equal(set-size-active-thread-set, decimal-natural("1")), not is-some-thread-sleeping),
+//			n-steps-set(bound "wake-time"),
+			if-else(is-equal(tuple lookup(current-sleep-map, bound "wake-time"), tuple()),
+					thread-atomic sequential(
+						add-to-sleep-map(bound "wake-time", bound "condition"),
+//						print(tuple("no condition founs, will wait on :", bound "condition")),
+						condition-wait bound "condition"
+					),
+					
+					condition-wait lookup(current-sleep-map, bound "wake-time") 
+					)
+				)
+//				,print("end thread sleep fun")
+//			)
+			
+		)
+	)
+)
+//if there is already a thread waiting to resume at the same time, wait on the same condition, 
+//Otherwise
+//	if(is-equal(map-elements current-sleep-map, tuple)
+//	print(tuple("Funcon thread-sleep", current-sleep-map, is-equal(tuple lookup(current-sleep-map, V), tuple))),
+//	give(lookup(current-sleep-map, V), 
+//		 sequential (
+//		print(tuple("0", given))
+//		,
+//		if-else(is-equal(tuple given, tuple),
+//			give(condition-create,
+//				sequential(
+//					print(tuple("1", given)),
+//					add-to-sleep-map(V, given),
+//					condition-wait given
+//				)
+//			),
+//			condition-wait given 
+//			)
+//		)
+	
+//	),
+//	print("done setting up sleep")
+//	))
+//	if-else() 
+//if-else( print-debug,
+//	 print("b thread-sleep"),
+//	 null),
+//	add-to-sleep-map(I,int-add(current-n-steps, V)),
+//	if-else( print-debug,
+//		print(tuple("added-to=ma", I)),
+//		null),
+//	
+//	thread-suspend(I),
+//	if-else( print-debug,
+//	print("sis"),
+//	null)
+//	
+//	)
+	
+//Funcon try-wake(_:thread-ids, _:ints) : => null-type
+//Funcon thread-wakeup
+
+// map-elements
+//Funcon
+//  thread-wakeup-time-passed(_:thread-ids*) : =>null-type
+//Rule
+//  is-in-set(TI, {TI*}) == (false)
+//  set-intersect(ATS, {TI*}) == { }
+//  set-unite(ATS, {TI*}) ~> ATS′
+//  -------------------------------------------------------------------------------
+//  < thread-resume(TI*:thread-ids*), thread-stepping(TI), active-thread-set(ATS) >
+//    ---> < null-value, thread-stepping(TI), active-thread-set(ATS′) >
+//    
 Type all-values ~> functions(tuples(values*),values)
 						| values
 						| syncs
 						
-# SL-specific funcons
 
-Funcon
-  sl-to-string(V:all-values) : => strings
-Rule
-  sl-to-string(null-value) ~> "null"
-Rule
-  sl-to-string(V:~null-type) ~> to-string(V)
 
-Funcon 
-  integer-add-else-string-append(V1:all-values, V2:all-values) : => all-values
-   ~> else(
-        integer-add(int V1, int V2),
-        string-append(sl-to-string V1, sl-to-string V2))
+//## Object atributes
+// 
+//Funcon pattern-from-ids(_:ids*) : => natural-numbers
+//Rule pattern-from-ids() ~> 0
+//Rule pattern-from-ids(I:ids, I*:ids*) ~> pattern abstraction{ I |->allocate-initialised-variable ( values, given ) }, pattern-from-ids(I*)
 
-# Abbreviations
 
-Funcon
-  int(V:all-values) : => integers
-    ~> checked cast-to-type(V, integers)
+Funcon method-zero-params(_:=>values) : =>functions(_, _)
 
-Funcon
-  bool(V:all-values) : => booleans
-    ~> checked cast-to-type(V, booleans)
 
-Funcon
-  str(V:all-values) : => strings
-    ~> checked cast-to-type(V, strings)
+Rule method-zero-params(X) ~>       
+	function closure scope(
+		collateral ( // TODO, remove?? variables not allowed to shadow visible fields
+	      match ( given,
+	        tuple (
+	          pattern abstraction
+	            { "self" |->
+	              allocate-initialised-variable ( pointers(objects), given ) }
+	              ) ),
+	      object-single-inheritance-feature-map 
+	        checked dereference first tuple-elements given
+	        ),
+	       	sequential(X)
+	    )
+Funcon self(I:ids) :=> vars ~>
+	lookup(object-single-inheritance-feature-map checked dereference assigned bound "self", I)
+	
+Funcon method(_:=>values, _:(=>values)?) : =>functions(_, _)
+Rule method(X, U?) ~>       
+	function closure scope(
+		collateral ( // TODO, remove?? variables not allowed to shadow visible fields
+	      match ( given,
+	        tuple (
+	          pattern abstraction
+	            { "self" |->
+	              allocate-initialised-variable ( pointers(objects), given ) }, U?
+	              ) ),
+	      object-single-inheritance-feature-map 
+	        checked dereference first tuple-elements given
+	        ),
+	       	sequential(X)
+	    )
+//Funcon method-zero-params(_:=>values, _:ids*) : =>functions(_, _)
 
-Funcon
-  obj(V:all-values) : => objects
-    ~> checked cast-to-type(V, objects)
+//Funcon 
+//pattern closure
+Funcon unpack(_:ids*) : => patterns* // TODO what instead of null-type
+//Rule unpack(I:ids) ~> print(I)
+//pattern abstraction(bind(I,alloc-init(values, given)))
 
-Funcon
-  fun(V:values) : => functions(_, _)
-    ~> checked cast-to-type(V, functions(_, _))
+Rule unpack(I:ids, I*:ids*) ~> (pattern abstraction(bind(I,alloc-init(values, given))), unpack(I*))
+Rule unpack()~> ()
 
-# Further funcons
+Funcon simple-class(_:ids, _:envs, _:envs) : => classes
+Rule simple-class(I:ids, V:envs, F:envs) ~> 
+	class(thunk closure reference object (fresh-atom, I, V), F)
 
-/*
-  Some of the funcons defined below might be sufficiently reuseful for
-  inclusion in Funcons-beta.
-*/
+Funcon extend-object-map(_:objects, _:environments) :=> objects
+Rule extend-object-map(O:objects, Env:environments) ~>
+object(
+fresh-atom,
+object-class-name O,
+map-unite(
+object-feature-map O,
+Env
+))
 
-## Binding
-
-Funcon
-  scope-closed(Env:envs, X:=>T) : => T
-   ~> closed scope(Env, X)
-/*
-  `scope-closed(D, X)` evaluates `D` in the current environment, then
-  evaluates `X` in the resulting environment. Note the difference between
-  `scope-closed(D, X)` and `closed(scope(D, X))`: the latter is equivalent
-  to `closed(scope(closed D, X))`, where `D` cannot reference any bindings.
-*/
-
-## Local variables
-
-/*
-  The local variable map is stored in a variable bound to "local-variables".
-  Initialising a local variable updates the stored local variable map. 
-  Subsequent assignments to a local variable do not change the stored map.
-  
-  Local variables Type all-values ~> functions(tuples(values*),values)
-						| values
-						| syncs
-So functions and values of objects share name space
-*/
-
-Funcon
-  initialise-local-variables : => environments
-   ~> bind("local-variables", 
-        allocate-initialised-variable(environments, map( )))
-
-Funcon
-  local-variable(I:ids) : => variables
-   ~> checked lookup(assigned bound "local-variables", I)
-
-Funcon
-  local-variable-initialise(I:ids, V:all-values) : => null-type
-   ~> assign(bound "local-variables", 
-        map-override(
-          { I |-> allocate-initialised-variable(all-values, V) },
-          assigned bound "local-variables"))
-
-Funcon
-  local-variable-assign(I:ids, V:all-values) : => null-type
-   ~> else(
-        assign(local-variable I, V),
-        local-variable-initialise(I, V))
-
-## Future
-
+Funcon get-class-method(O:objects, I:ids) :=> values ~>
+ checked lookup (
+//        lookup the method
+          class-feature-map checked lookup
+                                   (assigned
+                                      (bound
+                                         ("_std")),
+                                    object-class-name O),
+                                    I)
+	      
+//## Future
 //Funcon
 //
 //async-fun-create(F:thunks(T)) : => promise(T)  
@@ -169,19 +440,21 @@ Type values-or-syncs ~> values | syncs
 						
 //records(syncs)
 Datatype
-  promise-features ::=
+  shared-state-features ::=
     cv |
     mtx |
-    shared-state
+    state |
+    is-set
 Auxiliary Type
-  promise-feature-maps ~> maps(promise-features, values-or-syncs)
+  shared-state ~> maps(shared-state-features, values-or-syncs)
   
- Funcon promise-create : =>  promise-feature-maps // promise
+ Funcon shared-state-create : =>  shared-state // promise
   ~>
   {
   	cv |->  allocate-initialised-variable(syncs, condition-create),
   	mtx |-> allocate-initialised-variable(syncs, exclusive-lock-create),
-  	shared-state |-> allocate-initialised-variable(values, null)
+  	state |-> allocate-initialised-variable(values, null),
+  	is-set |-> allocate-initialised-variable(booleans, false)
   }
 
   
@@ -201,21 +474,264 @@ Auxiliary Type
    
 //checked map-lookup(SFM, SF)
 
-Funcon promise-get(P:promise) : => null-type ~>
-	sequential(
-		condition-wait-with-lock(checked map-lookup(P, cv), checked map-lookup(P, mtx)),
-		promise-feature(shared-state)
+Funcon shared-state-get(P:shared-state) : => values ~>
+	 if-else(assigned checked map-lookup(P, is-set), 
+		assigned checked map-lookup(P, state),
+//		force thunk closure 
+		    sequential(
+			print("waiting"),
+			//exclusive-lock-sync-else-wait(assigned checked map-lookup(P, mtx)),
+//			print("got lock"),
+			//thread-spin(condition-wait-with-lock(assigned checked map-lookup(P, cv), assigned checked map-lookup(P, mtx))),
+			condition-wait(assigned checked map-lookup(P, cv)),
+			print("was notified"),
+			//promise-get(P)
+			
+			//print(string-append("the val is set to", to-string assigned checked map-lookup(P, shared-state))),
+			///exclusive-lock-release(assigned checked map-lookup(P, mtx)),
+			assigned checked map-lookup(P, state)
+		)
+	)
+//	if 
+//	sequential(
+//		condition-wait-with-lock(assigned checked map-lookup(P, cv), assigned checked map-lookup(P, mtx)),
+//		C
+//		,
+//		exclusive-lock-release(assigned checked map-lookup(P, mtx))
+//	)
+
+Funcon shared-state-set(P:shared-state, V:values) : => null-type  ~> 
+	thread-atomic if-else(assigned checked map-lookup(P, is-set),
+		print(null), // TODO noop
+		thread-atomic sequential (
+//		exclusive-lock-sync-else-wait(assigned checked map-lookup(P, mtx)),
+//		print("value is:"),
+	//	print(V),
+		assign(checked map-lookup(P, state), V),//	set value
+		assign(checked map-lookup(P, is-set), true),//	set value
+//		exclusive-lock-release(assigned checked map-lookup(P, mtx)),
+		condition-notify-all assigned checked map-lookup(P, cv)
+		,
+		print("has notified")
+	)
 	)
 
-Funcon promise-set(V:values, P:P:promise) : => null-type  ~> 
-	thread-atomic sequential (
-		exclusive-lock-sync-else-wait(checked map-lookup(P, mtx)),
-		assign(checked map-lookup(P, shared-state), V),
-//		set shared_state to value 
-		condition-notify-all(checked map-lookup(P, cv))
-	)
-		
-   
+Meta-variables
+  T <: values
+  T* <: values*
+  
+Funcon tuple-head(_:tuples(values*)) : =>tuples(values*)
+Rule tuple-head(tuple( )) ~> ( )
+Rule tuple-head(tuple(V:T, V*:T*)) ~> V
+
+Funcon tuple-tail(_:tuples(values*)) : =>tuples(values*)
+Rule tuple-tail(tuple( )) ~> ( )
+Rule tuple-tail(tuple(V:T, V*:T*)) ~> tuple(V*:T*)
+
+//## Sleep
+//### Steps
+
+Entity
+  < _ , n-steps(_:ints) > --->
+  < _ , n-steps(_:ints) >
+
+Auxiliary Funcon
+  initialise-n-steps : =>null-type
+
+Rule
+  initialise-n-steps
+    ---> < null-value,  n-steps(0)>
+
+Funcon
+  current-n-steps : =>ints
+Rule
+  < current-n-steps, n-steps(T) > ---> T
+
+Funcon n-steps-set(_:ints) : =>null-type
+Rule
+  < n-steps-set(V:ints), n-steps(T) > ---> < null, n-steps(V)>
+
+Funcon increment-n-steps : =>null-type
+Rule
+  < increment-n-steps, n-steps(T) > ---> < null, n-steps(nat-succ T) >
+  
+//### Sleep map
+Entity
+  < _ ,  sleep-map(_:maps(ints, syncs)) > --->
+  < _ ,  sleep-map(_:maps(ints,syncs)) >
+  
+Auxiliary Funcon
+  initialise-sleep-map : =>null-type
+
+Rule
+  initialise-sleep-map
+    ---> < null-value, sleep-map(map()) >
+
+
+Funcon add-to-sleep-map(_:ints, _:syncs) :=> null-type
+Rule <add-to-sleep-map(V:ints, S:syncs), sleep-map(M)> ---> < null-value, sleep-map(map-unite({V|->S}, M)) >
+
+Funcon remove-from-sleep-map(_:ints) :=> null-type
+Rule <remove-from-sleep-map(V:ints), sleep-map(M)> --->  < null-value, sleep-map(map-delete(M, set(V))) >
+
+Funcon current-sleep-map : =>maps(ints, syncs)
+Rule < current-sleep-map, sleep-map(M) > ---> M
+
+//Rule
+//  < current-sleep-map, sleep-map( ) > ---> fail
+  
+Funcon
+  is-some-thread-sleeping : =>booleans ~> not is-equal(tuple map-elements current-sleep-map, tuple())
+  
+Funcon set-size-active-thread-set : => ints
+Rule
+  < set-size-active-thread-set, active-thread-set(ATS) >
+    ---> set-size(ATS)
+
+Funcon current-active-thread-set : => sets(thread-ids)
+Rule < current-active-thread-set, active-thread-set(M) > ---> M
+
+Funcon current-thread-stepping : => thread-ids?
+Rule < current-thread-stepping, thread-stepping(TI) > ---> TI
+Rule < current-thread-stepping, thread-stepping() > ---> "empty"
+
+Funcon
+  thread-resume-no-checks(_:thread-ids*) : =>null-type
+Rule
+//  is-in-set(TI, {TI*}) == (false)
+//  set-intersect(ATS, {TI*}) == { }
+//  -------------------------------------
+  
+  < thread-resume-no-checks(TI*:thread-ids*), active-thread-set(ATS) >
+    ---> < null-value, active-thread-set(set-unite(ATS, {TI*})) >
+    
+////
+// thread-stepping(TI)
+//   not is-equal(current-sleep-map, {})
+//Rule
+//  < is-some-thread-sleeping, sleep-map(M) >
+//    ---> not is-equal(map-elements M, map-elements map())
+//    
+Funcon thread-wake(V:ints, S:syncs) : => null-type ~> 
+	thread-atomic 
+	sequential(
+		remove-from-sleep-map(V),
+		overload-condition-notify-all(S)
+)
+
+Funcon
+  overload-condition-notify-all(SY:syncs) : =>null-type
+   ~> thread-atomic
+        sequential(
+          thread-resume-no-checks list-elements
+            assigned sync-feature(SY, sync-waiting-list),
+          assign(sync-feature(SY, sync-waiting-list), []))
+          
+	//	,
+//	thread-atomic 
+//	sequential(
+//	thread-resume(I)
+//	,
+//	print "resumed"
+//	)
+//	,
+//	null
+//)
+
+//Rule
+//	is-in-set(TI, {TI+}) == (false)
+//	map-unite({I |-> V}, M) ~> M′
+//	-------------------------------------------------------------------------------
+//	<add-to-sleep-map(I:thread-ids, V:ints), sleep-map(M)> ---> <sleep-map(map-unite({I |-> V}, M))>
+	 
+	 
+//	 map-unite
+//Entity
+//  < _ , wake-map(_:maps(thread-ids, ints)) > --->
+//  < _ , wake-map(_:maps(thread-ids, ints)) >
+  
+//Funcon
+//  current-time-passed : =>ints
+//Rule
+//  < current-time-passed,  time-passed(I) >
+//    ---> I
+    
+//Auxiliary Funcon
+//  initialise-time-passed : =>null-type
+//
+//Rule
+//  initialise-time-passed
+//    ---> < null-value, decimal-natural("0") >
+
+//Entity time-passed(_: ints) |- _ ---> _
+
+//Auxiliary Funcon
+//  initialise-time-passed : =>null-type
+//
+//Rule
+//  initialise-time-passed time-passed(v: integers) |- _ ---> _
+//    
+
+//Funcon test(_:strings) : =>null-type
+//Rule test(S:"test") ~> true
+//Otherwise
+//	test(_:strings) ~> false
+
+//Datatype
+//  libs ::= 
+//  	shared-mutex-lib |
+//  	mutex-lib
+//
+//Datatype literal-string-to-lib ::= {
+//inlude-mutex |-> mutex-lib
+//}
+//
+//(_:strings) :=> maps("strings", libs)
+//Rule 
+//
+//Funcon lib-map(_:libs) :=>  maps(_,_)
+//Rule lib-map mutex-lib ~> {"mutex" |-> "a"}
+//Rule lib-map shared-mutex-lib ~> {"shared_mutex" |-> "a"}
+//
+//Funcon search-libs-in-program(_:strings) :=> libs*
+//Rule search-libs-in-program(P:strings) ~> 
+
+// Lexis
+//Funcon tokens():=> lists(strings) ~> [
+//	t-pound,
+//	t-lower,
+//	t-greater,
+//	t-include,
+//	t-mutex
+//]
+//
+//Funcon t-pound():=> strings ~> "#"
+//Funcon t-lower():=> strings ~> "<"
+//Funcon t-greater():=> strings ~> ">"
+//Funcon t-include():=> strings ~> "include"
+//Funcon t-mutex():=> strings ~> "mutex"
+//
+//Funcon parser(S:strings):=> libs* ~>
+//	sequential(
+//		scope(
+//			sequential(
+//				bind("b", alloc-init(values,decimal-natural("0")))
+//				bind("e", alloc-init(vales,decimal-natural("1")))
+//			)
+//		while()
+//	
+//	)
+//Funcon is-sequence-
+
+//Funcon include-mutex-lib():=> maps(_:_) ~>
+//	{"test" |-> true}
+//
+//Funcon trans():=> null-type() ~> {
+//	t-pound t-include t-greater t-mutex
+//}
+//Funcon tokenize(_:strings) :=> 
+
+  
 //     exclusive-lock-create : =>syncs
 //   ~> sync-create(
 //        sync-feature-create sync-waiting-list,
