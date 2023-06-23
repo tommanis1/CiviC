@@ -1,0 +1,39 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (collateral
+     (bind
+        ("main",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values)))),
+   sequential
+     (assign
+        (bound
+           ("main"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        if-true-else
+                          (eval [: true || false && false :],
+                           exec [: print ( 1 ) ; :],
+                           null),
+                        if-true-else
+                          (eval [: false && false || true :],
+                           exec [: print ( 2 ) ; :],
+                           null))))))),
+      apply
+        (assigned
+           (bound
+              ("main")),
+         tuple
+           ( ))))

@@ -18,8 +18,17 @@ def select_files_with_all_extensions(dir, extensions):
     result = [os.path.join(dir, name) for name, exts in matches.items() if exts == set(extensions)]
     return result
 
+# def run(cmd): 
+#     return subprocess.check_output(cmd.split(" ")).decode(sys.stdout.encoding)
+
 def run(cmd): 
-    return subprocess.check_output(cmd.split(" ")).decode(sys.stdout.encoding)
+    completed_process = subprocess.run(cmd.split(" "), capture_output=True, text=True)
+
+    return_code = completed_process.returncode
+    stdout = completed_process.stdout
+    stderr = completed_process.stderr
+
+    return return_code, stdout, stderr
 
 def print_side_by_side(a, b):
     w, _ = shutil.get_terminal_size((80, 20))
@@ -37,14 +46,24 @@ def print_side_by_side(a, b):
 
 def compare(files):
     for f in files:
-        # custom tests
-        if 'thread-mutex-lock' in f:
-            # print(run(f"bash run_cpp.sh {f + '.cpp'}"))
-            print_side_by_side(run(f"bash run_cpp.sh {f + '.cpp'}").split("\n"), run(f"runfct --non-deterministic value-operations,rules,pattern-matching,interleaving-of-args {f + '.fct'}").split("\n"))
-        elif 'thread-mutex-lock_unstable' in f:
-            print_side_by_side(run(f"bash run_cpp.sh {f + '.cpp'}").split("\n"), run(f"runfct --non-deterministic value-operations,rules,pattern-matching,interleaving-of-args {f + '.fct'}").split("\n"))
-        else:
-            pass
+        # # custom tests
+        # if 'thread-mutex-lock' in f:
+        #     # print(run(f"bash run_cpp.sh {f + '.cpp'}"))
+        #     print_side_by_side(run(f"bash run_cpp.sh {f + '.cpp'}").split("\n"), run(f"runfct --non-deterministic value-operations,rules,pattern-matching,interleaving-of-args {f + '.fct'}").split("\n"))
+        # elif 'thread-mutex-lock_unstable' in f:
+        #     print_side_by_side(run(f"bash run_cpp.sh {f + '.cpp'}").split("\n"), run(f"runfct --non-deterministic value-operations,rules,pattern-matching,interleaving-of-args {f + '.fct'}").split("\n"))
+        # else:
+        ret, out, err = run(f"bash run_cpp.sh {f + '.cpp'}")
+        err = f"Output Entity: standard-err\n {err}" if err else ""
+        cpp = f"Result:\n{ret}\nOutput Entity: standard-out\n{out} {err}"
+        
+        ret, out, err = run(f"CIVIC-Runfct --non-deterministic value-operations,rules,pattern-matching,interleaving-of-args {f + '.fct'}")
+        fct = out
+
+        print_side_by_side(cpp.split("\n"), fct.split("\n"))
+        
+
+        # print_side_by_side(run(f"bash run_cpp.sh {f + '.cpp'}").split("\n"), run(f"CIVIC-Runfct --non-deterministic value-operations,rules,pattern-matching,interleaving-of-args {f + '.fct'}").split("\n"))
 
 
 def rm_exstension(files):

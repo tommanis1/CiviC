@@ -1,0 +1,7 @@
+void foo(int a, int b) {
+print(a);
+print(b);
+}
+int main () {
+foo(1,1);
+}

@@ -1,7 +1,16 @@
 Language "CIVIC"
 
 #A Disambiguation
+//Type ld-values ~> functions(values, values)
+//                | integers
+//                | booleans
+//                | variables
+//                | null-type
+//                | thread-ids
+//
+//  Funcon bool
 
+		
 Lexis SDF
 /*
 lexical syntax 
@@ -24,6 +33,7 @@ context-free syntax
 ``exp ::= exp '||' exp`` {left}
 
 context-free priorities
+
 {
 ``exp ::= exp '++'``
 }>

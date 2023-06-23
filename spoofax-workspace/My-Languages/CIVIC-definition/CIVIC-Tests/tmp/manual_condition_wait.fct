@@ -1,0 +1,5 @@
+initialise-binding multithread (sequential(
+print(null),
+thread-activate thread-joinable thunk closure(sequential( print null, thread-suspend (current-thread)))
+
+))

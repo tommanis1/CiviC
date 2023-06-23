@@ -1,0 +1,16 @@
+===== Program =====
+include <thread>
+void foo(int a) {
+print(a);
+}
+int main() {
+int a =1 ;
+std::thread t { foo, 1 } ;
+return 0;
+}===================
+Result:
+0
+
+Output Entity: standard-out
+1
+

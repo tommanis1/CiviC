@@ -8,43 +8,43 @@ imports
     
 lexical syntax // Language
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
 syntax // Language
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
 context-free syntax // Language
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
 context-free syntax // Semantics
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
 context-free syntax // Desugaring
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
 variables // Meta-variables
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
 // SDF comments
   
-  // #A Disambiguation
+  // A Disambiguation
                 
   
   
@@ -80,6 +80,17 @@ variables // Meta-variables
    {left}
   
   context-free priorities
+  
+  {
+  L-exp.L-exp--L-exp-PLUS-PLUS =
+    L-exp "++"
+  
+  }>
+  {
+  L-exp.L-exp--PLUS-PLUS-L-exp =
+    "++" L-exp
+  
+  }>
   {
   L-exp.L-exp--BANG-L-exp =
     "!" L-exp

@@ -1,0 +1,8 @@
+2023-06-22 22:35:25,694 INFO Running C++ tests for iteration 1
+2023-06-22 22:35:26,399 INFO Started container return code: 0, 942e7467672e924fbf8856448966834d3758f850554159345fc491ccc2445ce8
+, 
+2023-06-22 22:35:26,400 INFO Started: data/runs/run-20230622-223500/iteration-1-cpp/permutations_shared_computation.cpp, outfile: data/runs/run-20230622-223500/iteration-1-cpp/permutations_shared_computation_output_cpp-1.txt
+2023-06-22 22:35:26,400 INFO Testing: data/runs/run-20230622-223500/iteration-1-cpp/permutations_shared_computation.cpp
+2023-06-22 22:35:27,998 INFO Compile 0, , 
+2023-06-22 22:35:28,002 INFO Started running
+2023-06-22 22:35:29,075 INFO Succes, ^C

@@ -1,27 +1,39 @@
 module CIVIC-Start
             
 imports 
+  CIVIC-Funcons
   CIVIC-A-Disambiguation
+  CIVIC-B-Cpp
   Funcons
 
 // Language "CIVIC"
     
 lexical syntax // Language
-  LEX-id-user-defined = ( [a-z] )+
+  LEX-id-user-defined = ( [A-Z] | [a-z] | "_" ) ( [0-9] | [A-Z] | [a-z] | "_" )*
   LEX-int = ( [0-9] )+
   LEX-keyword = "do"
   LEX-keyword = "else"
   LEX-keyword = "fork"
   LEX-keyword = "if"
   LEX-keyword = "in"
-  LEX-keyword = "join"
   LEX-keyword = "print"
+  LEX-keyword = "return"
   LEX-keyword = "ref"
-  LEX-keyword = "spawn"
   LEX-keyword = "else"
   LEX-keyword = "while"
   LEX-keyword = "true"
   LEX-keyword = "false"
+  LEX-keyword = "include"
+  LEX-keyword = "iostream"
+  LEX-keyword = "chrono"
+  LEX-keyword = "thread"
+  LEX-keyword = "mutex"
+  LEX-keyword = "extern"
+  LEX-keyword = "future"
+  LEX-keyword = "condition_variable"
+  LEX-keyword = "chrono"
+  LEX-keyword = "try"
+  LEX-keyword = "catch"
   LEX-bool-const = "true"
   LEX-bool-const = "false"
   LEX-basic-type = "int"
@@ -35,6 +47,7 @@ lexical syntax // Language
   LEX-std-lib-id = "printNewlines"
   LEX-std-lib-id = "scanInt"
   LEX-std-lib-id = "scanFloat"
+  LEX-str-cont = ( [A-Z] | [a-z] | " " | "." | "," | "\\n" | [0-9] | ":" | "_" )*
   LEX-R-export = "export"
   
 syntax // Language
@@ -54,9 +67,8 @@ context-free syntax // Language
     LEX-return-type
   L-std-lib-id.LEX-std-lib-id = 
     LEX-std-lib-id
-  L-float-const.L-float-const--L-int-DOT-L-int =
-    L-int "." L-int
-  
+  L-str-cont.LEX-str-cont = 
+    LEX-str-cont
   L-id.L-id--L-id-user-defined =
     L-id-user-defined
   L-id.L-id--L-std-lib-id =
@@ -65,12 +77,15 @@ context-free syntax // Language
   L-negative-num.L-negative-num--DASH-L-int =
     "-" L-int
   
+  L-string.L-string--QUOTE-L-str-cont-QUOTE =
+    "\"" L-str-cont "\""
+  
   L-exp.L-exp--LPAREN-L-exp-RPAREN =
     "(" L-exp ")"
-  L-exp.L-exp--R-spawn-LPAREN-L-id-RPAREN =
-    "spawn" "(" L-id ")"
   L-exp.L-exp--BANG-L-exp =
     "!" L-exp
+  L-exp.L-exp--L-string =
+    L-string
   L-exp.L-exp--L-exp-PLUS-L-exp =
     L-exp "+" L-exp
   L-exp.L-exp--L-exp-DASH-L-exp =
@@ -97,17 +112,21 @@ context-free syntax // Language
     L-exp "||" L-exp
   L-exp.L-exp--L-id-LPAREN-L-exprs-Q-RPAREN =
     L-id "(" L-exprs? ")"
+  L-exp.L-exp--LPAREN-L-basic-type-RPAREN-L-exp =
+    "(" L-basic-type ")" L-exp
   L-exp.L-exp--L-id =
     L-id
   L-exp.L-exp--L-const =
     L-const
+  L-exp.L-exp--L-cpp-expr =
+    L-cpp-expr
+  L-exp.L-exp--AMPERSAND-L-exp =
+    "&" L-exp
   
   L-const.L-const--L-bool-const =
     L-bool-const
   L-const.L-const--L-int =
     L-int
-  L-const.L-const--L-float-const =
-    L-float-const
   L-const.L-const--L-negative-num =
     L-negative-num
   
@@ -118,34 +137,36 @@ context-free syntax // Language
     "," L-exprs
   
   
+  L-decl.L-decl--L-cpp-decl =
+    L-cpp-decl
   L-decl.L-decl--L-function-definition =
     L-function-definition
-  L-decl.L-decl--L-std-lib-import =
-    L-std-lib-import
+  L-decl.L-decl--L-var-decl =
+    L-var-decl
   
-  L-std-lib-import.L-std-lib-import--R-extern-L-return-type-L-std-lib-id-LPAREN-C-L-basic-type-L-id-D-Q-RPAREN-SEMI =
-    "extern" L-return-type L-std-lib-id "(" L-L-basic-type-L-id? ")" ";"
-  
-  L-L-basic-type-L-id.L-L-basic-type-L-id--L-basic-type-L-id =
-    L-basic-type L-id
-  
-  
-  L-var-decl.L-var-decl--L-basic-type-L-id-C-EQUALS-L-exp-D-Q-SEMI =
+  L-civic-var-decl.L-civic-var-decl--L-basic-type-L-id-C-EQUALS-L-exp-D-Q-SEMI =
     L-basic-type L-id L-EQUALS-L-exp? ";"
   
   L-EQUALS-L-exp.L-EQUALS-L-exp--EQUALS-L-exp =
     "=" L-exp
   
   
+  L-var-decl.L-var-decl--L-civic-var-decl =
+    L-civic-var-decl
+  L-var-decl.L-var-decl--L-cpp-var-decl =
+    L-cpp-var-decl
+  
   L-stmts.L-stmts--L-stmt-L-stmts-Q =
     L-stmt L-stmts?
   
-  L-stmt.L-stmt--L-var-decl =
-    L-var-decl
+  L-stmt.L-stmt--L-civic-var-decl =
+    L-civic-var-decl
   L-stmt.L-stmt--L-imp-stmt =
     L-imp-stmt
-  L-stmt.L-stmt--L-local-fun =
-    L-local-fun
+  L-stmt.L-stmt--L-cpp-stmt =
+    L-cpp-stmt
+  L-stmt.L-stmt--L-cpp-var-decl =
+    L-cpp-var-decl
   
   L-imp-stmt.L-imp-stmt--L-id-EQUALS-L-exp-SEMI =
     L-id "=" L-exp ";"
@@ -163,10 +184,10 @@ context-free syntax // Language
     "return" L-exp? ";"
   L-imp-stmt.L-imp-stmt--L-block =
     L-block
-  L-imp-stmt.L-imp-stmt--R-print-LPAREN-L-exp-RPAREN-SEMI =
-    "print" "(" L-exp ")" ";"
-  L-imp-stmt.L-imp-stmt--R-join-LPAREN-L-exp-RPAREN-SEMI =
-    "join" "(" L-exp ")" ";"
+  L-imp-stmt.L-imp-stmt--R-print-L-exp-SEMI =
+    "print" L-exp ";"
+  L-imp-stmt.L-imp-stmt--R-try-L-block-R-catch-LPAREN-DOT-DOT-DOT-RPAREN-L-block-SEMI =
+    "try" L-block "catch" "(" "..." ")" L-block ";"
   
   L-R-else-L-block.L-R-else-L-block--R-else-L-block =
     "else" L-block
@@ -178,12 +199,6 @@ context-free syntax // Language
   
   L-block.L-block--LBRACE-L-stmts-Q-RBRACE =
     "{" L-stmts? "}"
-  
-  L-local-fun.L-local-fun--L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
-    L-return-type L-id "(" L-params? ")" L-block
-  
-  L-l-call.L-l-call--L-std-lib-id-L-id-Q =
-    L-std-lib-id L-id?
   
   L-function-definition.L-function-definition--R-export-Q-L-return-type-L-id-LPAREN-L-params-Q-RPAREN-L-block =
     LEX-R-export? L-return-type L-id "(" L-params? ")" L-block
@@ -216,28 +231,27 @@ context-free syntax // Semantics
   FCT-Quoted.L-basic-type = L-basic-type
   FCT-Quoted.L-return-type = L-return-type
   FCT-Quoted.L-std-lib-id = L-std-lib-id
+  FCT-Quoted.L-str-cont = L-str-cont
   FCT.T-eval =
-    "eval" "[:" L-exprs ":]"
+    "eval" "[:" L-exp ":]"
+  FCT.T-eval-exprs =
+    "eval-exprs" "[:" L-exprs? ":]"
   FCT.T-exec-var =
     "exec-var" "[:" L-var-decl ":]"
   FCT.T-type =
     "type" "[:" L-basic-type ":]"
   FCT.T-id =
     "id" "[:" L-id ":]"
-  FCT.T-local-fun-declare =
-    "local-fun-declare" "[:" L-local-fun ":]"
-  FCT.T-initialise-local-fun =
-    "initialise-local-fun" "[:" L-local-fun ":]"
-  FCT.T-var-declare =
-    "var-declare" "[:" L-var-decl ":]"
+  FCT.T-eval-bool =
+    "eval-bool" "[:" L-bool-const ":]"
   FCT.T-exec =
     "exec" "[:" L-stmts ":]"
   FCT-SEQ.T-patts =
     "patts" "[:" L-params? ":]"
-  FCT.T-exec-std-lib-call =
-    "exec-std-lib-call" "[:" L-l-call ":]"
   FCT.T-declarations-local =
     "declarations-local" "[:" L-stmts? ":]"
+  FCT.T-destructions-local =
+    "destructions-local" "[:" L-stmts? ":]"
   FCT.T-initialisations-local =
     "initialisations-local" "[:" L-stmts? ":]"
   FCT.T-start =
@@ -248,10 +262,18 @@ context-free syntax // Semantics
     "declarations" "[:" L-decls ":]"
   FCT-SEQ.T-initialisations =
     "initialisations" "[:" L-decls ":]"
+  FCT-SEQ.T-initialisations-lib =
+    "initialisations-lib" "[:" L-decls ":]"
   FCT.T-initialise =
     "initialise" "[:" L-decl ":]"
+  FCT.T-initialise-lib =
+    "initialise-lib" "[:" L-decl ":]"
   FCT.T-declare =
     "declare" "[:" L-decl ":]"
+  FCT-SEQ.T-destructions =
+    "destructions" "[:" L-decls ":]"
+  FCT.T-destruct =
+    "destruct" "[:" L-decl ":]"
   
 context-free syntax // Desugaring
   Term.ToTerm = "[:" L-stmt  ":]" ":" "stmt"
@@ -281,10 +303,10 @@ variables // Meta-variables
   L-std-lib-id? = "(:STDLibID" [1-9]? "?:)" {prefer}
   L-std-lib-id* = "(:STDLibID" [1-9]? "*:)" {prefer}
   L-std-lib-id+ = "(:STDLibID" [1-9]? "+:)" {prefer}
-  L-float-const = "(:F" [1-9]? ":)" {prefer}
-  L-float-const? = "(:F" [1-9]? "?:)" {prefer}
-  L-float-const* = "(:F" [1-9]? "*:)" {prefer}
-  L-float-const+ = "(:F" [1-9]? "+:)" {prefer}
+  L-str-cont = "(:StringContent" [1-9]? ":)" {prefer}
+  L-str-cont? = "(:StringContent" [1-9]? "?:)" {prefer}
+  L-str-cont* = "(:StringContent" [1-9]? "*:)" {prefer}
+  L-str-cont+ = "(:StringContent" [1-9]? "+:)" {prefer}
   L-id = "(:ID" [1-9]? ":)" {prefer}
   L-id? = "(:ID" [1-9]? "?:)" {prefer}
   L-id* = "(:ID" [1-9]? "*:)" {prefer}
@@ -293,6 +315,10 @@ variables // Meta-variables
   L-negative-num? = "(:NN" [1-9]? "?:)" {prefer}
   L-negative-num* = "(:NN" [1-9]? "*:)" {prefer}
   L-negative-num+ = "(:NN" [1-9]? "+:)" {prefer}
+  L-string = "(:S" [1-9]? ":)" {prefer}
+  L-string? = "(:S" [1-9]? "?:)" {prefer}
+  L-string* = "(:S" [1-9]? "*:)" {prefer}
+  L-string+ = "(:S" [1-9]? "+:)" {prefer}
   L-exp = "(:E" [1-9]? ":)" {prefer}
   L-exp? = "(:E" [1-9]? "?:)" {prefer}
   L-exp* = "(:E" [1-9]? "*:)" {prefer}
@@ -309,10 +335,10 @@ variables // Meta-variables
   L-decl? = "(:Decl" [1-9]? "?:)" {prefer}
   L-decl* = "(:Decl" [1-9]? "*:)" {prefer}
   L-decl+ = "(:Decl" [1-9]? "+:)" {prefer}
-  L-std-lib-import = "(:STDLibImport" [1-9]? ":)" {prefer}
-  L-std-lib-import? = "(:STDLibImport" [1-9]? "?:)" {prefer}
-  L-std-lib-import* = "(:STDLibImport" [1-9]? "*:)" {prefer}
-  L-std-lib-import+ = "(:STDLibImport" [1-9]? "+:)" {prefer}
+  L-civic-var-decl = "(:CiviCVarDecl" [1-9]? ":)" {prefer}
+  L-civic-var-decl? = "(:CiviCVarDecl" [1-9]? "?:)" {prefer}
+  L-civic-var-decl* = "(:CiviCVarDecl" [1-9]? "*:)" {prefer}
+  L-civic-var-decl+ = "(:CiviCVarDecl" [1-9]? "+:)" {prefer}
   L-var-decl = "(:VarDecl" [1-9]? ":)" {prefer}
   L-var-decl? = "(:VarDecl" [1-9]? "?:)" {prefer}
   L-var-decl* = "(:VarDecl" [1-9]? "*:)" {prefer}
@@ -333,14 +359,6 @@ variables // Meta-variables
   L-block? = "(:Block" [1-9]? "?:)" {prefer}
   L-block* = "(:Block" [1-9]? "*:)" {prefer}
   L-block+ = "(:Block" [1-9]? "+:)" {prefer}
-  L-local-fun = "(:LocalFunDef" [1-9]? ":)" {prefer}
-  L-local-fun? = "(:LocalFunDef" [1-9]? "?:)" {prefer}
-  L-local-fun* = "(:LocalFunDef" [1-9]? "*:)" {prefer}
-  L-local-fun+ = "(:LocalFunDef" [1-9]? "+:)" {prefer}
-  L-l-call = "(:SLCall" [1-9]? ":)" {prefer}
-  L-l-call? = "(:SLCall" [1-9]? "?:)" {prefer}
-  L-l-call* = "(:SLCall" [1-9]? "*:)" {prefer}
-  L-l-call+ = "(:SLCall" [1-9]? "+:)" {prefer}
   L-function-definition = "(:FunDef" [1-9]? ":)" {prefer}
   L-function-definition? = "(:FunDef" [1-9]? "?:)" {prefer}
   L-function-definition* = "(:FunDef" [1-9]? "*:)" {prefer}

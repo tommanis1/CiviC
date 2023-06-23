@@ -1,0 +1,27 @@
+// swapping t1 and t2 breaks
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope(
+bind
+  ("prom",
+   allocate-initialised-variable
+     (promise-feature-maps,
+      promise-create)),
+      sequential(
+      //promise-set(assigned bound "prom", 1),
+      print(bound "prom"),
+            scope( bind("t2", thread-activate  thread-detached thunk closure thread-atomic sequential (
+          	print("start t2"),
+	      	promise-set(assigned bound "prom", "test")
+      	)),
+
+      	sequential(
+    	scope( bind("t1", thread-activate  thread-detached thunk closure thread-atomic sequential (
+    			print("start t1"),
+		      	print(string-append("t1:", to-string promise-get(assigned bound "prom")))
+	      	)),
+      	
+      sequential(
+      //thread-join bound "t1",
+      print("t1"),
+      print(string-append("main:", to-string promise-get(assigned bound "prom")))
+      
+      ))))))

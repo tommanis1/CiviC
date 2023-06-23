@@ -1,0 +1,14 @@
+cabal-version:      2.4
+name:               CIVIC-Runfct
+version:            0.1.0.0
+
+executable CIVIC-Runfct
+
+    other-extensions:    OverloadedStrings
+    other-modules: Funcons.CIVIC.CIVICFuncons.CIVICFuncons
+        
+    build-depends:    base ^>=4.12.0.0
+                    ,funcons-tools >= 0.2.0.15
+                    ,funcons-values >= 0.1.0.9
+    default-language: Haskell2010
+    main-is:          Main.hs

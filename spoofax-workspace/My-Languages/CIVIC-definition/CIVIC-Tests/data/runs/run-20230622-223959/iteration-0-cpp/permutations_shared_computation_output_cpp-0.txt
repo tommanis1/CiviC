@@ -1,0 +1,4 @@
+count:1,result:terminated
+count:1,result:timeout
+count:2,result:timeout
+^C

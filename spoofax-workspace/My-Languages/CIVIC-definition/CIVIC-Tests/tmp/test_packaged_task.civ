@@ -1,0 +1,21 @@
+include <future>
+//include <mutex>
+int foo(int v) {print"foo";return v;}
+int main(){
+
+int b = 1;
+std::packaged_task task{foo};
+//print task;
+std::future <int> f = task.get_future();
+task(0);
+print f.get();
+//print f.get();
+//print f;
+//foo(1,3,4,4);
+//std::cout << 
+//bool a = task.get_future();
+//print a;
+///print task.get_future();
+//std::mutex dgf;
+print "r";
+}

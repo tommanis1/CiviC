@@ -1,0 +1,20 @@
+===== Program =====
+extern void printInt( int val);
+
+int a = 1;
+
+void foo() {
+		print(a);
+	}
+	
+export int main () {
+	printInt(a);
+	foo();
+	return 0;
+}===================
+Result:
+0
+
+Output Entity: standard-out
+1,1
+

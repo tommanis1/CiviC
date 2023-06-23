@@ -1,0 +1,246 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::promise" |-> simple-class
+                                  ("std::promise",
+                                   {"promise" |-> allocate-initialised-variable
+                                                    (shared-state,
+                                                     shared-state-create)},
+                                   {"get" |-> method-zero-params
+                                                (shared-state-get assigned self
+                                                   "promise"),
+                                    "set" |-> function closure scope
+                                                (collateral
+                                                   (match
+                                                      (given,
+                                                       tuple
+                                                         (pattern abstraction
+                                                            {"self" |-> allocate-initialised-variable
+                                                                          (pointers
+                                                                             (objects),
+                                                                           given)},
+                                                          pattern abstraction
+                                                            {"val" |-> allocate-initialised-variable
+                                                                         (values,
+                                                                          given)})),
+                                                    object-single-inheritance-feature-map checked dereference first tuple-elements
+                                                      given),
+                                                 sequential
+                                                   (shared-state-set
+                                                      (assigned self
+                                                         ("promise"),
+                                                       assigned bound
+                                                         "val")))}),
+             "std::packaged_task" |-> simple-class
+                                        ("std::packaged_task",
+                                         {"shared-state" |-> allocate-initialised-variable
+                                                               (shared-state,
+                                                                shared-state-create),
+                                          "_init" |-> tuple
+                                                        (unpack "callable")},
+                                         {"get_future" |-> method
+                                                             (reference object
+                                                                (fresh-atom,
+                                                                 "std::future",
+                                                                 {"shared-state" |-> assigned self
+                                                                                       "shared-state"})),
+                                          "_call" |-> method
+                                                        (shared-state-set
+                                                           (assigned self
+                                                              "shared-state",
+                                                            apply
+                                                              (assigned self
+                                                                 "callable",
+                                                               assigned bound
+                                                                 "args")),
+                                                         "args")}),
+             "std::future" |-> simple-class
+                                 ("std::future",
+                                  {"_init" |-> [unpack
+                                                  ("shared-state")]},
+                                  {"get" |-> method-zero-params
+                                               (shared-state-get
+                                                  (self "shared-state"))})})),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            bind
+              ("foo",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            assign
+              (bound
+                 ("foo"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure
+                             (bind
+                                ("v",
+                                 allocate-initialised-variable
+                                   (values,
+                                    given))))),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                              print
+                                ("foo"),
+                              return
+                                (assigned
+                                   (bound
+                                      ("v"))))))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             (bind
+                                ("b",
+                                 alloc
+                                   (values)),
+                              bind
+                                ("task",
+                                 alloc
+                                   (references
+                                      (objects))),
+                              bind
+                                ("f",
+                                 alloc values),
+                              ( )),
+                           sequential
+                             (assign
+                                (bound
+                                   ("b"),
+                                 decimal-natural
+                                   ("1")),
+                              assign
+                                (bound "task",
+                                 reference give
+                                   (checked dereference force class-instantiator lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::packaged_task"),
+                                    extend-object-map
+                                      (given,
+                                       match
+                                         (tuple
+                                            (assigned
+                                               (bound
+                                                  ("foo"))),
+                                          lookup
+                                            (object-feature-map given,
+                                             "_init"))))),
+                              assign
+                                (bound "f",
+                                 give
+                                   (assigned bound
+                                      ("task"),
+                                    apply
+                                      (lookup
+                                         (class-feature-map lookup
+                                            (assigned
+                                               (bound
+                                                  ("_std")),
+                                             object-class-name checked dereference
+                                               given),
+                                          "get_future"),
+                                       tuple
+                                         (given,
+                                          ( ))))),
+                              ( ),
+                              ( ),
+                              ( ),
+                              give
+                                (assigned
+                                   (bound
+                                      ("task")),
+                                 if-else
+                                   (is
+                                      (given,
+                                       functions
+                                         (tuples
+                                            ((values)*),
+                                          values)),
+                                    apply
+                                      (assigned
+                                         (bound
+                                            ("task")),
+                                       tuple
+                                         (decimal-natural
+                                            ("0"))),
+                                    apply
+                                      (lookup
+                                         (class-feature-map lookup
+                                            (assigned
+                                               (bound
+                                                  ("_std")),
+                                             object-class-name checked dereference
+                                               given),
+                                          "_call"),
+                                       tuple
+                                         (given,
+                                          tuple
+                                            (decimal-natural
+                                               ("0")))))),
+                              print
+                                (give
+                                   (assigned bound
+                                      ("f"),
+                                    apply
+                                      (lookup
+                                         (class-feature-map lookup
+                                            (assigned
+                                               (bound
+                                                  ("_std")),
+                                             object-class-name checked dereference
+                                               given),
+                                          "get"),
+                                       tuple
+                                         (given,
+                                          ( ))))),
+                              print
+                                ("r"))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))))

@@ -1,0 +1,3 @@
+count:0,result:terminated
+count:3,result:terminated
+count:4

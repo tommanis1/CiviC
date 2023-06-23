@@ -1,0 +1,11 @@
+===== Program =====
+void test() {print(1);}
+int main () {
+int t = spawn(test);
+}===================
+Result:
+null-value
+
+Output Entity: standard-out
+1
+

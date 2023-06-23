@@ -49,26 +49,52 @@ Rule
             while-true(or(is-some-thread-active, is-some-thread-sleeping),
 //            thread-atomic
            		sequential(
-           			print "begin loop",
-					handle-abrupt(
-           					sequential(
-           						update-thread-stepping, 
-           						thread-step, 
-           						increment-n-steps,
-           						foreach-thread-try-wake map-elements current-sleep-map
-           					),
-           					sequential(
-           						if-else(
-           							is-some-thread-sleeping,
-           							force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map,
-           							abrupt(given)
-           						)
-           					)
-           				),
-           				print(tuple("multi2","thre:", current-thread-stepping, is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended))
+//           			print tuple("begin loop",current-sleep-map,is-some-thread-sleeping, set-size current-active-thread-set, is-equal(set-size current-active-thread-set, 0)),
+           			
+           			if-else(and(is-equal(set-size current-active-thread-set, 0), is-some-thread-sleeping),
+//           				thread-atomic 
+//           				sequential(
+           				force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map,
+           				
+//           				),
+           				null
+           			),
+           			update-thread-stepping,
+//           		 print(tuple("sdsdf", current-thread-stepping)),
+           			
+//           			if-else(is-equal(current-thread-stepping, "empty"),
+//           				sequential(
+//           					print("rr")
+//           				),
+           				sequential(
+           				handle-abrupt(
+           					thread-step, 
+           					sequential(print("thread-step failed"))),
+           				increment-n-steps,
+           				foreach-thread-try-wake map-elements current-sleep-map
+           				)
+//           			),
+           			
+//					handle-abrupt(
+//           					sequential(
+//           						update-thread-stepping, 
+//           						thread-step, 
+//           						increment-n-steps,
+//           						foreach-thread-try-wake map-elements current-sleep-map
+//           					),
+//           					sequential(
+//           						print(tuple("caught deadlock", is-some-thread-sleeping)),
+//           						if-else(
+//           							is-some-thread-sleeping,
+//           							force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map,
+//           							null //abrupt(given)
+//           						)
+//           					)
+//           				),
+//           				,print(tuple("multi2","thre:", current-thread-stepping, is-some-thread-active, is-some-thread-sleeping, current-active-thread-set, is-some-thread-suspended))
               		)
               	),
-              	check not is-some-thread-suspended, // deadlock
+              	handle-abrupt(check not is-some-thread-suspended, abrupt "deadlock"), // deadlock
             thread-value given), // given is TI
           given) // given is the reason for abruption
           ))
@@ -127,7 +153,7 @@ Funcon
   condition-wait-with-lock-overload(SY:syncs, L:syncs) : =>null-type
    ~> sequential(
          thread-atomic sequential(
-//          exclusive-lock-release(L),
+          exclusive-lock-release(L),
           sync-waiting-list-add(SY, current-thread),
           thread-suspend current-thread),
         exclusive-lock-sync-else-wait(L))
@@ -200,8 +226,7 @@ Funcon force-wake(_:ints _:syncs) :=> null-type
 
 //Rule  force-wake() ~> null
 Rule  force-wake(V:ints, S:syncs) ~>
-	thread-atomic sequential(
-//	 print("force-wake"),
+	sequential(
 		n-steps-set(V),
 		thread-wake(V, S)
 	)
@@ -337,7 +362,7 @@ Rule method(X, U?) ~>
 	      object-single-inheritance-feature-map 
 	        checked dereference first tuple-elements given
 	        ),
-	       	sequential(X)
+	       	handle-return(sequential(X))
 	    )
 //Funcon method-zero-params(_:=>values, _:ids*) : =>functions(_, _)
 
@@ -581,7 +606,7 @@ Rule
 //    ---> not is-equal(map-elements M, map-elements map())
 //    
 Funcon thread-wake(V:ints, S:syncs) : => null-type ~> 
-	thread-atomic 
+//	thread-atomic 
 	sequential(
 		remove-from-sleep-map(V),
 		overload-condition-notify-all(S)
@@ -589,8 +614,10 @@ Funcon thread-wake(V:ints, S:syncs) : => null-type ~>
 
 Funcon
   overload-condition-notify-all(SY:syncs) : =>null-type
-   ~> thread-atomic
-        sequential(
+   ~> 
+//   thread-atomic
+    sequential(
+//        	print("overload-condition-notify-all"),
           thread-resume-no-checks list-elements
             assigned sync-feature(SY, sync-waiting-list),
           assign(sync-feature(SY, sync-waiting-list), []))

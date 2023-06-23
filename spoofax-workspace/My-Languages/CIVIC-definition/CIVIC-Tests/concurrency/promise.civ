@@ -1,0 +1,8 @@
+//promise << int >>  test ;
+
+int main () {
+
+//test.set(1);
+//print test.get();
+return 1;
+}

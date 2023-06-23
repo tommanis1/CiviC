@@ -1,0 +1,63 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::mutex" |-> allocate-initialised-variable
+                                (syncs,
+                                 exclusive-lock-create)})),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            bind
+              ("g_num_m",
+               lookup
+                 (assigned
+                    (bound
+                       ("_std")),
+                  "std::mutex")),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            ( ),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                              return
+                                (decimal-natural
+                                   ("1")))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))))

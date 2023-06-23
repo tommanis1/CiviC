@@ -1,0 +1,26 @@
+promise << int>> prom;
+
+int set(){
+//print 1; 
+prom.set(99);
+return 0;}
+int get(){
+//print 2; 
+print prom.get();
+return 0;
+}
+
+
+int main () {
+
+std::thread t {get};
+std::thread tt {set};
+
+t.join();
+//print 88;
+tt.join();
+print 11;
+//print prom.get();
+
+return 0;
+}

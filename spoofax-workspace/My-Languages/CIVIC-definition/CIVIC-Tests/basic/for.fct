@@ -1,6 +1,12 @@
-initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect scope
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
   (collateral
      (bind
+        ("_std",
+         allocate-initialised-variable
+           (environments,
+            map
+              ( ))),
+      bind
         ("main",
          allocate-variable
            (functions
@@ -19,40 +25,48 @@ initialise-binding initialise-storing initialise-giving finalise-failing finalis
                     ( )),
                handle-return
                  (scope
-                    (bind
-                       ("a",
-                        allocate-initialised-variable
-                          (values,
-                           decimal-natural
-                             ("11"))),
-                     scope
+                    (collateral
                        (bind
                           ("i",
                            allocate-initialised-variable
-                             (integers,
+                             (values,
                               decimal-natural
-                                ("1"))),
-                        while
-                          (is-less
-                             (assigned
-                                (bound
-                                   ("i")),
-                              decimal-natural
-                                ("10")),
-                           sequential
-                             (print
+                                ("11"))),
+                        ( )),
+                     sequential
+                       (( ),
+                        scope
+                          (bind
+                             ("i",
+                              allocate-initialised-variable
+                                (integers,
+                                 decimal-natural
+                                   ("1"))),
+                           while
+                             (is-less
                                 (assigned
                                    (bound
-                                      ("i"))),
-                              assign
-                                (bound
-                                   ("i"),
-                                 integer-add
+                                      ("i")),
+                                 decimal-natural
+                                   ("10")),
+                              sequential
+                                (print
                                    (assigned
                                       (bound
-                                         ("i")),
-                                    decimal-natural
-                                      ("1"))))))))))),
+                                         ("i"))),
+                                 assign
+                                   (bound
+                                      ("i"),
+                                    integer-add
+                                      (assigned
+                                         (bound
+                                            ("i")),
+                                       decimal-natural
+                                         ("1")))))),
+                        print
+                          (assigned
+                             (bound
+                                ("i"))))))))),
       apply
         (assigned
            (bound

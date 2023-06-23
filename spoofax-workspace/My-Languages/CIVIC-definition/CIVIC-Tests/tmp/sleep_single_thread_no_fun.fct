@@ -1,0 +1,13 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing 
+overload-multithread postpone-after-effect 
+scope(
+{
+	"t1"|-> thread-activate thread-joinable thunk closure(sequential(thread-sleep(decimal-natural "10"), print "t1")),
+	"t2"|-> thread-activate thread-joinable thunk closure(sequential(print "t2"))
+},
+
+sequential(
+
+print("main thread")
+))
+ 

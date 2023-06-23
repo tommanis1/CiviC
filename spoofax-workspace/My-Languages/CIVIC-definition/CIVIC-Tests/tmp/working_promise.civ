@@ -1,0 +1,19 @@
+include <future>
+std::promise prom;
+
+int foo() {
+int a = 1;
+
+	prom.set(1);
+	print prom.get();
+	//print prom.get();
+}
+
+int main () {
+std::thread t {foo};
+	//prom.set(1);
+//foo();
+t.join();
+print prom.get();
+return 0;
+}

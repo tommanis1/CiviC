@@ -1,0 +1,171 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing overload-multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::mutex" |-> simple-class
+                                ("std::mutex",
+                                 {"" |-> ""},
+                                 {"(constructor)" |-> method
+                                                        (reference extend-object-map
+                                                           (dereference force class-instantiator lookup
+                                                              (assigned
+                                                                 (bound
+                                                                    ("_std")),
+                                                               "std::mutex"),
+                                                            {"mutex" |-> allocate-initialised-variable
+                                                                           (syncs,
+                                                                            exclusive-lock-create)})),
+                                  "lock" |-> method
+                                               (exclusive-lock-sync-else-wait
+                                                  (assigned self
+                                                     "mutex")),
+                                  "unlock" |-> method
+                                                 (exclusive-lock-release
+                                                    (assigned self
+                                                       "mutex"))}),
+             "std::unique_lock" |-> simple-class
+                                      ("std::unique_lock",
+                                       {"" |-> ""},
+                                       {"(constructor)" |-> method
+                                                              (sequential
+                                                                 (give
+                                                                    (extend-object-map
+                                                                       (dereference force class-instantiator lookup
+                                                                          (assigned
+                                                                             (bound
+                                                                                ("_std")),
+                                                                           "std::unique_lock"),
+                                                                        {"owns" |-> allocate-initialised-variable
+                                                                                      (booleans,
+                                                                                       false),
+                                                                         "mutex-ref" |-> alloc-init
+                                                                                           (values,
+                                                                                            assigned bound
+                                                                                              "mutex-ref")}),
+                                                                     sequential
+                                                                       (apply
+                                                                          (get-class-method
+                                                                             (given,
+                                                                              "lock"),
+                                                                           tuple
+                                                                             (reference given)),
+                                                                        reference given))),
+                                                               tuple
+                                                                 (unpack "mutex-ref")),
+                                        "lock" |-> method
+                                                     (if-else
+                                                        (assigned
+                                                           (self "owns"),
+                                                         throw "already owns lock",
+                                                         sequential
+                                                           (give
+                                                              (assigned self
+                                                                 "mutex-ref",
+                                                               apply
+                                                                 (get-class-method
+                                                                    (dereference given,
+                                                                     "lock"),
+                                                                  tuple
+                                                                    (given))),
+                                                            assign
+                                                              (self "owns",
+                                                               true)))),
+                                        "unlock" |-> method
+                                                       (sequential
+                                                          (give
+                                                             (assigned self
+                                                                "mutex-ref",
+                                                              apply
+                                                                (get-class-method
+                                                                   (dereference given,
+                                                                    "unlock"),
+                                                                 tuple
+                                                                   (given))),
+                                                           assign
+                                                             (self "owns",
+                                                              false)))})})),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("m",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound "m",
+                                    give
+                                      (object
+                                         (fresh-atom,
+                                          "std::mutex",
+                                          {"" |-> ""}),
+                                       apply
+                                         (get-class-method
+                                            (given,
+                                             "(constructor)"),
+                                          tuple
+                                            (reference given)))),
+                                 ( ),
+                                 ( ),
+                                 give
+                                   (assigned bound
+                                      ("m"),
+                                    apply
+                                      (lookup
+                                         (class-feature-map lookup
+                                            (assigned
+                                               (bound
+                                                  ("_std")),
+                                             object-class-name checked dereference
+                                               given),
+                                          "lock"),
+                                       tuple
+                                         (given,
+                                          ( ))))))),
+                        sequential
+                          (( ),
+                           ( ),
+                           return given))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( )),
+            ( ),
+            ( )))))

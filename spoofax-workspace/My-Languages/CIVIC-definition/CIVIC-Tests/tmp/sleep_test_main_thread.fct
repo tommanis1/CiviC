@@ -1,0 +1,160 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing overload-multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::this_thread::sleep_for" |-> function closure
+                                                 (scope
+                                                    (match
+                                                       (given,
+                                                        tuple
+                                                          (pattern closure
+                                                             (bind
+                                                                ("n",
+                                                                 alloc-init
+                                                                   (ints,
+                                                                    given))))),
+                                                     sequential
+                                                       (thread-sleep
+                                                          (assigned bound
+                                                             "n")))),
+             "std::thread" |-> simple-class
+                                 ("std::thread",
+                                  {"detached" |-> alloc-init
+                                                    (booleans,
+                                                     false),
+                                   "_init" |-> pattern abstraction
+                                                 (bind
+                                                    ("index",
+                                                     alloc-init
+                                                       (values,
+                                                        allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                                          (tuple-head given,
+                                                           tuple-tail given))))},
+                                  {"join" |-> method sequential
+                                                (if-else
+                                                   (assigned self
+                                                      "detached",
+                                                    null,
+                                                    sequential
+                                                      (thread-join lookup-index assigned self
+                                                         "index",
+                                                       null))),
+                                   "detach" |-> method sequential
+                                                  (assign
+                                                     (self "detached",
+                                                      true),
+                                                   null),
+                                   "(destructor)" |-> method sequential if-else
+                                                        (or
+                                                           (assigned self
+                                                              "detached",
+                                                            is-thread-terminated lookup-index assigned self
+                                                              "index"),
+                                                         null,
+                                                         throw "terminate called without an active exception")}),
+             "std::jthread" |-> simple-class
+                                  ("std::jthread",
+                                   {"_init" |-> pattern abstraction
+                                                  (bind
+                                                     ("index",
+                                                      alloc-init
+                                                        (values,
+                                                         allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                                           (tuple-head given,
+                                                            tuple-tail given))))},
+                                   {"join" |-> method thread-join lookup-index assigned self
+                                                 "index"})})),
+      ( ),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            ( ),
+            bind
+              ("foo",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            ( ),
+            assign
+              (bound
+                 ("foo"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                ( ),
+                              sequential
+                                (( ),
+                                 null))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                ( ),
+                              sequential
+                                (( ),
+                                 print "one",
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("1"))),
+                                 print "two"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( )),
+            ( ),
+            ( ),
+            ( ),
+            ( )))))

@@ -1,0 +1,59 @@
+INFO:root:Created 1 civ files
+INFO:root:Gen fct:  0, Generating funcons for all .civ files in ./data/runs/run-20230621-102650/iteration-1-funcons
+, WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.google.inject.internal.cglib.core.$ReflectUtils$1 (file:/home/l/Documents/year_4/CiviC-Semantics/dependencies/org.metaborg.sunshine2-2.5.16.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of com.google.inject.internal.cglib.core.$ReflectUtils$1
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+10:27:52 INFO  - Building file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230621-102650/iteration-1-funcons
+10:27:52 INFO  - Building 1 sources, 0 includes of language impl. org.example:CIVIC-Editor:0.1.0-SNAPSHOT
+10:27:57 INFO  - permutations_mutex.civ
+10:27:59 INFO  - Build successful
+
+INFO:root:Created 1 fct files
+INFO:root:Started: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex.civ, outfile: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_output-1.txt
+INFO:root:Testing: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex.civ
+INFO:root:deadlock "deadlock" "count:0,function:1,result:",[],0,"\n","count:1,function:1,result:",[]
+INFO:root:deadlock for count 1
+INFO:root:generate_a_continue_file file: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex.civ continue_counter:1, count:1
+INFO:root:found in: try { std::cout << "count:1,function:1,result:" << f0() <<std::endl; } catch (...) { std::cout << "count:1,function:1,result:" << "fail" <<std::endl;}
+INFO:root:loc : 1
+INFO:root:continue_file : data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_cont_1.cpp
+INFO:root:Contine civ file data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_cont_1
+INFO:root:Gen fct:  0, Generating funcons for all .civ files in ./data/runs/run-20230621-102650/iteration-1-funcons
+, WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.google.inject.internal.cglib.core.$ReflectUtils$1 (file:/home/l/Documents/year_4/CiviC-Semantics/dependencies/org.metaborg.sunshine2-2.5.16.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of com.google.inject.internal.cglib.core.$ReflectUtils$1
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+10:28:02 INFO  - Building file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230621-102650/iteration-1-funcons
+10:28:02 INFO  - Building 2 sources, 0 includes of language impl. org.example:CIVIC-Editor:0.1.0-SNAPSHOT
+10:28:06 INFO  - permutations_mutex_cont_1.civ
+10:28:09 INFO  - permutations_mutex.civ
+10:28:11 INFO  - Build successful
+
+INFO:root:Testing: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_cont_1
+INFO:root:deadlock "deadlock" "count:2,function:2,result:",0,"\n","count:3,function:2,result:",0,"\n","count:4,function:1,result:",[],0,"\n","count:5,function:1,result:",[]
+INFO:root:deadlock for count 5
+INFO:root:generate_a_continue_file file: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex.civ continue_counter:2, count:5
+INFO:root:found in: try { std::cout << "count:5,function:1,result:" << f0() <<std::endl; } catch (...) { std::cout << "count:5,function:1,result:" << "fail" <<std::endl;}
+
+INFO:root:loc : 5
+INFO:root:continue_file : data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_cont_2.cpp
+INFO:root:Contine civ file data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_cont_2
+INFO:root:Gen fct:  0, Generating funcons for all .civ files in ./data/runs/run-20230621-102650/iteration-1-funcons
+, WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.google.inject.internal.cglib.core.$ReflectUtils$1 (file:/home/l/Documents/year_4/CiviC-Semantics/dependencies/org.metaborg.sunshine2-2.5.16.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of com.google.inject.internal.cglib.core.$ReflectUtils$1
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+10:28:14 INFO  - Building file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230621-102650/iteration-1-funcons
+10:28:14 INFO  - Building 3 sources, 0 includes of language impl. org.example:CIVIC-Editor:0.1.0-SNAPSHOT
+10:28:18 INFO  - permutations_mutex_cont_1.civ
+10:28:20 INFO  - permutations_mutex_cont_2.civ
+10:28:21 INFO  - permutations_mutex.civ
+10:28:22 INFO  - Build successful
+
+INFO:root:Testing: data/runs/run-20230621-102650/iteration-1-funcons/permutations_mutex_cont_2
+INFO:root:deadlock 0 Result:
+INFO:root:Succes

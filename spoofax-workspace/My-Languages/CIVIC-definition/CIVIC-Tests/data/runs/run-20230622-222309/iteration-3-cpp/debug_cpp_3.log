@@ -1,0 +1,15 @@
+2023-06-22 22:23:16,332 INFO Running C++ tests for iteration 3
+2023-06-22 22:23:17,040 INFO Started container return code: 0, 82ea87d42992be32b36391201c16eff70ea507810d965c835937277d259eb637
+, 
+2023-06-22 22:23:17,040 INFO Started: data/runs/run-20230622-222309/iteration-3-cpp/permutations_shared_computation.cpp, outfile: data/runs/run-20230622-222309/iteration-3-cpp/permutations_shared_computation_output_cpp-3.txt
+2023-06-22 22:23:17,040 INFO Testing: data/runs/run-20230622-222309/iteration-3-cpp/permutations_shared_computation.cpp
+2023-06-22 22:23:18,241 INFO Compile 1, /usr/src/myapp/permutations_shared_computation.cpp:43:1: error: ISO C++ forbids declaration of 'f0' with no type [-fpermissive]
+   43 | f0() {}
+      | ^~
+/usr/src/myapp/permutations_shared_computation.cpp: In function 'int f0()':
+/usr/src/myapp/permutations_shared_computation.cpp:43:7: warning: no return statement in function returning non-void [-Wreturn-type]
+   43 | f0() {}
+      |       ^
+, 
+2023-06-22 22:23:18,243 INFO Started running
+2023-06-22 22:23:18,398 INFO Succes, /bin/bash: line 1: ./output: No such file or directory

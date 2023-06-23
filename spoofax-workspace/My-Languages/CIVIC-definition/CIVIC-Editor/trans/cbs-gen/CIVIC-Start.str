@@ -7,7 +7,9 @@ imports
   pp/CIVIC-pp
 
 imports
+  cbs-gen/CIVIC-Funcons
   cbs-gen/CIVIC-A-Disambiguation
+  cbs-gen/CIVIC-B-Cpp
 
 // Language "CIVIC"
 
@@ -30,6 +32,9 @@ to-funcons-lex:
 to-funcons-lex: 
   FCTDoubleQuoted(L-std-lib-id(LEX-std-lib-id(str))) -> 
   FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-str-cont(LEX-str-cont(str))) -> 
+  FCTString(<double-quote> str)
 to-funcons:
   |[ id[: (:UID:) :] ]| ->
   |[ \"(:UID:)\" ]|
@@ -40,42 +45,30 @@ to-funcons:
   |[ type[: (:BasicType:) :] ]| ->
   |[ values ]|
 to-funcons:
-  |[ eval[: spawn((:ID:)) :] ]| ->
-  |[ allocate-index thread-activate thread-joinable postpone-after-effect supply (assigned (bound (id[: (:ID:) :])), 
-                                         tuple ()) ]|
-to-funcons:
   |[ eval[: (:N:) :] ]| ->
   |[ decimal-natural (\"(:N:)\") ]|
-to-funcons:
-  |[ eval[: (:N1:).(:N2:) :] ]| ->
-  |[ decimal-float (binary32, 
-             \"(:N1:)\", 
-             \"(:N2:)\", 
-             "1") ]|
 to-funcons:
   |[ eval[: -(:N:) :] ]| ->
   |[ integer-negate (decimal-natural (\"(:N:)\")) ]|
 to-funcons:
+  |[ eval[: "(:StringContent:)" :] ]| ->
+  |[ \"(:StringContent:)\" ]|
+to-funcons:
   |[ eval[: (:ID:) :] ]| ->
   |[ assigned (bound (id[: (:ID:) :])) ]|
 to-funcons:
-  |[ eval[: true :] ]| ->
+  |[ eval-bool[: true :] ]| ->
   |[ true ]|
 to-funcons:
-  |[ eval[: false :] ]| ->
+  |[ eval-bool[: false :] ]| ->
   |[ false ]|
 to-funcons:
-  |[ eval[: (:ID:)() :] ]| ->
-  |[ apply (eval[: (:ID:) :], 
-             tuple ()) ]|
+  |[ eval[: (:Bool:) :] ]| ->
+  |[ eval-bool[: (:Bool:) :] ]|
 to-funcons:
-  |[ eval[: (:ID:)((:Exprs:)) :] ]| ->
+  |[ eval[: (:ID:)((:Exprs?:)) :] ]| ->
   |[ apply (eval[: (:ID:) :], 
-             tuple (eval[: (:Exprs:) :])) ]|
-to-funcons:
-  |[ eval[: (:E:),(:Exprs:) :] ]| ->
-  |[ sequential (eval[: (:E:) :], 
-             eval[: (:Exprs:) :]) ]|
+             tuple (eval-exprs[: (:Exprs?:) :])) ]|
 to-funcons:
   |[ eval[: ((:E:)) :] ]| ->
   |[ eval[: (:E:) :] ]|
@@ -141,35 +134,41 @@ to-funcons:
   |[ eval[: !(:E:) :] ]| ->
   |[ not (eval[: (:E:) :]) ]|
 to-funcons:
-  |[ local-fun-declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
-  |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
+  |[ eval[: ((:BasicType:))(:E:) :] ]| ->
+  |[ cast-to-type (eval[: (:E:) :], 
+             type[: (:BasicType:) :]) ]|
 to-funcons:
-  |[ initialise-local-fun[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
-  |[ initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
+  |[ eval-exprs[:  :] ]| ->
+  |[ () ]|
 to-funcons:
-  |[ var-declare[: (:BasicType:)(:ID:); :] ]| ->
+  |[ eval-exprs[: (:E:) :] ]| ->
+  |[ eval[: (:E:) :] ]|
+to-funcons:
+  |[ eval-exprs[: (:E:),(:Exprs:) :] ]| ->
+  |[ eval[: (:E:) :], 
+     eval-exprs[: (:Exprs:) :] ]|
+to-funcons:
+  |[ declare[: (:BasicType:)(:ID:); :] ]| ->
   |[ bind (id[: (:ID:) :], 
-             allocate-initialised-variable (type[: (:BasicType:) :], 
-                     null)) ]|
+             alloc (type[: (:BasicType:) :])) ]|
 to-funcons:
-  |[ var-declare[: (:BasicType:)(:ID:)=(:E:); :] ]| ->
+  |[ initialise[: (:BasicType:)(:ID:); :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ declare[: (:BasicType:)(:ID:)=(:E:); :] ]| ->
   |[ bind (id[: (:ID:) :], 
-             allocate-initialised-variable (type[: (:BasicType:) :], 
-                     eval[: (:E:) :])) ]|
+             alloc (type[: (:BasicType:) :])) ]|
+to-funcons:
+  |[ initialise[: (:BasicType:)(:ID:)=(:E:); :] ]| ->
+  |[ assign (bound (id[: (:ID:) :]), 
+             eval[: (:E:) :]) ]|
 to-funcons:
   |[ exec[: (:ImpStmt:)(:Stmts:) :] ]| ->
   |[ sequential (exec[: (:ImpStmt:) :], 
              exec[: (:Stmts:) :]) ]|
 to-funcons:
-  |[ exec[: (:LocalFunDef:)(:Stmts:) :] ]| ->
+  |[ exec[: (:CiviCVarDecl:)(:Stmts:) :] ]| ->
   |[ exec[: (:Stmts:) :] ]|
-to-funcons:
-  |[ exec[: (:VarDecl:)(:Stmts:) :] ]| ->
-  |[ scope (var-declare[: (:VarDecl:) :], 
-             exec[: (:Stmts:) :]) ]|
-to-funcons:
-  |[ exec[: (:VarDecl:) :] ]| ->
-  |[ effect (var-declare[: (:VarDecl:) :]) ]|
 to-funcons:
   |[ exec[: (:ID:)=(:E:); :] ]| ->
   |[ assign (bound (id[: (:ID:) :]), 
@@ -213,6 +212,10 @@ to-funcons:
                                      integer-add (assigned (bound (id[: (:ID:) :])), 
                                              decimal-natural ("1")))))) ]|
 to-funcons:
+  |[ exec[: try(:Block1:)catch(...)(:Block2:); :] ]| ->
+  |[ handle-thrown (sequential (exec[: (:Block1:) :]), 
+             sequential (exec[: (:Block2:) :])) ]|
+to-funcons:
   |[ exec[: return(:E:); :] ]| ->
   |[ return (eval[: (:E:) :]) ]|
 to-funcons:
@@ -222,23 +225,14 @@ to-funcons:
   |[ exec[: (:E:); :] ]| ->
   |[ eval[: (:E:) :] ]|
 to-funcons:
-  |[ exec[: print((:E:)); :] ]| ->
+  |[ exec[: print(:E:); :] ]| ->
   |[ print (eval[: (:E:) :]) ]|
-to-funcons:
-  |[ exec[: join((:E:)); :] ]| ->
-  |[ thread-join lookup-index (eval[: (:E:) :]) ]|
 to-funcons:
   |[ exec[: {(:Stmts:)} :] ]| ->
   |[ exec[: (:Stmts:) :] ]|
 to-funcons:
   |[ exec[: {} :] ]| ->
   |[ null ]|
-to-funcons:
-  |[ initialise[: export(:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
-  |[ initialise[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
-to-funcons:
-  |[ declare[: export(:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
-  |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]|
 to-funcons:
   |[ patts[:  :] ]| ->
   |[ () ]|
@@ -256,54 +250,16 @@ to-funcons:
   |[ assign (bound (id[: (:ID:) :]), 
              function closure (scope (match (given, 
                                             tuple (patts[: (:Params?:) :])), 
-                                    handle-return (scope (collateral (declarations-local[: (:Block:) :]), 
-                                                    sequential (initialisations-local[: (:Block:) :], 
-                                                            exec[: (:Block:) :])))))) ]|
+                                    handle-return scope (collateral (declarations-local[: (:Block:) :]), 
+                                                   give (handle-return sequential (initialisations-local[: (:Block:) :], 
+                                                                          exec[: (:Block:) :]), 
+                                                           sequential (destructions-local[: (:Block:) :], 
+                                                                   return given)))))) ]|
 to-funcons:
   |[ declare[: (:RetType:)(:ID:)((:Params?:))(:Block:) :] ]| ->
   |[ bind (id[: (:ID:) :], 
              allocate-variable (functions (tuples ((values)*), 
                              values))) ]|
-to-funcons:
-  |[ declare[: extern(:RetType:)(:STDLibID:)((:BasicType:)(:ID:)); :] ]| ->
-  |[ bind (id[: (:STDLibID:) :], 
-             allocate-variable (functions (tuples ((values)*), 
-                             values))) ]|
-to-funcons:
-  |[ initialise[: extern(:RetType:)(:STDLibID:)((:BasicType:)(:ID:)); :] ]| ->
-  |[ assign (bound (id[: (:STDLibID:) :]), 
-             function closure (scope (match (given, 
-                                            tuple (patts[: (:BasicType:)(:ID:) :])), 
-                                    handle-return (exec-std-lib-call[: (:STDLibID:)(:ID:) :])))) ]|
-to-funcons:
-  |[ declare[: extern(:RetType:)(:STDLibID:)(); :] ]| ->
-  |[ bind (id[: (:STDLibID:) :], 
-             allocate-variable (functions (tuples ((values)*), 
-                             values))) ]|
-to-funcons:
-  |[ initialise[: extern(:RetType:)(:STDLibID:)(); :] ]| ->
-  |[ assign (bound (id[: (:STDLibID:) :]), 
-             function closure (scope (match (given, 
-                                            tuple (())), 
-                                    handle-return (exec-std-lib-call[: (:STDLibID:) :])))) ]|
-to-funcons:
-  |[ exec-std-lib-call[: printInt(:ID:) :] ]| ->
-  |[ print (eval[: (:ID:) :]) ]|
-to-funcons:
-  |[ exec-std-lib-call[: printFloat(:ID:) :] ]| ->
-  |[ print (eval[: (:ID:) :]) ]|
-to-funcons:
-  |[ exec-std-lib-call[: scanInt :] ]| ->
-  |[ null ]|
-to-funcons:
-  |[ exec-std-lib-call[: scanFloat :] ]| ->
-  |[ null ]|
-to-funcons:
-  |[ exec-std-lib-call[: printSpaces(:ID:) :] ]| ->
-  |[ print (" ") ]|
-to-funcons:
-  |[ exec-std-lib-call[: printNewlines(:ID:) :] ]| ->
-  |[ print ("\n") ]|
 to-funcons:
   |[ declarations-local[: {(:Stmts:)} :] ]| ->
   |[ declarations-local[: (:Stmts:) :] ]|
@@ -314,15 +270,31 @@ to-funcons:
   |[ declarations-local[:  :] ]| ->
   |[ () ]|
 to-funcons:
-  |[ declarations-local[: (:LocalFunDef:)(:Stmts?:) :] ]| ->
-  |[ local-fun-declare[: (:LocalFunDef:) :], 
-     declarations-local[: (:Stmts?:) :] ]|
-to-funcons:
   |[ declarations-local[: (:ImpStmt:)(:Stmts?:) :] ]| ->
   |[ declarations-local[: (:Stmts?:) :] ]|
 to-funcons:
-  |[ declarations-local[: (:VarDecl:)(:Stmts?:) :] ]| ->
+  |[ declarations-local[: (:CiviCVarDecl:)(:Stmts?:) :] ]| ->
+  |[ declare[: (:CiviCVarDecl:) :], 
+     declarations-local[: (:Stmts?:) :] ]|
+to-funcons-default:
+  |[ declarations-local[: (:Stmt:)(:Stmts?:) :] ]| ->
   |[ declarations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ destructions-local[: {(:Stmts:)} :] ]| ->
+  |[ destructions-local[: (:Stmts:) :] ]|
+to-funcons:
+  |[ destructions-local[: {} :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ destructions-local[:  :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ destructions-local[: (:CPPVarDecl:)(:Stmts?:) :] ]| ->
+  |[ destruct[: (:CPPVarDecl:) :], 
+     destructions-local[: (:Stmts?:) :] ]|
+to-funcons-default:
+  |[ destructions-local[: (:Stmt:)(:Stmts?:) :] ]| ->
+  |[ destructions-local[: (:Stmts?:) :] ]|
 to-funcons:
   |[ initialisations-local[: {(:Stmts:)} :] ]| ->
   |[ initialisations-local[: (:Stmts:) :] ]|
@@ -333,24 +305,26 @@ to-funcons:
   |[ initialisations-local[:  :] ]| ->
   |[ () ]|
 to-funcons:
-  |[ initialisations-local[: (:LocalFunDef:)(:Stmts?:) :] ]| ->
-  |[ initialise-local-fun[: (:LocalFunDef:) :], 
+  |[ initialisations-local[: (:CiviCVarDecl:)(:Stmts?:) :] ]| ->
+  |[ initialise[: (:CiviCVarDecl:) :], 
      initialisations-local[: (:Stmts?:) :] ]|
-to-funcons:
-  |[ initialisations-local[: (:ImpStmt:)(:Stmts?:) :] ]| ->
-  |[ initialisations-local[: (:Stmts?:) :] ]|
-to-funcons:
-  |[ initialisations-local[: (:VarDecl:)(:Stmts?:) :] ]| ->
+to-funcons-default:
+  |[ initialisations-local[: (:Stmt:)(:Stmts?:) :] ]| ->
   |[ initialisations-local[: (:Stmts?:) :] ]|
 to-funcons:
   |[ start[: (:Pgm:) :] ]| ->
-  |[ initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect run[: (:Pgm:) :] ]|
+  |[ initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing overload-multithread postpone-after-effect run[: (:Pgm:) :] ]|
 to-funcons:
   |[ run[: (:Decls:) :] ]| ->
-  |[ scope (collateral (declarations[: (:Decls:) :]), 
-             sequential (initialisations[: (:Decls:) :], 
-                     apply (assigned (bound ("main")), 
-                             tuple ()))) ]|
+  |[ scope (bind ("_std", 
+                     allocate-initialised-variable (environments, 
+                             map ())), 
+             sequential (initialisations-lib[: (:Decls:) :], 
+                     scope (collateral (declarations[: (:Decls:) :]), 
+                             sequential (initialisations[: (:Decls:) :], 
+                                     apply (assigned (bound ("main")), 
+                                             tuple ()), 
+                                     destructions[: (:Decls:) :])))) ]|
 to-funcons:
   |[ declarations[: (:Decl:) :] ]| ->
   |[ declare[: (:Decl:) :] ]|
@@ -365,4 +339,18 @@ to-funcons:
   |[ initialisations[: (:Decl:)(:Decls:) :] ]| ->
   |[ initialise[: (:Decl:) :], 
      initialisations[: (:Decls:) :] ]|
+to-funcons:
+  |[ initialisations-lib[: (:Decl:) :] ]| ->
+  |[ initialise-lib[: (:Decl:) :] ]|
+to-funcons:
+  |[ initialisations-lib[: (:Decl:)(:Decls:) :] ]| ->
+  |[ initialise-lib[: (:Decl:) :], 
+     initialisations-lib[: (:Decls:) :] ]|
+to-funcons:
+  |[ destructions[: (:Decl:) :] ]| ->
+  |[ destruct[: (:Decl:) :] ]|
+to-funcons:
+  |[ destructions[: (:Decl:)(:Decls:) :] ]| ->
+  |[ destruct[: (:Decl:) :], 
+     destructions[: (:Decls:) :] ]|
 

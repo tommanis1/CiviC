@@ -1,0 +1,7 @@
+include <thread>
+void foo() {print "foo";}
+int main () {
+std::thread t{foo};
+std::thread tt{foo};
+print "b";
+}

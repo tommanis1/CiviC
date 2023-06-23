@@ -1,0 +1,134 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (( ),
+      ( ),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (bind
+              ("prom",
+               allocate-initialised-variable
+                 (promise-feature-maps,
+                  promise-create)),
+            bind
+              ("set",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("get",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            assign
+              (bound
+                 ("set"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                            
+                              promise-set
+                                (assigned
+                                   (bound
+                                      ("prom")),
+                                 decimal-natural
+                                   ("99")),
+                              return
+                                (decimal-natural
+                                   ("0")))))))),
+            assign
+              (bound
+                 ("get"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                              print
+                                (promise-get assigned
+                                   (bound
+                                      ("prom"))),
+                              return
+                                (decimal-natural
+                                   ("0")))))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             (bind
+                                ("tt",
+                                 allocate-initialised-variable
+                                   (values,
+                                    null)),
+                              ( )),
+                           sequential
+                             (( ),
+                              assign
+                                (bound
+                                   ("tt"),
+                                 allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                   (assigned
+                                      (bound
+                                         ("set")),
+                                    tuple
+                                      ( ))),
+                              print
+                                (decimal-natural
+                                   ("11")),
+                              print
+                                (promise-get assigned
+                                   (bound
+                                      ("prom"))),
+                              return
+                                (decimal-natural
+                                   ("0")))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))))

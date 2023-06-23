@@ -1,0 +1,1964 @@
+LanguagePart(
+  "\"CIVIC\""
+, Sect(
+    HeadSectNumTitle("B", "Cpp\n")
+  , None()
+  , [ SpecLexis(
+        [ Prod(
+            Some(VarStems([VarStem("CPP-Lib")]))
+          , "cpp-std-lib"
+          , [ PhraseTypeAtom("'iostream'")
+            , PhraseTypeAtom("'thread'")
+            , PhraseTypeAtom("'mutex'")
+            , PhraseTypeAtom("'shared_mutex'")
+            , PhraseTypeAtom("'future'")
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("CPPLibLoc")]))
+          , "lib-loc"
+          , [ PhraseTypeSequence(
+                PhraseTypeAtom("'std'")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("':'")
+                , PhraseTypeSequence(
+                    PhraseTypeAtom("':'")
+                  , PhraseTypeSequence(
+                      PhraseTypePostfix(
+                        PhraseTypeGroup(
+                          Some(
+                            PhraseTypeUnion(
+                              PhraseTypeRange("'A'", "'Z'")
+                            , PhraseTypeUnion(PhraseTypeRange("'a'", "'z'"), PhraseTypeAtom("'_'"))
+                            )
+                          )
+                        )
+                      , "*"
+                      )
+                    , PhraseTypePostfix(
+                        PhraseTypeGroup(
+                          Some(
+                            PhraseTypeSequence(
+                              PhraseTypeAtom("':'")
+                            , PhraseTypeSequence(
+                                PhraseTypeAtom("':'")
+                              , PhraseTypePostfix(
+                                  PhraseTypeGroup(
+                                    Some(
+                                      PhraseTypeUnion(
+                                        PhraseTypeRange("'A'", "'Z'")
+                                      , PhraseTypeUnion(PhraseTypeRange("'a'", "'z'"), PhraseTypeAtom("'_'"))
+                                      )
+                                    )
+                                  )
+                                , "+"
+                                )
+                              )
+                            )
+                          )
+                        )
+                      , "*"
+                      )
+                    )
+                  )
+                )
+              )
+            ]
+          )
+        ]
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("CPPE")]))
+          , "cpp-expr"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("id")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'.'")
+                , PhraseTypeSequence(
+                    PhraseTypeSynName("id")
+                  , PhraseTypeSequence(
+                      PhraseTypeAtom("'('")
+                    , PhraseTypeSequence(PhraseTypePostfix(PhraseTypeSynName("exprs"), "?"), PhraseTypeAtom("')'"))
+                    )
+                  )
+                )
+              )
+            , PhraseTypeSynName("lib-loc")
+            ]
+          )
+        ]
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))])
+        , None()
+        , Terms(
+            [ TermApp(
+                "lookup"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "assigned"
+                      , TermGroup(
+                          Terms(
+                            [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                          )
+                        )
+                      )
+                    , TermQuoted(TermVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None())))
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("ID", Some("1"), None()))
+            , WordAtom("'.'")
+            , WordVar(VarVarStemSuffixPostfix("ID", Some("2"), None()))
+            , WordAtom("'('")
+            , WordAtom("')'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "give"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "assigned"
+                      , TermApp(
+                          "bound"
+                        , TermGroup(
+                            Terms(
+                              [ TermSemantics(
+                                  "id"
+                                , Phrase([WordVar(VarVarStemSuffixPostfix("ID", Some("1"), None()))])
+                                , None()
+                                )
+                              ]
+                            )
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "apply"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "lookup"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermApp(
+                                        "class-feature-map"
+                                      , TermApp(
+                                          "lookup"
+                                        , TermGroup(
+                                            Terms(
+                                              [ TermApp(
+                                                  "assigned"
+                                                , TermGroup(
+                                                    Terms(
+                                                      [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                                    )
+                                                  )
+                                                )
+                                              , TermApp("object-class-name", TermApp("checked", TermApp("dereference", TermName("given"))))
+                                              ]
+                                            )
+                                          )
+                                        )
+                                      )
+                                    , TermSemantics(
+                                        "id"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", Some("2"), None()))])
+                                      , None()
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            , TermApp(
+                                "tuple"
+                              , TermGroup(Terms([TermName("given"), TermGroup(Terms([]))]))
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("ID", Some("1"), None()))
+            , WordAtom("'.'")
+            , WordVar(VarVarStemSuffixPostfix("ID", Some("2"), None()))
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))
+            , WordAtom("')'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "give"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "assigned"
+                      , TermApp(
+                          "bound"
+                        , TermGroup(
+                            Terms(
+                              [ TermSemantics(
+                                  "id"
+                                , Phrase([WordVar(VarVarStemSuffixPostfix("ID", Some("1"), None()))])
+                                , None()
+                                )
+                              ]
+                            )
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "apply"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "lookup"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermApp(
+                                        "class-feature-map"
+                                      , TermApp(
+                                          "lookup"
+                                        , TermGroup(
+                                            Terms(
+                                              [ TermApp(
+                                                  "assigned"
+                                                , TermGroup(
+                                                    Terms(
+                                                      [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                                    )
+                                                  )
+                                                )
+                                              , TermApp("object-class-name", TermApp("checked", TermApp("dereference", TermName("given"))))
+                                              ]
+                                            )
+                                          )
+                                        )
+                                      )
+                                    , TermSemantics(
+                                        "id"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", Some("2"), None()))])
+                                      , None()
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            , TermApp(
+                                "tuple"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermName("given")
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermSemantics(
+                                              "eval"
+                                            , Phrase([WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))])
+                                            , None()
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("CPPDDecl")]))
+          , "cpp-decl"
+          , [ PhraseTypeSequence(
+                PhraseTypeAtom("'include'")
+              , PhraseTypeSequence(PhraseTypeAtom("'<'"), PhraseTypeSequence(PhraseTypeSynName("cpp-std-lib"), PhraseTypeAtom("'>'")))
+              )
+            ]
+          )
+        ]
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("CPPDDecl", None(), None()))])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("CPPDDecl", None(), None()))])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise-lib"
+        , Phrase(
+            [WordAtom("'include'"), WordAtom("'<'"), WordAtom("'iostream'"), WordAtom("'>'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp("bound", TermString("\"_std\""))
+                    , TermApp(
+                        "map-unite"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "assigned"
+                              , TermGroup(
+                                  Terms(
+                                    [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                  )
+                                )
+                              )
+                            , TermMap(
+                                [ PointMap(TermString("\"std::endl\""), TermString("\"\\n\""))
+                                , PointMap(TermString("\"std::cout\""), TermName("print"))
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise-lib"
+        , Phrase(
+            [WordAtom("'include'"), WordAtom("'<'"), WordAtom("'mutex'"), WordAtom("'>'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp("bound", TermString("\"_std\""))
+                    , TermApp(
+                        "map-unite"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "assigned"
+                              , TermGroup(
+                                  Terms(
+                                    [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                  )
+                                )
+                              )
+                            , TermMap(
+                                [ PointMap(
+                                    TermString("\"std::mutex\"")
+                                  , TermApp(
+                                      "simple-class"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermString("\"std::mutex\"")
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"mutex\"")
+                                                , TermApp(
+                                                    "allocate-initialised-variable"
+                                                  , TermGroup(Terms([TermName("syncs"), TermName("exclusive-lock-create")]))
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"lock\"")
+                                                , TermApp(
+                                                    "method-zero-params"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermApp(
+                                                            "exclusive-lock-sync-else-wait"
+                                                          , TermGroup(
+                                                              Terms([TermApp("assigned", TermApp("self", TermString("\"mutex\"")))])
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"unlock\"")
+                                                , TermApp(
+                                                    "method-zero-params"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermApp(
+                                                            "exclusive-lock-release"
+                                                          , TermGroup(
+                                                              Terms([TermApp("assigned", TermApp("self", TermString("\"mutex\"")))])
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise-lib"
+        , Phrase(
+            [WordAtom("'include'"), WordAtom("'<'"), WordAtom("'shared_mutex'"), WordAtom("'>'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp("bound", TermString("\"_std\""))
+                    , TermApp(
+                        "map-unite"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "assigned"
+                              , TermGroup(
+                                  Terms(
+                                    [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                  )
+                                )
+                              )
+                            , TermMap(
+                                [ PointMap(
+                                    TermString("\"std::shared_mutex\"")
+                                  , TermApp(
+                                      "class"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermApp(
+                                              "thunk"
+                                            , TermApp(
+                                                "closure"
+                                              , TermApp(
+                                                  "reference"
+                                                , TermApp(
+                                                    "object"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermName("fresh-atom")
+                                                        , TermString("\"std::shared_mutex\"")
+                                                        , TermMap(
+                                                            [ PointMap(
+                                                                TermString("\"rw-lock\"")
+                                                              , TermApp(
+                                                                  "allocate-initialised-variable"
+                                                                , TermGroup(Terms([TermName("syncs"), TermName("rw-lock-create")]))
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              )
+                                            )
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"lock\"")
+                                                , TermApp(
+                                                    "function"
+                                                  , TermApp(
+                                                      "closure"
+                                                    , TermApp(
+                                                        "scope"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "collateral"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermApp(
+                                                                        "match"
+                                                                      , TermGroup(
+                                                                          Terms(
+                                                                            [ TermName("given")
+                                                                            , TermApp(
+                                                                                "tuple"
+                                                                              , TermGroup(
+                                                                                  Terms(
+                                                                                    [ TermApp(
+                                                                                        "pattern"
+                                                                                      , TermApp(
+                                                                                          "abstraction"
+                                                                                        , TermMap(
+                                                                                            [ PointMap(
+                                                                                                TermString("\"self\"")
+                                                                                              , TermApp(
+                                                                                                  "allocate-initialised-variable"
+                                                                                                , TermGroup(
+                                                                                                    Terms(
+                                                                                                      [TermApp("pointers", TermGroup(Terms([TermName("objects")]))), TermName("given")]
+                                                                                                    )
+                                                                                                  )
+                                                                                                )
+                                                                                              )
+                                                                                            ]
+                                                                                          )
+                                                                                        )
+                                                                                      )
+                                                                                    ]
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                            ]
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    , TermApp(
+                                                                        "object-single-inheritance-feature-map"
+                                                                      , TermApp(
+                                                                          "checked"
+                                                                        , TermApp("dereference", TermApp("first", TermApp("tuple-elements", TermName("given"))))
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            , TermApp(
+                                                                "thread-atomic"
+                                                              , TermApp(
+                                                                  "sequential"
+                                                                , TermGroup(
+                                                                    Terms(
+                                                                      [ TermApp(
+                                                                          "rw-lock-sync-exclusive-else-wait"
+                                                                        , TermApp(
+                                                                            "assigned"
+                                                                          , TermApp("self", TermGroup(Terms([TermString("\"rw-lock\"")])))
+                                                                          )
+                                                                        )
+                                                                      ]
+                                                                    )
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"lock_shared\"")
+                                                , TermApp(
+                                                    "function"
+                                                  , TermApp(
+                                                      "closure"
+                                                    , TermApp(
+                                                        "scope"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "collateral"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermApp(
+                                                                        "match"
+                                                                      , TermGroup(
+                                                                          Terms(
+                                                                            [ TermName("given")
+                                                                            , TermApp(
+                                                                                "tuple"
+                                                                              , TermGroup(
+                                                                                  Terms(
+                                                                                    [ TermApp(
+                                                                                        "pattern"
+                                                                                      , TermApp(
+                                                                                          "abstraction"
+                                                                                        , TermMap(
+                                                                                            [ PointMap(
+                                                                                                TermString("\"self\"")
+                                                                                              , TermApp(
+                                                                                                  "allocate-initialised-variable"
+                                                                                                , TermGroup(
+                                                                                                    Terms(
+                                                                                                      [TermApp("pointers", TermGroup(Terms([TermName("objects")]))), TermName("given")]
+                                                                                                    )
+                                                                                                  )
+                                                                                                )
+                                                                                              )
+                                                                                            ]
+                                                                                          )
+                                                                                        )
+                                                                                      )
+                                                                                    ]
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                            ]
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    , TermApp(
+                                                                        "object-single-inheritance-feature-map"
+                                                                      , TermApp(
+                                                                          "checked"
+                                                                        , TermApp("dereference", TermApp("first", TermApp("tuple-elements", TermName("given"))))
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            , TermApp(
+                                                                "thread-atomic"
+                                                              , TermApp(
+                                                                  "sequential"
+                                                                , TermGroup(
+                                                                    Terms(
+                                                                      [ TermApp(
+                                                                          "rw-lock-sync-shared-else-wait"
+                                                                        , TermApp(
+                                                                            "assigned"
+                                                                          , TermApp("self", TermGroup(Terms([TermString("\"rw-lock\"")])))
+                                                                          )
+                                                                        )
+                                                                      ]
+                                                                    )
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"unlock\"")
+                                                , TermApp(
+                                                    "function"
+                                                  , TermApp(
+                                                      "closure"
+                                                    , TermApp(
+                                                        "scope"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "collateral"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermApp(
+                                                                        "match"
+                                                                      , TermGroup(
+                                                                          Terms(
+                                                                            [ TermName("given")
+                                                                            , TermApp(
+                                                                                "tuple"
+                                                                              , TermGroup(
+                                                                                  Terms(
+                                                                                    [ TermApp(
+                                                                                        "pattern"
+                                                                                      , TermApp(
+                                                                                          "abstraction"
+                                                                                        , TermMap(
+                                                                                            [ PointMap(
+                                                                                                TermString("\"self\"")
+                                                                                              , TermApp(
+                                                                                                  "allocate-initialised-variable"
+                                                                                                , TermGroup(
+                                                                                                    Terms(
+                                                                                                      [TermApp("pointers", TermGroup(Terms([TermName("objects")]))), TermName("given")]
+                                                                                                    )
+                                                                                                  )
+                                                                                                )
+                                                                                              )
+                                                                                            ]
+                                                                                          )
+                                                                                        )
+                                                                                      )
+                                                                                    ]
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                            ]
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    , TermApp(
+                                                                        "object-single-inheritance-feature-map"
+                                                                      , TermApp(
+                                                                          "checked"
+                                                                        , TermApp("dereference", TermApp("first", TermApp("tuple-elements", TermName("given"))))
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            , TermApp(
+                                                                "thread-atomic"
+                                                              , TermApp(
+                                                                  "sequential"
+                                                                , TermGroup(
+                                                                    Terms(
+                                                                      [ TermApp(
+                                                                          "rw-lock-release-exclusive"
+                                                                        , TermApp(
+                                                                            "assigned"
+                                                                          , TermApp("self", TermGroup(Terms([TermString("\"rw-lock\"")])))
+                                                                          )
+                                                                        )
+                                                                      ]
+                                                                    )
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"unlock_shared\"")
+                                                , TermApp(
+                                                    "function"
+                                                  , TermApp(
+                                                      "closure"
+                                                    , TermApp(
+                                                        "scope"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "collateral"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermApp(
+                                                                        "match"
+                                                                      , TermGroup(
+                                                                          Terms(
+                                                                            [ TermName("given")
+                                                                            , TermApp(
+                                                                                "tuple"
+                                                                              , TermGroup(
+                                                                                  Terms(
+                                                                                    [ TermApp(
+                                                                                        "pattern"
+                                                                                      , TermApp(
+                                                                                          "abstraction"
+                                                                                        , TermMap(
+                                                                                            [ PointMap(
+                                                                                                TermString("\"self\"")
+                                                                                              , TermApp(
+                                                                                                  "allocate-initialised-variable"
+                                                                                                , TermGroup(
+                                                                                                    Terms(
+                                                                                                      [TermApp("pointers", TermGroup(Terms([TermName("objects")]))), TermName("given")]
+                                                                                                    )
+                                                                                                  )
+                                                                                                )
+                                                                                              )
+                                                                                            ]
+                                                                                          )
+                                                                                        )
+                                                                                      )
+                                                                                    ]
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                            ]
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    , TermApp(
+                                                                        "object-single-inheritance-feature-map"
+                                                                      , TermApp(
+                                                                          "checked"
+                                                                        , TermApp("dereference", TermApp("first", TermApp("tuple-elements", TermName("given"))))
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            , TermApp(
+                                                                "thread-atomic"
+                                                              , TermApp(
+                                                                  "sequential"
+                                                                , TermGroup(
+                                                                    Terms(
+                                                                      [ TermApp(
+                                                                          "rw-lock-release-shared"
+                                                                        , TermApp(
+                                                                            "assigned"
+                                                                          , TermApp("self", TermGroup(Terms([TermString("\"rw-lock\"")])))
+                                                                          )
+                                                                        )
+                                                                      ]
+                                                                    )
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise-lib"
+        , Phrase(
+            [WordAtom("'include'"), WordAtom("'<'"), WordAtom("'future'"), WordAtom("'>'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp("bound", TermString("\"_std\""))
+                    , TermApp(
+                        "map-unite"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "assigned"
+                              , TermGroup(
+                                  Terms(
+                                    [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                  )
+                                )
+                              )
+                            , TermMap(
+                                [ PointMap(
+                                    TermString("\"std::promise\"")
+                                  , TermApp(
+                                      "simple-class"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermString("\"std::promise\"")
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"promise\"")
+                                                , TermApp(
+                                                    "allocate-initialised-variable"
+                                                  , TermGroup(Terms([TermName("shared-state"), TermName("shared-state-create")]))
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"get\"")
+                                                , TermApp(
+                                                    "method-zero-params"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [TermApp("shared-state-get", TermApp("assigned", TermApp("self", TermString("\"promise\""))))]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"set\"")
+                                                , TermApp(
+                                                    "function"
+                                                  , TermApp(
+                                                      "closure"
+                                                    , TermApp(
+                                                        "scope"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "collateral"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermApp(
+                                                                        "match"
+                                                                      , TermGroup(
+                                                                          Terms(
+                                                                            [ TermName("given")
+                                                                            , TermApp(
+                                                                                "tuple"
+                                                                              , TermGroup(
+                                                                                  Terms(
+                                                                                    [ TermApp(
+                                                                                        "pattern"
+                                                                                      , TermApp(
+                                                                                          "abstraction"
+                                                                                        , TermMap(
+                                                                                            [ PointMap(
+                                                                                                TermString("\"self\"")
+                                                                                              , TermApp(
+                                                                                                  "allocate-initialised-variable"
+                                                                                                , TermGroup(
+                                                                                                    Terms(
+                                                                                                      [TermApp("pointers", TermGroup(Terms([TermName("objects")]))), TermName("given")]
+                                                                                                    )
+                                                                                                  )
+                                                                                                )
+                                                                                              )
+                                                                                            ]
+                                                                                          )
+                                                                                        )
+                                                                                      )
+                                                                                    , TermApp(
+                                                                                        "pattern"
+                                                                                      , TermApp(
+                                                                                          "abstraction"
+                                                                                        , TermMap(
+                                                                                            [ PointMap(
+                                                                                                TermString("\"val\"")
+                                                                                              , TermApp(
+                                                                                                  "allocate-initialised-variable"
+                                                                                                , TermGroup(Terms([TermName("values"), TermName("given")]))
+                                                                                                )
+                                                                                              )
+                                                                                            ]
+                                                                                          )
+                                                                                        )
+                                                                                      )
+                                                                                    ]
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                            ]
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    , TermApp(
+                                                                        "object-single-inheritance-feature-map"
+                                                                      , TermApp(
+                                                                          "checked"
+                                                                        , TermApp("dereference", TermApp("first", TermApp("tuple-elements", TermName("given"))))
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            , TermApp(
+                                                                "sequential"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermApp(
+                                                                        "shared-state-set"
+                                                                      , TermGroup(
+                                                                          Terms(
+                                                                            [ TermApp(
+                                                                                "assigned"
+                                                                              , TermApp("self", TermGroup(Terms([TermString("\"promise\"")])))
+                                                                              )
+                                                                            , TermApp("assigned", TermApp("bound", TermString("\"val\"")))
+                                                                            ]
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  )
+                                , PointMap(
+                                    TermString("\"std::packaged_task\"")
+                                  , TermApp(
+                                      "simple-class"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermString("\"std::packaged_task\"")
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"shared-state\"")
+                                                , TermApp(
+                                                    "allocate-initialised-variable"
+                                                  , TermGroup(Terms([TermName("shared-state"), TermName("shared-state-create")]))
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"_init\"")
+                                                , TermApp(
+                                                    "tuple"
+                                                  , TermGroup(Terms([TermApp("unpack", TermString("\"callable\""))]))
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"get_future\"")
+                                                , TermApp(
+                                                    "method"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermApp(
+                                                            "reference"
+                                                          , TermApp(
+                                                              "object"
+                                                            , TermGroup(
+                                                                Terms(
+                                                                  [ TermName("fresh-atom")
+                                                                  , TermString("\"std::future\"")
+                                                                  , TermMap(
+                                                                      [PointMap(
+                                                                         TermString("\"shared-state\"")
+                                                                       , TermApp("assigned", TermApp("self", TermString("\"shared-state\"")))
+                                                                       )]
+                                                                    )
+                                                                  ]
+                                                                )
+                                                              )
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              , PointMap(
+                                                  TermString("\"_call\"")
+                                                , TermApp(
+                                                    "method"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermApp(
+                                                            "shared-state-set"
+                                                          , TermGroup(
+                                                              Terms(
+                                                                [ TermApp("assigned", TermApp("self", TermString("\"shared-state\"")))
+                                                                , TermApp(
+                                                                    "apply"
+                                                                  , TermGroup(
+                                                                      Terms(
+                                                                        [ TermApp("assigned", TermApp("self", TermString("\"callable\"")))
+                                                                        , TermApp("assigned", TermApp("bound", TermString("\"args\"")))
+                                                                        ]
+                                                                      )
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                            )
+                                                          )
+                                                        , TermString("\"args\"")
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  )
+                                , PointMap(
+                                    TermString("\"std::future\"")
+                                  , TermApp(
+                                      "simple-class"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermString("\"std::future\"")
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"_init\"")
+                                                , TermList(
+                                                    Terms(
+                                                      [TermApp("unpack", TermGroup(Terms([TermString("\"shared-state\"")])))]
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"get\"")
+                                                , TermApp(
+                                                    "method-zero-params"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [TermApp(
+                                                           "shared-state-get"
+                                                         , TermGroup(Terms([TermApp("self", TermString("\"shared-state\""))]))
+                                                         )]
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise-lib"
+        , Phrase(
+            [WordAtom("'include'"), WordAtom("'<'"), WordAtom("'thread'"), WordAtom("'>'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp("bound", TermString("\"_std\""))
+                    , TermApp(
+                        "map-unite"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "assigned"
+                              , TermGroup(
+                                  Terms(
+                                    [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                  )
+                                )
+                              )
+                            , TermMap(
+                                [ PointMap(
+                                    TermString("\"std::thread\"")
+                                  , TermApp(
+                                      "simple-class"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermString("\"std::thread\"")
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"_init\"")
+                                                , TermApp(
+                                                    "pattern"
+                                                  , TermApp(
+                                                      "abstraction"
+                                                    , TermGroup(
+                                                        Terms(
+                                                          [ TermApp(
+                                                              "bind"
+                                                            , TermGroup(
+                                                                Terms(
+                                                                  [ TermString("\"index\"")
+                                                                  , TermApp(
+                                                                      "alloc-init"
+                                                                    , TermGroup(
+                                                                        Terms(
+                                                                          [ TermName("values")
+                                                                          , TermApp(
+                                                                              "allocate-index"
+                                                                            , TermApp(
+                                                                                "thread-activate"
+                                                                              , TermApp(
+                                                                                  "thread-joinable"
+                                                                                , TermApp(
+                                                                                    "postpone-after-effect"
+                                                                                  , TermApp(
+                                                                                      "supply"
+                                                                                    , TermGroup(
+                                                                                        Terms(
+                                                                                          [TermApp("tuple-head", TermName("given")), TermApp("tuple-tail", TermName("given"))]
+                                                                                        )
+                                                                                      )
+                                                                                    )
+                                                                                  )
+                                                                                )
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        )
+                                                                      )
+                                                                    )
+                                                                  ]
+                                                                )
+                                                              )
+                                                            )
+                                                          ]
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          , TermMap(
+                                              [ PointMap(
+                                                  TermString("\"join\"")
+                                                , TermApp(
+                                                    "thread-join"
+                                                  , TermApp("lookup-index", TermApp("assigned", TermApp("self", TermString("\"index\""))))
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecOtherwise(
+        RuleSemantic(
+          "initialise-lib"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("Insert")]))
+          , "insert"
+          , [PhraseTypeSequence(PhraseTypeAtom("'<<'"), PhraseTypeSynName("exp"))]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Inserts")]))
+          , "inserts"
+          , [PhraseTypeSequence(PhraseTypeSynName("insert"), PhraseTypePostfix(PhraseTypeSynName("inserts"), "?"))]
+          )
+        , Prod(
+            Some(VarStems([VarStem("CPPStmt")]))
+          , "cpp-stmt"
+          , [PhraseTypeSynName("insertstmt")]
+          )
+        , Prod(
+            None()
+          , "types"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("basic-type")
+              , PhraseTypePostfix(
+                  PhraseTypeGroup(Some(PhraseTypeSequence(PhraseTypeAtom("','"), PhraseTypeSynName("types"))))
+                , "?"
+                )
+              )
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("FunSign")]))
+          , "function-signature"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("return-type")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'('")
+                , PhraseTypeSequence(PhraseTypePostfix(PhraseTypeSynName("types"), "?"), PhraseTypeAtom("')'"))
+                )
+              )
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("InsertStmt")]))
+          , "insertstmt"
+          , [PhraseTypeSequence(PhraseTypeSynName("lib-loc"), PhraseTypeSequence(PhraseTypeSynName("inserts"), PhraseTypeAtom("';'")))]
+          )
+        , Prod(
+            Some(VarStems([VarStem("CPPVarDecl")]))
+          , "cpp-var-decl"
+          , [ PhraseTypeSequence(PhraseTypeSynName("lib-loc"), PhraseTypeSequence(PhraseTypeSynName("id"), PhraseTypeAtom("';'")))
+            , PhraseTypeSequence(
+                PhraseTypeSynName("lib-loc")
+              , PhraseTypeSequence(
+                  PhraseTypeSynName("id")
+                , PhraseTypeSequence(
+                    PhraseTypeAtom("'{'")
+                  , PhraseTypeSequence(
+                      PhraseTypePostfix(PhraseTypeSynName("exprs"), "?")
+                    , PhraseTypeSequence(PhraseTypeAtom("'}'"), PhraseTypeAtom("';'"))
+                    )
+                  )
+                )
+              )
+            , PhraseTypeSequence(
+                PhraseTypeSynName("lib-loc")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'<'")
+                , PhraseTypeSequence(
+                    PhraseTypeSynName("basic-type")
+                  , PhraseTypeSequence(
+                      PhraseTypeAtom("'>'")
+                    , PhraseTypeSequence(
+                        PhraseTypeSynName("id")
+                      , PhraseTypeSequence(PhraseTypeAtom("'='"), PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeAtom("';'")))
+                      )
+                    )
+                  )
+                )
+              )
+            ]
+          )
+        ]
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordAtom("'<<'")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Inserts", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "print"
+              , TermSemantics(
+                  "eval"
+                , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                , None()
+                )
+              )
+            , TermSemantics(
+                "exec"
+              , Phrase(
+                  [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+                  , WordVar(VarVarStemSuffixPostfix("Inserts", None(), None()))
+                  , WordAtom("';'")
+                  ]
+                )
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordAtom("'<<'")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "print"
+              , TermSemantics(
+                  "eval"
+                , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                , None()
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPStmt", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "sequential"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("CPPStmt", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "bind"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "id"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp(
+                        "alloc"
+                      , TermGroup(
+                          Terms(
+                            [TermApp("references", TermGroup(Terms([TermName("objects")])))]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermSemantics(
+                          "id"
+                        , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                        , None()
+                        )
+                      )
+                    , TermApp(
+                        "force"
+                      , TermApp(
+                          "class-instantiator"
+                        , TermApp(
+                            "lookup"
+                          , TermGroup(
+                              Terms(
+                                [ TermApp(
+                                    "assigned"
+                                  , TermGroup(
+                                      Terms(
+                                        [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                      )
+                                    )
+                                  )
+                                , TermQuoted(TermVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None())))
+                                ]
+                              )
+                            )
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'{'")
+            , WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))
+            , WordAtom("'}'")
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "bind"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "id"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp(
+                        "alloc"
+                      , TermGroup(
+                          Terms(
+                            [TermApp("references", TermGroup(Terms([TermName("objects")])))]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'{'")
+            , WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))
+            , WordAtom("'}'")
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermSemantics(
+                          "id"
+                        , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                        , None()
+                        )
+                      )
+                    , TermApp(
+                        "reference"
+                      , TermApp(
+                          "give"
+                        , TermGroup(
+                            Terms(
+                              [ TermApp(
+                                  "checked"
+                                , TermApp(
+                                    "dereference"
+                                  , TermApp(
+                                      "force"
+                                    , TermApp(
+                                        "class-instantiator"
+                                      , TermApp(
+                                          "lookup"
+                                        , TermGroup(
+                                            Terms(
+                                              [ TermApp(
+                                                  "assigned"
+                                                , TermGroup(
+                                                    Terms(
+                                                      [TermApp("bound", TermGroup(Terms([TermString("\"_std\"")])))]
+                                                    )
+                                                  )
+                                                )
+                                              , TermQuoted(TermVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None())))
+                                              ]
+                                            )
+                                          )
+                                        )
+                                      )
+                                    )
+                                  )
+                                )
+                              , TermApp(
+                                  "extend-object-map"
+                                , TermGroup(
+                                    Terms(
+                                      [ TermName("given")
+                                      , TermApp(
+                                          "match"
+                                        , TermGroup(
+                                            Terms(
+                                              [ TermApp(
+                                                  "tuple"
+                                                , TermGroup(
+                                                    Terms(
+                                                      [ TermSemantics(
+                                                          "eval"
+                                                        , Phrase([WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))])
+                                                        , None()
+                                                        )
+                                                      ]
+                                                    )
+                                                  )
+                                                )
+                                              , TermApp(
+                                                  "lookup"
+                                                , TermGroup(
+                                                    Terms([TermApp("object-feature-map", TermName("given")), TermString("\"_init\"")])
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          )
+                                        )
+                                      ]
+                                    )
+                                  )
+                                )
+                              ]
+                            )
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'{'")
+            , WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))
+            , WordAtom("'}'")
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordAtom("'<'")
+            , WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordAtom("'>'")
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "bind"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "id"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp("alloc", TermName("values"))
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordAtom("'<'")
+            , WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordAtom("'>'")
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermSemantics(
+                          "id"
+                        , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                        , None()
+                        )
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordAtom("'<'")
+            , WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordAtom("'>'")
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "sequential"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPLibLoc", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialise"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "initialisations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declare"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "declarations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    ]
+  , []
+  )
+)

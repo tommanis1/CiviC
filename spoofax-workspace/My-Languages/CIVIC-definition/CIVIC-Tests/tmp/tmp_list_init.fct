@@ -1,0 +1,33 @@
+initialise-binding initialise-storing finalise-failing multithread scope
+  (bind
+     ("x",
+      allocate-initialised-variable
+        (integers,
+         decimal "64")),
+   scope
+     (bind
+        ("t1",
+         thread-activate thread-joinable thunk closure assign
+           (bound "x",
+            checked int-div
+              (assigned
+                 (bound "x"),
+               decimal "2"))),
+      scope
+        (bind
+           ("t2",
+            thread-activate thread-joinable thunk closure assign
+              (bound "x",
+               int-add
+                 (assigned
+                    (bound "x"),
+                  decimal "10"))),
+         sequential
+           (effect
+              (thread-join
+                 (bound "t1")),
+            effect
+              (thread-join
+                 (bound "t2")),
+            assigned
+              (bound "x")))))

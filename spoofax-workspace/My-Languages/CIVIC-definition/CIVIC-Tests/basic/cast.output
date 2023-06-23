@@ -1,0 +1,9 @@
+===== Program =====
+int main() {
+bool a = true;
+//print(1+1+1);
+return (int) 1;
+}===================
+Result:
+1
+

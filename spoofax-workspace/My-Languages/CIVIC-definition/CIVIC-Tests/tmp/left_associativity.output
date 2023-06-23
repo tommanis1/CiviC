@@ -1,0 +1,10 @@
+===== Program =====
+int main(){
+print(2*1+1+1 * 20);
+}===================
+Result:
+null-value
+
+Output Entity: standard-out
+23
+

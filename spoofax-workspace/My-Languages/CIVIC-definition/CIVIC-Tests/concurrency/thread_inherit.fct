@@ -1,0 +1,98 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (( ),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (bind
+              ("b",
+               allocate-initialised-variable
+                 (values,
+                  decimal-natural
+                    ("0"))),
+            bind
+              ("foo",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            assign
+              (bound
+                 ("foo"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure
+                             (bind
+                                ("a",
+                                 allocate-initialised-variable
+                                   (values,
+                                    given))))),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                              print
+                                (assigned
+                                   (bound
+                                      ("b"))))))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             (bind
+                                ("t",
+                                 allocate-initialised-variable
+                                   (values,
+                                    null)),
+                              ( )),
+                           sequential
+                             (( ),
+                              assign
+                                (bound
+                                   ("t"),
+                                 allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                   (assigned
+                                      (bound
+                                         ("foo")),
+                                    tuple
+                                      (decimal-natural
+                                         ("0")))),
+                              return
+                                (decimal-natural
+                                   ("0")))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))))

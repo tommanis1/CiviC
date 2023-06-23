@@ -1,0 +1,7 @@
+include <thread>
+void foo(int time){print"foo";print"foo";print"foo";}
+void main() {
+std::thread t {foo};
+//t.join();
+print "end";
+}

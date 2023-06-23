@@ -1,0 +1,8 @@
+===== Program =====
+int main() {
+int foo(int a) {return a;}
+return foo(1);
+}===================
+Result:
+1
+

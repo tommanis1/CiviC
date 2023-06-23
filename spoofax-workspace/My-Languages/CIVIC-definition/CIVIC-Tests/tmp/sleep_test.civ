@@ -1,0 +1,90 @@
+include <thread>
+include <iostream>
+
+void foo(){
+int a = 1;
+int b = 2;
+//std::cout << "foo0";
+std::this_thread::sleep_for(200);
+std::cout << "2";
+
+//std::cout << "foo2";2
+//print ("test");
+
+
+}
+
+void bar(){
+int a = 1;
+int b = 2;
+//std::cout << "bar0";
+std::this_thread::sleep_for(400);
+std::cout << "3";
+}
+void foobar(){
+int a = 1;
+int b = 2;
+//std::cout << "foobar0";
+std::this_thread::sleep_for(100);
+std::cout << "1";
+}
+
+void four(){
+int a = 1;
+int b = 2;
+//std::cout << "foobar0";
+std::this_thread::sleep_for(600);
+std::cout << "4";
+}
+
+void five(){
+int a = 1;
+int b = 2;
+std::this_thread::sleep_for(900);
+std::cout << "5";
+}
+
+void six(){
+std::this_thread::sleep_for(1000);
+std::cout << "6";
+}
+
+
+void main(){
+//std::cout << "main0";
+std::thread tsix{six};
+
+std::thread tfour{four};
+std::thread tfive{five};
+
+std::thread ttt{foobar};
+
+std::thread t{foo};
+std::thread tt{bar};
+
+//std::cout << "main1";
+//std::cout << "main2";
+//std::cout << "main3";
+
+
+//t.detach();
+//t.join();
+//tt.join();
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+//std::cout << "";
+
+}

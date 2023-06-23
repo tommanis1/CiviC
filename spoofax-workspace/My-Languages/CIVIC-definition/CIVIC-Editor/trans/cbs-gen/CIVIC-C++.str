@@ -1,0 +1,44 @@
+module CIVIC-C++
+
+imports
+  libstratego-gpp
+  signatures/-
+  pp/CIVIC-parenthesize
+  pp/CIVIC-pp
+
+imports
+  cbs-gen/CIVIC-Start
+
+// Language "CIVIC"
+
+rules
+
+// #1 CIVIC-C++
+              
+
+to-funcons-lex: 
+  FCTDoubleQuoted(L-string-chars(LEX-string-chars(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons:
+  |[ eval[: "(:StringChars:)" :] ]| ->
+  |[ \"(:StringChars:)\" ]|
+to-funcons-lex: 
+  FCTDoubleQuoted(L-cpp-std-lib(LEX-cpp-std-lib(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons:
+  |[ initialise[: (:CPPDDecl:) :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ declare[: (:CPPDDecl:) :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ concat[: <<(:E:)(:Inserts?:) :] ]| ->
+  |[ string-append (to-string (eval[: (:E:) :]), 
+             concat[: (:Inserts?:) :]) ]|
+to-funcons:
+  |[ concat[:  :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ exec[: std::cout(:Inserts:); :] ]| ->
+  |[ print concat[: (:Inserts:) :] ]|
+

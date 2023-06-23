@@ -1,0 +1,6 @@
+===== Program =====
+int main() {
+if (true || false && false) {print(1);}
+if (false && false || true) {print(2);}
+
+}===================

@@ -1,0 +1,13 @@
+include < future >
+
+std::promise t;
+std::promise tt;
+
+int main(){
+t.set(0);
+tt.set(1);
+
+print t.get();
+print tt.get();
+
+}

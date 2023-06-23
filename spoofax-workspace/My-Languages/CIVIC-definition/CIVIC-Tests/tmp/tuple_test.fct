@@ -1,0 +1,3 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing
+multithread 
+sequential (print(tuple-head tuple("a", "A")))

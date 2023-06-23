@@ -1,0 +1,11 @@
+{
+"x_label":"Order of threads",
+"title":"",
+"runs":
+    {
+    "r1":{
+        "args":"--non-deterministic value-operations",
+        "legend_label":"Funcons "
+}
+}
+}

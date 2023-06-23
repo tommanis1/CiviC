@@ -1,0 +1,12 @@
+===== Program =====
+void foo() {print(2);}
+export int main () {
+void foo() {print(1);}
+foo();
+}===================
+Result:
+null-value
+
+Output Entity: standard-out
+1
+

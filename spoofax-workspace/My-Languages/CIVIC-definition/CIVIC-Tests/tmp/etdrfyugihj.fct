@@ -1,0 +1,10 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing 
+multithread sequential (
+thread-join thread-activate  thread-joinable thunk abstraction print "test",
+print(null),
+print("1"),
+print("2"),
+print("3")
+
+
+)

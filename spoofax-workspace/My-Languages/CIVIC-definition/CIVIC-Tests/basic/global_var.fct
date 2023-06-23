@@ -1,0 +1,107 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (collateral
+     (bind
+        ("printInt",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values))),
+      bind
+        ("foo",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values))),
+      bind
+        ("a",
+         allocate-initialised-variable
+           (values,
+            decimal-natural
+              ("1"))),
+      bind
+        ("main",
+         allocate-variable
+           (functions
+              (tuples
+                 ((values)*),
+               values)))),
+   sequential
+     (assign
+        (bound
+           ("printInt"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    (pattern closure
+                       (bind
+                          ("val",
+                           allocate-initialised-variable
+                             (values,
+                              given))))),
+               handle-return
+                 (print
+                    (assigned
+                       (bound
+                          ("val"))))))),
+      assign
+        (bound
+           ("foo"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        print
+                          (assigned
+                             (bound
+                                ("a"))))))))),
+      ( ),
+      assign
+        (bound
+           ("main"),
+         function closure
+           (scope
+              (match
+                 (given,
+                  tuple
+                    ( )),
+               handle-return
+                 (scope
+                    (collateral
+                       ( ),
+                     sequential
+                       (( ),
+                        apply
+                          (assigned
+                             (bound
+                                ("printInt")),
+                           tuple
+                             (assigned
+                                (bound
+                                   ("a")))),
+                        apply
+                          (assigned
+                             (bound
+                                ("foo")),
+                           tuple
+                             ( )),
+                        return
+                          (decimal-natural
+                             ("0")))))))),
+      apply
+        (assigned
+           (bound
+              ("main")),
+         tuple
+           ( ))))

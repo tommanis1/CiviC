@@ -1,0 +1,5 @@
+void foo() {print(2);}
+export int main () {
+void foo() {print(1);}
+foo();
+}

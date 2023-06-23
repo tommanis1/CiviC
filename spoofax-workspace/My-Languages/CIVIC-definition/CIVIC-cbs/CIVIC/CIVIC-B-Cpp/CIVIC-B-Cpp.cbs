@@ -5,9 +5,9 @@ Language "CIVIC"
 
 
 Lexis
-	CPP-Lib: cpp-std-lib ::= 'iostream' | 'thread' 	| 'mutex' | 'shared_mutex'	| 'future'
+	CPP-Lib: cpp-std-lib ::= 'iostream' | 'thread' 	| 'mutex' | 'shared_mutex'	| 'future' | 'condition_variable' | 'chrono'
 	CPPLibId : lib-id ::= 'std' ':' ':' ('A'-'Z'|'a'-'z'|'_')* ( ':' ':' ('A'-'Z'|'a'-'z'|'_')+)*
-Syntax
+Syntax 
 	CPPE : cpp-expr ::= id '.' id '(' exprs? ')'| lib-id | lib-id '(' exprs? ')'
 
 Rule eval[[ CPPLibId ]] = lookup(assigned(bound("_std")), \"CPPLibId\")
@@ -36,32 +36,144 @@ Rule eval[[ ID1 '.' ID2 '(' Exprs ')' ]] =
                                          ("_std")),
                                     object-class-name checked dereference given),   //class name                                  
           id[[ID2]] ),
-        tuple ( given, (eval[[ Exprs ]]) ) ) )
+        tuple ( given, tuple(eval-exprs[[ Exprs ]]) ) ) )
         
-Rule eval [[ CPPLibId '(' Exprs ')' ]] = 
+Rule eval [[ CPPLibId '(' Exprs? ')' ]] = 
 apply(
 	lookup(assigned(bound("_std")),\"CPPLibId\"),
-	tuple(eval[[ Exprs ]]))
+	tuple(eval-exprs[[ Exprs? ]]))
 
-Rule eval [[ CPPLibId '('  ')' ]] = 
-apply(
-	lookup(assigned(bound("_std")),\"CPPLibId\"),
-	tuple(()))
+//Rule eval [[ CPPLibId '('  ')' ]] = 
+//apply(
+//	lookup(assigned(bound("_std")),\"CPPLibId\"),
+//	tuple(()))
 
 Syntax
 	CPPDDecl : cpp-decl ::= 'include' '<' cpp-std-lib '>'
 Rule declare[[ CPPDDecl ]] = ()
 Rule initialise[[ CPPDDecl ]] = ()
 
+Rule initialise-lib[[ 'include' '<' 'iostream' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+{	
+	"std::endl" |-> "\n"
+}))
+Rule initialise-lib[[ 'include' '<' 'condition_variable' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
+{
+	"std::condition_variable" |-> simple-class("std::condition_variable", 
+	{"" |->""}, {
+	"(constructor)" |-> method(reference extend-object-map(
+		                    dereference force class-instantiator lookup(assigned(bound("_std")), "std::condition_variable"),
+		                    {
+			                    "condition" |-> alloc-init(syncs, condition-create)
+		                    })),
+	"wait" |-> method(
+		if-else(
+			is-equal(object-class-name dereference assigned bound "unique_lock", "std::unique_lock"),
+			sequential(
+					//assign(lookup(object-single-inheritance-feature-map checked dereference assigned bound "unique_lock", "owns"), false),
+					//give(assigned lookup(object-single-inheritance-feature-map checked dereference assigned bound "unique_lock", "mutex-ref"), // get mutex object in unique_lock
+					//give(assigned lookup(object-single-inheritance-feature-map checked dereference given, "mutex"), // get  exclusive-lock funcon in mutex object 
+					give(assigned bound "unique_lock",sequential(
+					//TODO wait with lock instead
+//					apply(get-class-method( dereference given, "unlock"), tuple(given)),
+					condition-wait assigned self "condition"
+//					,
+//					apply(get-class-method( dereference given, "lock"), tuple(given))
+					
+					))
+//					, given))
+				),
+			throw "need std::unique_lock"
+		)
+	, tuple(unpack "unique_lock")),
+	"notify_all" |-> method(condition-notify-all(assigned self "condition"))
+	
+	})
+}))
 Rule initialise-lib[[ 'include' '<' 'mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
 {
 	"std::mutex" |-> simple-class("std::mutex", 
-		{ "mutex" |-> allocate-initialised-variable(syncs, exclusive-lock-create) },
+		{ "" |->"" },
 	    {
-	    	"lock" |-> method(exclusive-lock-sync-else-wait(assigned self "mutex")),
-	    	"unlock" |-> method(exclusive-lock-release(assigned self "mutex"))
+	    "(constructor)" |-> method(reference extend-object-map(
+            dereference assigned bound "self",
+            {
+                "mutex" |-> allocate-initialised-variable(syncs, exclusive-lock-create),
+                "locked" |-> alloc-init(booleans, false)
+                
+            })),
+	    	"lock" |-> method(sequential(exclusive-lock-sync-else-wait(assigned self "mutex"), assign( self "locked", true), print "", return null)),
+	    	"unlock" |-> method(sequential(
+	    		if-else( assigned self "locked",
+	    			sequential(
+	    				exclusive-lock-release(assigned self "mutex"),
+	    				assign(self "locked", false)
+	    			),
+	    			null
+	    		),
+	    		return null))
 	    }
-	)
+	),
+	"std::unique_lock" |-> simple-class("std::unique_lock",
+        {""|->""},
+        {
+        "(constructor)" |-> method(
+                sequential(
+                    give(extend-object-map(
+		                    dereference assigned bound "self",
+		                    {"owns" |-> allocate-initialised-variable(booleans, false),
+			                  "mutex-ref" |-> alloc-init(values, assigned bound "mutex-ref")}),
+                		// given is the just created unique_lock object
+                		sequential(
+                		// call lock on the unique_lock
+                		apply(get-class-method( given, "lock"), tuple(reference given)),
+                		reference given
+                		)
+                	)),
+                tuple(unpack "mutex-ref")
+//            )
+            ),
+            	"(destructor)"  |-> method(
+		give(assigned bound "self", 
+			apply(get-class-method( dereference given, "unlock"), tuple(given))
+		)
+	),
+            "lock" |-> method(
+            	  if-else(
+                    assigned(self "owns"),
+                    throw "already owns lock",
+                    sequential(
+		            	give(  	// call lock on the associated lockable object
+		            		assigned self "mutex-ref",
+		                	apply(get-class-method(dereference given ,"lock"), tuple(given))
+		                ),
+		                assign(self "owns", true)
+                    )
+                )
+            ),
+            "unlock" |-> method(sequential(
+            give(
+		            		assigned self "mutex-ref",
+		                	apply(get-class-method(dereference given ,"unlock"), tuple(given))
+		                ), assign(self "owns", false))
+            )
+//            ,
+//            "unlock" |-> method(
+//                
+//            ),
+//            "(destructor)" |-> method(
+//                if-else(
+//                    assigned(self "owns"),
+//                    sequential(
+//                        exclusive-lock-release(assigned self "mutex"),
+//                        assign(self "owns", false)
+//                    ),
+//                    null
+//                )
+//            )
+        }
+    )
+	
 }))
 
 Rule initialise-lib[[ 'include' '<' 'shared_mutex' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),
@@ -69,6 +181,7 @@ Rule initialise-lib[[ 'include' '<' 'shared_mutex' '>' ]] = assign(bound "_std",
 	"std::shared_mutex" |->  simple-class( "std::shared_mutex",
 	{ "rw-lock" |-> allocate-initialised-variable(syncs, rw-lock-create) },
 	{
+		"(constructor)" |-> method(force class-instantiator lookup(assigned(bound("_std")), "std::shared_mutex")),
 		"lock" |-> method (rw-lock-sync-exclusive-else-wait assigned self("rw-lock")),
 	 	"lock_shared" |->method (rw-lock-sync-shared-else-wait assigned self("rw-lock")),
 	  	"unlock" |-> method( rw-lock-release-exclusive assigned self("rw-lock")),
@@ -91,16 +204,44 @@ Rule initialise-lib[[ 'include' '<' 'future' '>' ]] = assign(bound "_std", map-u
 		
 	},
 	{
+	
 	"get_future" |-> method(
 		reference object(fresh-atom, "std::future", {"shared-state" |-> assigned self "shared-state"})),
 	"_call" |-> method(shared-state-set(assigned self "shared-state", apply(assigned self "callable", assigned bound "args")) , "args")
 	})
 	,
 	"std::future" |->simple-class("std::future",{"_init" |-> [unpack( "shared-state")]} ,{
+	
 	"get"|-> method-zero-params(shared-state-get( self "shared-state")) 
 	})
+//	,
+//	"std::async" |-> function closure scope(match(given, tuple(unpack("args"))),
+//		sequential(print(assigned bound "args"))
+//	)
+//	
 }))
-     
+
+Rule initialise-lib[[ 'include' '<' 'chrono' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),{
+	"std::chrono::seconds" |-> function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure(bind("n",alloc-init(ints,given))))),
+                           sequential
+                             ( int-mul(assigned bound "n", 10))
+                             )),
+   	"std::chrono::milliseconds" |-> function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure(bind("n",alloc-init(ints,given))))),
+                           sequential
+                             ( int-mul(assigned bound "n", 1))
+                             ))
+}))
+
 Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),{
 	"std::this_thread::sleep_for" |->                function closure
                  (scope
@@ -111,30 +252,39 @@ Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = assign(bound "_std", map-u
                            sequential
                              ( thread-sleep(cast(assigned bound "n", ints))
                              ))),
+     
                              
 	"std::thread" |-> simple-class("std::thread", {
-	"detached" |-> alloc-init(booleans, false),
-	"_init" |->
-		// given is tuple of shape fun, arg*
-		pattern abstraction(
-		bind("index",
-		alloc-init(values, 
-			allocate-index thread-activate thread-joinable postpone-after-effect 
-			supply(
-				tuple-head given, tuple-tail given
-		)
-		))
+	""|->""
+
 	
-	)},{
+	},{
+	"(constructor)" |-> method(sequential(
+		give(
+		give(force class-instantiator lookup(assigned(bound("_std")), "std::thread"),
+			reference extend-object-map(dereference given, {
+			"detached" |-> alloc-init(booleans, false),
+			"index" |-> 		
+			alloc-init(values, 
+				allocate-index thread-activate thread-joinable postpone-after-effect 
+				supply(tuple-head assigned bound "args", tuple-tail assigned bound "args"))})
+			
+		),
+		sequential(
+//		thread-yield(),
+		return given))), unpack "args"),
+	
+	
 		"join" |-> method sequential (if-else(assigned self "detached",
 			null,
-			sequential(thread-join lookup-index assigned self "index" , null))),
+			sequential(thread-join lookup-index assigned self "index" , print("")))),
 		"detach" |-> method sequential(
 			assign( self "detached", true),
 			null
 		),
 		"(destructor)" |-> 
-		method sequential if-else(
+		method thread-atomic sequential(
+		 if-else(
 			or(
 				assigned self "detached",
 				is-thread-terminated lookup-index assigned self "index"
@@ -142,20 +292,26 @@ Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = assign(bound "_std", map-u
 			null,
 			throw "terminate called without an active exception"
 		)
+//		print "out scope"
+		)
 		
 //		sequential( 
 //		print(assigned self "index"),
 //		throw "terminate called without an active exception")
 		}), 
 //		thread-joinable
-	"std::jthread" |-> simple-class("std::jthread", {"_init" |->
-		// given is tuple of shape fun, arg*
-		pattern abstraction(bind("index",alloc-init(values, 
-			allocate-index thread-activate thread-joinable postpone-after-effect supply(
-				tuple-head given, tuple-tail given
-		)))
-	
-	)},{
+	"std::jthread" |-> simple-class("std::jthread", {
+	""|->""
+	},{
+		"(constructor)" |-> method(sequential(
+		give(force class-instantiator lookup(assigned(bound("_std")), "std::jthread"),
+			reference extend-object-map(dereference given, {"index" |-> 		
+			alloc-init(values, 
+				allocate-index thread-activate thread-joinable postpone-after-effect 
+				supply(tuple-head assigned bound "args", tuple-tail assigned bound "args"))})
+			
+		)), unpack "args"),
+		
 		"join" |-> method thread-join lookup-index assigned self "index"
 		})
 }))
@@ -333,16 +489,23 @@ Rule exec[[ CPPStmt Stmts ]] = sequential(exec[[ CPPStmt ]], exec[[ Stmts ]])
 //bind(id[[ ID ]], allocate-initialised-variable(promise-feature-maps, promise-create))
 
 Rule declare[[ CPPLibId ID ';']] = bind(id[[ ID ]], alloc( references(objects)))
-Rule initialise[[ CPPLibId ID ';']] = assign( bound id[[ ID ]], 
-	force class-instantiator lookup(assigned(bound("_std")), \"CPPLibId\") )
+Rule initialise[[ CPPLibId ID ';']] = assign( bound id[[ ID ]],
+	give(object(fresh-atom, \"CPPLibId \", {"" |-> ""}), 
+	apply(get-class-method(given,"(constructor)"), tuple(reference given))))
 // packaged task
 Rule declare[[ CPPLibId ID '{' Exprs '}' ';' ]] = bind(id[[ ID ]], alloc( references(objects)))
-Rule initialise[[ CPPLibId ID '{' Exprs '}' ';' ]] = assign(bound id[[ ID ]], reference give (
-	checked dereference force class-instantiator lookup(assigned(bound("_std")), \"CPPLibId\"), 
-	extend-object-map(given, 
-		match(tuple(eval[[Exprs]]), lookup (object-feature-map given, "_init"))
+Rule initialise[[ CPPLibId ID '{' Exprs '}' ';' ]] = assign(bound id[[ ID ]], 
+give(object(fresh-atom, \"CPPLibId \", {"" |-> ""}), 
+	apply(get-class-method(given,"(constructor)"), tuple(reference given, tuple(eval-exprs[[Exprs]])))))
 	
-	)))
+//reference give (
+//	checked dereference force class-instantiator lookup(assigned(bound("_std")), \"CPPLibId\"), 
+//	extend-object-map(given, 
+//		match(tuple(eval[[Exprs]]), lookup (object-feature-map given, "_init"))
+//	
+//	))
+	
+//	)
 //TODO clean 
 
 Rule destruct[[ CPPLibId ID '{' Exprs '}' ';' ]] = give( 

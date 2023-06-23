@@ -1,0 +1,272 @@
+\ProvidesPackage{CIVIC}[2021/08/18 Package declaring hyperlinks for use with cbs-latex]
+\RequirePackage{cbs-latex}
+\RequirePackage{Unstable-Funcons-beta}
+
+\def\FUN@all@values
+  {\FUNCBS{/}{CIVIC-Funcons}{all-values}}
+\def\FUN@basic@types
+  {\FUNCBS{/}{CIVIC-Start}{basic-types}}
+\def\FUN@bool
+  {\FUNCBS{/}{CIVIC-Funcons}{bool}}
+\def\FUN@custom@multithread
+  {\FUNCBS{/}{CIVIC-Funcons}{custom-multithread}}
+\def\FUN@cv
+  {\FUNCBS{/}{CIVIC-Funcons}{cv}}
+\def\FUN@extend@object@map
+  {\FUNCBS{/}{CIVIC-Funcons}{extend-object-map}}
+\def\FUN@fun
+  {\FUNCBS{/}{CIVIC-Funcons}{fun}}
+\def\FUN@initialise@local@variables
+  {\FUNCBS{/}{CIVIC-Funcons}{initialise-local-variables}}
+\def\FUN@int
+  {\FUNCBS{/}{CIVIC-Funcons}{int}}
+\def\FUN@integer@add@else@string@append
+  {\FUNCBS{/}{CIVIC-Funcons}{integer-add-else-string-append}}
+\def\FUN@is@set
+  {\FUNCBS{/}{CIVIC-Funcons}{is-set}}
+\def\FUN@ld@values
+  {\FUNCBS{/}{CIVIC-A-Disambiguation}{ld-values}}
+\def\FUN@local@variable
+  {\FUNCBS{/}{CIVIC-Funcons}{local-variable}}
+\def\FUN@local@variable@assign
+  {\FUNCBS{/}{CIVIC-Funcons}{local-variable-assign}}
+\def\FUN@local@variable@initialise
+  {\FUNCBS{/}{CIVIC-Funcons}{local-variable-initialise}}
+\def\FUN@method
+  {\FUNCBS{/}{CIVIC-Funcons}{method}}
+\def\FUN@method@zero@params
+  {\FUNCBS{/}{CIVIC-Funcons}{method-zero-params}}
+\def\FUN@mtx
+  {\FUNCBS{/}{CIVIC-Funcons}{mtx}}
+\def\FUN@obj
+  {\FUNCBS{/}{CIVIC-Funcons}{obj}}
+\def\FUN@scope@closed
+  {\FUNCBS{/}{CIVIC-Funcons}{scope-closed}}
+\def\FUN@self
+  {\FUNCBS{/}{CIVIC-Funcons}{self}}
+\def\FUN@shared@state
+  {\FUNCBS{/}{CIVIC-Funcons}{shared-state}}
+\def\FUN@shared@state@create
+  {\FUNCBS{/}{CIVIC-Funcons}{shared-state-create}}
+\def\FUN@shared@state@features
+  {\FUNCBS{/}{CIVIC-Funcons}{shared-state-features}}
+\def\FUN@shared@state@get
+  {\FUNCBS{/}{CIVIC-Funcons}{shared-state-get}}
+\def\FUN@shared@state@set
+  {\FUNCBS{/}{CIVIC-Funcons}{shared-state-set}}
+\def\FUN@simple@class
+  {\FUNCBS{/}{CIVIC-Funcons}{simple-class}}
+\def\FUN@sl@to@string
+  {\FUNCBS{/}{CIVIC-Funcons}{sl-to-string}}
+\def\FUN@state
+  {\FUNCBS{/}{CIVIC-Funcons}{state}}
+\def\FUN@str
+  {\FUNCBS{/}{CIVIC-Funcons}{str}}
+\def\FUN@t@greater
+  {\FUNCBS{/}{CIVIC-Funcons}{t-greater}}
+\def\FUN@t@include
+  {\FUNCBS{/}{CIVIC-Funcons}{t-include}}
+\def\FUN@t@lower
+  {\FUNCBS{/}{CIVIC-Funcons}{t-lower}}
+\def\FUN@t@mutex
+  {\FUNCBS{/}{CIVIC-Funcons}{t-mutex}}
+\def\FUN@t@pound
+  {\FUNCBS{/}{CIVIC-Funcons}{t-pound}}
+\def\FUN@tokens
+  {\FUNCBS{/}{CIVIC-Funcons}{tokens}}
+\def\FUN@tuple@head
+  {\FUNCBS{/}{CIVIC-Funcons}{tuple-head}}
+\def\FUN@tuple@tail
+  {\FUNCBS{/}{CIVIC-Funcons}{tuple-tail}}
+\def\FUN@unpack
+  {\FUNCBS{/}{CIVIC-Funcons}{unpack}}
+\def\FUN@values@or@syncs
+  {\FUNCBS{/}{CIVIC-Funcons}{values-or-syncs}}
+\def\LANG@CIVIC
+  {\LANGCBS{/}{CIVIC-Start}{CIVIC}}
+\def\SECT@A
+  {\SECTCBS{/}{CIVIC-A-Disambiguation}{A}}
+\def\SECT@B
+  {\SECTCBS{/}{CIVIC-B-Cpp}{B}}
+\def\SEM@declarations
+  {\SEMCBS{/}{CIVIC-Start}{declarations}}
+\def\SEM@declarations@local
+  {\SEMCBS{/}{CIVIC-Start}{declarations-local}}
+\def\SEM@declare
+  {\SEMCBS{/}{CIVIC-Start}{declare}}
+\def\SEM@eval
+  {\SEMCBS{/}{CIVIC-Start}{eval}}
+\def\SEM@eval@bool
+  {\SEMCBS{/}{CIVIC-Start}{eval-bool}}
+\def\SEM@exec
+  {\SEMCBS{/}{CIVIC-Start}{exec}}
+\def\SEM@exec@var
+  {\SEMCBS{/}{CIVIC-Start}{exec-var}}
+\def\SEM@id
+  {\SEMCBS{/}{CIVIC-Start}{id}}
+\def\SEM@initialisations
+  {\SEMCBS{/}{CIVIC-Start}{initialisations}}
+\def\SEM@initialisations@lib
+  {\SEMCBS{/}{CIVIC-Start}{initialisations-lib}}
+\def\SEM@initialisations@local
+  {\SEMCBS{/}{CIVIC-Start}{initialisations-local}}
+\def\SEM@initialise
+  {\SEMCBS{/}{CIVIC-Start}{initialise}}
+\def\SEM@initialise@lib
+  {\SEMCBS{/}{CIVIC-Start}{initialise-lib}}
+\def\SEM@patts
+  {\SEMCBS{/}{CIVIC-Start}{patts}}
+\def\SEM@run
+  {\SEMCBS{/}{CIVIC-Start}{run}}
+\def\SEM@start
+  {\SEMCBS{/}{CIVIC-Start}{start}}
+\def\SEM@type
+  {\SEMCBS{/}{CIVIC-Start}{type}}
+\def\SYN@basic@type
+  {\SYNCBS{/}{CIVIC-Start}{basic-type}}
+\def\SYN@block
+  {\SYNCBS{/}{CIVIC-Start}{block}}
+\def\SYN@bool@const
+  {\SYNCBS{/}{CIVIC-Start}{bool-const}}
+\def\SYN@civic@var@decl
+  {\SYNCBS{/}{CIVIC-Start}{civic-var-decl}}
+\def\SYN@const
+  {\SYNCBS{/}{CIVIC-Start}{const}}
+\def\SYN@cpp@decl
+  {\SYNCBS{/}{CIVIC-B-Cpp}{cpp-decl}}
+\def\SYN@cpp@expr
+  {\SYNCBS{/}{CIVIC-B-Cpp}{cpp-expr}}
+\def\SYN@cpp@std@lib
+  {\SYNCBS{/}{CIVIC-B-Cpp}{cpp-std-lib}}
+\def\SYN@cpp@stmt
+  {\SYNCBS{/}{CIVIC-B-Cpp}{cpp-stmt}}
+\def\SYN@cpp@var@decl
+  {\SYNCBS{/}{CIVIC-B-Cpp}{cpp-var-decl}}
+\def\SYN@decl
+  {\SYNCBS{/}{CIVIC-Start}{decl}}
+\def\SYN@decls
+  {\SYNCBS{/}{CIVIC-Start}{decls}}
+\def\SYN@exp
+  {\SYNCBS{/}{CIVIC-Start}{exp}}
+\def\SYN@exprs
+  {\SYNCBS{/}{CIVIC-Start}{exprs}}
+\def\SYN@function@definition
+  {\SYNCBS{/}{CIVIC-Start}{function-definition}}
+\def\SYN@function@signature
+  {\SYNCBS{/}{CIVIC-B-Cpp}{function-signature}}
+\def\SYN@id
+  {\SYNCBS{/}{CIVIC-Start}{id}}
+\def\SYN@id@user@defined
+  {\SYNCBS{/}{CIVIC-Start}{id-user-defined}}
+\def\SYN@imp@stmt
+  {\SYNCBS{/}{CIVIC-Start}{imp-stmt}}
+\def\SYN@insert
+  {\SYNCBS{/}{CIVIC-B-Cpp}{insert}}
+\def\SYN@inserts
+  {\SYNCBS{/}{CIVIC-B-Cpp}{inserts}}
+\def\SYN@insertstmt
+  {\SYNCBS{/}{CIVIC-B-Cpp}{insertstmt}}
+\def\SYN@int
+  {\SYNCBS{/}{CIVIC-Start}{int}}
+\def\SYN@keyword
+  {\SYNCBS{/}{CIVIC-Start}{keyword}}
+\def\SYN@lib@loc
+  {\SYNCBS{/}{CIVIC-B-Cpp}{lib-loc}}
+\def\SYN@negative@num
+  {\SYNCBS{/}{CIVIC-Start}{negative-num}}
+\def\SYN@param
+  {\SYNCBS{/}{CIVIC-Start}{param}}
+\def\SYN@params
+  {\SYNCBS{/}{CIVIC-Start}{params}}
+\def\SYN@pgm
+  {\SYNCBS{/}{CIVIC-Start}{pgm}}
+\def\SYN@return@type
+  {\SYNCBS{/}{CIVIC-Start}{return-type}}
+\def\SYN@start
+  {\SYNCBS{/}{CIVIC-Start}{start}}
+\def\SYN@std@lib@id
+  {\SYNCBS{/}{CIVIC-Start}{std-lib-id}}
+\def\SYN@stmt
+  {\SYNCBS{/}{CIVIC-Start}{stmt}}
+\def\SYN@stmts
+  {\SYNCBS{/}{CIVIC-Start}{stmts}}
+\def\SYN@str@cont
+  {\SYNCBS{/}{CIVIC-Start}{str-cont}}
+\def\SYN@string
+  {\SYNCBS{/}{CIVIC-Start}{string}}
+\def\SYN@types
+  {\SYNCBS{/}{CIVIC-B-Cpp}{types}}
+\def\SYN@var@decl
+  {\SYNCBS{/}{CIVIC-Start}{var-decl}}
+\def\VAR@BasicType
+  {\VARCBS{/}{CIVIC-Start}{BasicType}}
+\def\VAR@Block
+  {\VARCBS{/}{CIVIC-Start}{Block}}
+\def\VAR@Bool
+  {\VARCBS{/}{CIVIC-Start}{Bool}}
+\def\VAR@CiviCVarDecl
+  {\VARCBS{/}{CIVIC-Start}{CiviCVarDecl}}
+\def\VAR@Const
+  {\VARCBS{/}{CIVIC-Start}{Const}}
+\def\VAR@CPP@Lib
+  {\VARCBS{/}{CIVIC-B-Cpp}{CPP-Lib}}
+\def\VAR@CPPDDecl
+  {\VARCBS{/}{CIVIC-B-Cpp}{CPPDDecl}}
+\def\VAR@CPPE
+  {\VARCBS{/}{CIVIC-B-Cpp}{CPPE}}
+\def\VAR@CPPLibLoc
+  {\VARCBS{/}{CIVIC-B-Cpp}{CPPLibLoc}}
+\def\VAR@CPPStmt
+  {\VARCBS{/}{CIVIC-B-Cpp}{CPPStmt}}
+\def\VAR@CPPVarDecl
+  {\VARCBS{/}{CIVIC-B-Cpp}{CPPVarDecl}}
+\def\VAR@Decl
+  {\VARCBS{/}{CIVIC-Start}{Decl}}
+\def\VAR@Decls
+  {\VARCBS{/}{CIVIC-Start}{Decls}}
+\def\VAR@E
+  {\VARCBS{/}{CIVIC-Start}{E}}
+\def\VAR@Exprs
+  {\VARCBS{/}{CIVIC-Start}{Exprs}}
+\def\VAR@FunDef
+  {\VARCBS{/}{CIVIC-Start}{FunDef}}
+\def\VAR@FunSign
+  {\VARCBS{/}{CIVIC-B-Cpp}{FunSign}}
+\def\VAR@ID
+  {\VARCBS{/}{CIVIC-Start}{ID}}
+\def\VAR@ImpStmt
+  {\VARCBS{/}{CIVIC-Start}{ImpStmt}}
+\def\VAR@Insert
+  {\VARCBS{/}{CIVIC-B-Cpp}{Insert}}
+\def\VAR@Inserts
+  {\VARCBS{/}{CIVIC-B-Cpp}{Inserts}}
+\def\VAR@InsertStmt
+  {\VARCBS{/}{CIVIC-B-Cpp}{InsertStmt}}
+\def\VAR@N
+  {\VARCBS{/}{CIVIC-Start}{N}}
+\def\VAR@NN
+  {\VARCBS{/}{CIVIC-Start}{NN}}
+\def\VAR@Param
+  {\VARCBS{/}{CIVIC-Start}{Param}}
+\def\VAR@Params
+  {\VARCBS{/}{CIVIC-Start}{Params}}
+\def\VAR@Pgm
+  {\VARCBS{/}{CIVIC-Start}{Pgm}}
+\def\VAR@RetType
+  {\VARCBS{/}{CIVIC-Start}{RetType}}
+\def\VAR@S
+  {\VARCBS{/}{CIVIC-Start}{S}}
+\def\VAR@START
+  {\VARCBS{/}{CIVIC-Start}{START}}
+\def\VAR@STDLibID
+  {\VARCBS{/}{CIVIC-Start}{STDLibID}}
+\def\VAR@Stmt
+  {\VARCBS{/}{CIVIC-Start}{Stmt}}
+\def\VAR@Stmts
+  {\VARCBS{/}{CIVIC-Start}{Stmts}}
+\def\VAR@StringContent
+  {\VARCBS{/}{CIVIC-Start}{StringContent}}
+\def\VAR@UID
+  {\VARCBS{/}{CIVIC-Start}{UID}}
+\def\VAR@VarDecl
+  {\VARCBS{/}{CIVIC-Start}{VarDecl}}

@@ -1,38 +1,74 @@
-initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect scope
-  (collateral
-     (bind
-        ("main",
-         allocate-variable
-           (functions
-              (tuples
-                 ((values)*),
-               values)))),
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
    sequential
-     (assign
-        (bound
-           ("main"),
-         function closure
-           (scope
-              (match
-                 (given,
-                  tuple
-                    ( )),
-               handle-return
+     (( ),
+      ( ),
+      scope
+        (collateral
+           (bind
+              ("foo",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (assign
+              (bound
+                 ("foo"),
+               function closure
                  (scope
-                    (collateral
-                       ( ),
-                     sequential
-                       (( ),
-                        return
-                          (apply
-                             (assigned
-                                (bound
-                                   ("foo")),
-                              tuple
-                                (eval [: ( 1 ) :]))))))))),
-      apply
-        (assigned
-           (bound
-              ("main")),
-         tuple
-           ( ))))
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                              return
+                                (decimal-natural
+                                   ("1")))))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                             print is-in-type(assigned bound "foo", functions(values,values)),
+                              return
+                                (apply
+                                   (assigned
+                                      (bound
+                                         ("foo")),
+                                    tuple
+                                      ( ))))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))))

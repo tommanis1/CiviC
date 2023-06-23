@@ -1,0 +1,24 @@
+module CIVIC-Funcons
+            
+imports 
+  
+  Funcons
+
+// Language "CIVIC"
+    
+lexical syntax // Language
+  
+syntax // Language
+  
+context-free syntax // Language
+  
+context-free syntax // Semantics
+  
+context-free syntax // Desugaring
+  
+variables // Meta-variables
+  
+// SDF comments
+  
+sorts // ASTs
+  T-start

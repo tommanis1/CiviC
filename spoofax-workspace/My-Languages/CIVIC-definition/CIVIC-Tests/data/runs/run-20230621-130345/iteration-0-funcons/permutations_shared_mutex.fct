@@ -1,0 +1,1742 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing overload-multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::endl" |-> "
+"})),
+      assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::shared_mutex" |-> simple-class
+                                       ("std::shared_mutex",
+                                        {"rw-lock" |-> allocate-initialised-variable
+                                                         (syncs,
+                                                          rw-lock-create)},
+                                        {"(constructor)" |-> method
+                                                               (force class-instantiator lookup
+                                                                  (assigned
+                                                                     (bound
+                                                                        ("_std")),
+                                                                   "std::shared_mutex")),
+                                         "lock" |-> method
+                                                      (rw-lock-sync-exclusive-else-wait assigned self
+                                                         ("rw-lock")),
+                                         "lock_shared" |-> method
+                                                             (rw-lock-sync-shared-else-wait assigned self
+                                                                ("rw-lock")),
+                                         "unlock" |-> method
+                                                        (rw-lock-release-exclusive assigned self
+                                                           ("rw-lock")),
+                                         "unlock_shared" |-> method
+                                                               (rw-lock-release-shared assigned self
+                                                                  ("rw-lock"))})})),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            ( ),
+            bind
+              ("m",
+               alloc
+                 (references
+                    (objects))),
+            bind
+              ("f0",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("f1",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("f2",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("f3",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            ( ),
+            assign
+              (bound "m",
+               give
+                 (object
+                    (fresh-atom,
+                     "std::shared_mutex",
+                     {"" |-> ""}),
+                  apply
+                    (get-class-method
+                       (given,
+                        "(constructor)"),
+                     tuple
+                       (reference given)))),
+            assign
+              (bound
+                 ("f0"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return scope
+                       (collateral
+                          ( ),
+                        give
+                          (handle-return sequential
+                             (( ),
+                              give
+                                (assigned bound
+                                   ("m"),
+                                 apply
+                                   (lookup
+                                      (class-feature-map lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          object-class-name checked dereference
+                                            given),
+                                       "lock"),
+                                    tuple
+                                      (given,
+                                       ( )))),
+                              return
+                                (decimal-natural
+                                   ("0"))),
+                           sequential
+                             (( ),
+                              return given)))))),
+            assign
+              (bound
+                 ("f1"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return scope
+                       (collateral
+                          ( ),
+                        give
+                          (handle-return sequential
+                             (( ),
+                              give
+                                (assigned bound
+                                   ("m"),
+                                 apply
+                                   (lookup
+                                      (class-feature-map lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          object-class-name checked dereference
+                                            given),
+                                       "unlock"),
+                                    tuple
+                                      (given,
+                                       ( )))),
+                              return
+                                (decimal-natural
+                                   ("0"))),
+                           sequential
+                             (( ),
+                              return given)))))),
+            assign
+              (bound
+                 ("f2"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return scope
+                       (collateral
+                          ( ),
+                        give
+                          (handle-return sequential
+                             (( ),
+                              give
+                                (assigned bound
+                                   ("m"),
+                                 apply
+                                   (lookup
+                                      (class-feature-map lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          object-class-name checked dereference
+                                            given),
+                                       "lock_shared"),
+                                    tuple
+                                      (given,
+                                       ( )))),
+                              return
+                                (decimal-natural
+                                   ("0"))),
+                           sequential
+                             (( ),
+                              return given)))))),
+            assign
+              (bound
+                 ("f3"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return scope
+                       (collateral
+                          ( ),
+                        give
+                          (handle-return sequential
+                             (( ),
+                              give
+                                (assigned bound
+                                   ("m"),
+                                 apply
+                                   (lookup
+                                      (class-feature-map lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          object-class-name checked dereference
+                                            given),
+                                       "unlock_shared"),
+                                    tuple
+                                      (given,
+                                       ( )))),
+                              return
+                                (decimal-natural
+                                   ("0"))),
+                           sequential
+                             (( ),
+                              return given)))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return scope
+                       (collateral
+                          ( ),
+                        give
+                          (handle-return sequential
+                             (( ),
+                              handle-thrown
+                                (sequential
+                                   (print "count:0,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:0,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:1,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:1,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:2,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:2,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:3,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:3,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:4,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:4,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:5,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:5,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:6,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:6,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:7,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:7,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:8,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:8,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:9,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:9,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:10,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:10,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:11,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:11,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:12,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:12,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:13,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:13,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:14,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:14,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:15,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:15,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:16,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:16,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:17,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:17,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:18,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:18,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:19,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:19,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:20,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:20,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:21,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:21,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:22,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:22,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:23,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:23,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:24,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:24,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:25,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:25,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:26,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:26,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:27,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:27,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:28,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:28,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:29,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:29,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:30,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:30,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:31,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:31,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:32,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:32,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:33,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:33,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:34,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:34,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:35,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:35,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:36,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:36,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:37,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:37,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:38,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:38,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:39,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:39,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:40,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:40,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:41,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:41,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:42,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:42,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:43,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:43,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:44,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:44,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:45,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:45,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:46,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:46,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:47,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:47,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:48,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:48,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:49,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:49,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:50,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:50,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:51,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:51,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:52,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:52,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:53,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:53,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:54,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:54,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:55,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:55,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:56,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:56,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:57,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:57,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:58,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:58,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:59,function:4,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f3")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:59,function:4,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:60,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:60,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:61,function:3,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f2")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:61,function:3,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:62,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:62,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:63,function:2,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f1")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:63,function:2,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:64,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:64,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              handle-thrown
+                                (sequential
+                                   (print "count:65,function:1,result:",
+                                    print apply
+                                      (assigned
+                                         (bound
+                                            ("f0")),
+                                       tuple
+                                         ( )),
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl")),
+                                 sequential
+                                   (print "count:65,function:1,result:",
+                                    print "fail",
+                                    print lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::endl"))),
+                              return
+                                (decimal-natural
+                                   ("0"))),
+                           sequential
+                             (( ),
+                              return given)))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( )),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( )))))

@@ -1,0 +1,16 @@
+2023-06-22 17:16:44,757 INFO start: single-class-with-member-functions/jthread
+2023-06-22 17:16:44,757 INFO len lines2
+2023-06-22 17:16:44,758 INFO lines['    t.join()', '    t.detach)()']
+2023-06-22 17:16:44,758 INFO combinations[('    t.join()', '    t.join()'), ('    t.join()', '    t.detach)()'), ('    t.detach)()', '    t.join()'), ('    t.detach)()', '    t.detach)()')]
+2023-06-22 17:16:44,758 INFO start: single-class-with-member-functions/thread
+2023-06-22 17:16:44,758 INFO len lines2
+2023-06-22 17:16:44,758 INFO lines['    t.join()', '    t.detach)()']
+2023-06-22 17:16:44,758 INFO combinations[('    t.join()', '    t.join()'), ('    t.join()', '    t.detach)()'), ('    t.detach)()', '    t.join()'), ('    t.detach)()', '    t.detach)()')]
+2023-06-22 17:16:44,759 INFO start: single-class-with-member-functions/mutex
+2023-06-22 17:16:44,759 INFO len lines1
+2023-06-22 17:16:44,759 INFO lines['    m.lock()    m.unlock()']
+2023-06-22 17:16:44,759 INFO combinations[('    m.lock()    m.unlock()',)]
+2023-06-22 17:16:44,759 INFO start: single-class-with-member-functions/shared_mutex
+2023-06-22 17:16:44,759 INFO len lines2
+2023-06-22 17:16:44,759 INFO lines['    m.lock()    m.unlock()', '    m.lock_shared()    m.unlock_shared()']
+2023-06-22 17:16:44,760 INFO combinations[('    m.lock()    m.unlock()', '    m.lock()    m.unlock()'), ('    m.lock()    m.unlock()', '    m.lock_shared()    m.unlock_shared()'), ('    m.lock_shared()    m.unlock_shared()', '    m.lock()    m.unlock()'), ('    m.lock_shared()    m.unlock_shared()', '    m.lock_shared()    m.unlock_shared()')]

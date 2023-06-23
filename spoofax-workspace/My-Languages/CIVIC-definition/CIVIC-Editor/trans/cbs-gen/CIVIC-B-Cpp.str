@@ -1,0 +1,311 @@
+module CIVIC-B-Cpp
+
+imports
+  libstratego-gpp
+  signatures/-
+  pp/CIVIC-parenthesize
+  pp/CIVIC-pp
+
+imports
+  cbs-gen/CIVIC-Start
+
+// Language "CIVIC"
+
+rules
+
+// B Cpp
+              
+
+to-funcons-lex: 
+  FCTDoubleQuoted(L-cpp-std-lib(LEX-cpp-std-lib(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons-lex: 
+  FCTDoubleQuoted(L-lib-id(LEX-lib-id(str))) -> 
+  FCTString(<double-quote> str)
+to-funcons:
+  |[ eval[: (:CPPLibId:) :] ]| ->
+  |[ lookup (assigned (bound ("_std")), 
+             \"(:CPPLibId:)\") ]|
+to-funcons:
+  |[ eval[: (:ID1:).(:ID2:)() :] ]| ->
+  |[ give (assigned bound (id[: (:ID1:) :]), 
+             apply (lookup (class-feature-map lookup (assigned (bound ("_std")), 
+                                            object-class-name checked dereference given), 
+                             id[: (:ID2:) :]), 
+                     tuple (given, 
+                             ()))) ]|
+to-funcons:
+  |[ eval[: (:ID1:).(:ID2:)((:Exprs:)) :] ]| ->
+  |[ give (assigned bound (id[: (:ID1:) :]), 
+             apply (lookup (class-feature-map lookup (assigned (bound ("_std")), 
+                                            object-class-name checked dereference given), 
+                             id[: (:ID2:) :]), 
+                     tuple (given, 
+                             tuple (eval-exprs[: (:Exprs:) :])))) ]|
+to-funcons:
+  |[ eval[: (:CPPLibId:)((:Exprs?:)) :] ]| ->
+  |[ apply (lookup (assigned (bound ("_std")), 
+                     \"(:CPPLibId:)\"), 
+             tuple (eval-exprs[: (:Exprs?:) :])) ]|
+to-funcons:
+  |[ declare[: (:CPPDDecl:) :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ initialise[: (:CPPDDecl:) :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ initialise-lib[: include<iostream> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::endl" |-> "\n"})) ]|
+to-funcons:
+  |[ initialise-lib[: include<condition_variable> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::condition_variable" |-> simple-class ("std::condition_variable", 
+                                                         {"" |-> ""}, 
+                                                         {"(constructor)" |-> method (reference extend-object-map (dereference force class-instantiator lookup (assigned (bound ("_std")), 
+                                                                                                                                         "std::condition_variable"), 
+                                                                                                            {"condition" |-> alloc-init (syncs, 
+                                                                                                                                                condition-create)})), 
+                                                          "wait" |-> method (if-else (is-equal (object-class-name dereference assigned bound "unique_lock", 
+                                                                                                             "std::unique_lock"), 
+                                                                                                     sequential (give (assigned bound "unique_lock", 
+                                                                                                                     sequential (condition-wait assigned self "condition"))), 
+                                                                                                     throw "need std::unique_lock"), 
+                                                                                             tuple (unpack "unique_lock")), 
+                                                          "notify_all" |-> method (condition-notify-all (assigned self "condition"))})})) ]|
+to-funcons:
+  |[ initialise-lib[: include<mutex> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::mutex" |-> simple-class ("std::mutex", 
+                                                         {"" |-> ""}, 
+                                                         {"(constructor)" |-> method (reference extend-object-map (dereference assigned bound "self", 
+                                                                                                            {"mutex" |-> allocate-initialised-variable (syncs, 
+                                                                                                                                                exclusive-lock-create), 
+                                                                                                             "locked" |-> alloc-init (booleans, 
+                                                                                                                                                false)})), 
+                                                          "lock" |-> method (sequential (exclusive-lock-sync-else-wait (assigned self "mutex"), 
+                                                                                                     assign (self "locked", 
+                                                                                                             true), 
+                                                                                                     print "", 
+                                                                                                     return null)), 
+                                                          "unlock" |-> method (sequential (if-else (assigned self "locked", 
+                                                                                                             sequential (exclusive-lock-release (assigned self "mutex"), 
+                                                                                                                     assign (self "locked", 
+                                                                                                                             false)), 
+                                                                                                             null), 
+                                                                                                     return null))}), 
+                      "std::unique_lock" |-> simple-class ("std::unique_lock", 
+                                                         {"" |-> ""}, 
+                                                         {"(constructor)" |-> method (sequential (give (extend-object-map (dereference assigned bound "self", 
+                                                                                                                     {"owns" |-> allocate-initialised-variable (booleans, 
+                                                                                                                                                         false), 
+                                                                                                                      "mutex-ref" |-> alloc-init (values, 
+                                                                                                                                                         assigned bound "mutex-ref")}), 
+                                                                                                             sequential (apply (get-class-method (given, 
+                                                                                                                                     "lock"), 
+                                                                                                                             tuple (reference given)), 
+                                                                                                                     reference given))), 
+                                                                                             tuple (unpack "mutex-ref")), 
+                                                          "(destructor)" |-> method (give (assigned bound "self", 
+                                                                                                     apply (get-class-method (dereference given, 
+                                                                                                                     "unlock"), 
+                                                                                                             tuple (given)))), 
+                                                          "lock" |-> method (if-else (assigned (self "owns"), 
+                                                                                                     throw "already owns lock", 
+                                                                                                     sequential (give (assigned self "mutex-ref", 
+                                                                                                                     apply (get-class-method (dereference given, 
+                                                                                                                                     "lock"), 
+                                                                                                                             tuple (given))), 
+                                                                                                             assign (self "owns", 
+                                                                                                                     true)))), 
+                                                          "unlock" |-> method (sequential (give (assigned self "mutex-ref", 
+                                                                                                             apply (get-class-method (dereference given, 
+                                                                                                                             "unlock"), 
+                                                                                                                     tuple (given))), 
+                                                                                                     assign (self "owns", 
+                                                                                                             false)))})})) ]|
+to-funcons:
+  |[ initialise-lib[: include<shared_mutex> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::shared_mutex" |-> simple-class ("std::shared_mutex", 
+                                                         {"rw-lock" |-> allocate-initialised-variable (syncs, 
+                                                                                             rw-lock-create)}, 
+                                                         {"(constructor)" |-> method (force class-instantiator lookup (assigned (bound ("_std")), 
+                                                                                                                   "std::shared_mutex")), 
+                                                          "lock" |-> method (rw-lock-sync-exclusive-else-wait assigned self ("rw-lock")), 
+                                                          "lock_shared" |-> method (rw-lock-sync-shared-else-wait assigned self ("rw-lock")), 
+                                                          "unlock" |-> method (rw-lock-release-exclusive assigned self ("rw-lock")), 
+                                                          "unlock_shared" |-> method (rw-lock-release-shared assigned self ("rw-lock"))})})) ]|
+to-funcons:
+  |[ initialise-lib[: include<future> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::promise" |-> simple-class ("std::promise", 
+                                                         {"promise" |-> allocate-initialised-variable (shared-state, 
+                                                                                             shared-state-create)}, 
+                                                         {"get" |-> method (shared-state-get assigned self "promise"), 
+                                                          "set" |-> method (sequential (shared-state-set (assigned self ("promise"), 
+                                                                                                             assigned bound "val")), 
+                                                                                             "val")}), 
+                      "std::packaged_task" |-> simple-class ("std::packaged_task", 
+                                                         {"shared-state" |-> allocate-initialised-variable (shared-state, 
+                                                                                             shared-state-create), 
+                                                          "_init" |-> tuple (unpack "callable")}, 
+                                                         {"get_future" |-> method (reference object (fresh-atom, 
+                                                                                                            "std::future", 
+                                                                                                            {"shared-state" |-> assigned self "shared-state"})), 
+                                                          "_call" |-> method (shared-state-set (assigned self "shared-state", 
+                                                                                                     apply (assigned self "callable", 
+                                                                                                             assigned bound "args")), 
+                                                                                             "args")}), 
+                      "std::future" |-> simple-class ("std::future", 
+                                                         {"_init" |-> [unpack ("shared-state")]}, 
+                                                         {"get" |-> method-zero-params (shared-state-get (self "shared-state"))})})) ]|
+to-funcons:
+  |[ initialise-lib[: include<chrono> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::chrono::seconds" |-> function closure (scope (match (given, 
+                                                                                tuple (pattern closure (bind ("n", 
+                                                                                                               alloc-init (ints, 
+                                                                                                                       given))))), 
+                                                                        sequential (int-mul (assigned bound "n", 
+                                                                                        10)))), 
+                      "std::chrono::milliseconds" |-> function closure (scope (match (given, 
+                                                                                tuple (pattern closure (bind ("n", 
+                                                                                                               alloc-init (ints, 
+                                                                                                                       given))))), 
+                                                                        sequential (int-mul (assigned bound "n", 
+                                                                                        1))))})) ]|
+to-funcons:
+  |[ initialise-lib[: include<thread> :] ]| ->
+  |[ assign (bound "_std", 
+             map-unite (assigned (bound ("_std")), 
+                     {"std::this_thread::sleep_for" |-> function closure (scope (match (given, 
+                                                                                tuple (pattern closure (bind ("n", 
+                                                                                                               alloc-init (ints, 
+                                                                                                                       given))))), 
+                                                                        sequential (thread-sleep (cast (assigned bound "n", 
+                                                                                                ints))))), 
+                      "std::thread" |-> simple-class ("std::thread", 
+                                                         {"" |-> ""}, 
+                                                         {"(constructor)" |-> method (sequential (give (give (force class-instantiator lookup (assigned (bound ("_std")), 
+                                                                                                                                           "std::thread"), 
+                                                                                                                     reference extend-object-map (dereference given, 
+                                                                                                                                    {"detached" |-> alloc-init (booleans, 
+                                                                                                                                                                        false), 
+                                                                                                                                     "index" |-> alloc-init (values, 
+                                                                                                                                                                        allocate-index thread-activate thread-joinable postpone-after-effect supply (tuple-head assigned bound "args", 
+                                                                                                                                                                                                            tuple-tail assigned bound "args"))})), 
+                                                                                                             sequential (return given))), 
+                                                                                             unpack "args"), 
+                                                          "join" |-> method sequential (if-else (assigned self "detached", 
+                                                                                                            null, 
+                                                                                                            sequential (thread-join lookup-index assigned self "index", 
+                                                                                                                    print ("")))), 
+                                                          "detach" |-> method sequential (assign (self "detached", 
+                                                                                                            true), 
+                                                                                                    null), 
+                                                          "(destructor)" |-> method thread-atomic sequential (if-else (or (assigned self "detached", 
+                                                                                                                           is-thread-terminated lookup-index assigned self "index"), 
+                                                                                                                   null, 
+                                                                                                                   throw "terminate called without an active exception"))}), 
+                      "std::jthread" |-> simple-class ("std::jthread", 
+                                                         {"" |-> ""}, 
+                                                         {"(constructor)" |-> method (sequential (give (force class-instantiator lookup (assigned (bound ("_std")), 
+                                                                                                                                   "std::jthread"), 
+                                                                                                             reference extend-object-map (dereference given, 
+                                                                                                                            {"index" |-> alloc-init (values, 
+                                                                                                                                                                allocate-index thread-activate thread-joinable postpone-after-effect supply (tuple-head assigned bound "args", 
+                                                                                                                                                                                                    tuple-tail assigned bound "args"))}))), 
+                                                                                             unpack "args"), 
+                                                          "join" |-> method thread-join lookup-index assigned self "index"})})) ]|
+to-funcons-default:
+  |[ initialise-lib[: (:Decl:) :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ exec[: (:CPPLibId:)<<(:E:)(:Inserts:); :] ]| ->
+  |[ print eval[: (:E:) :], 
+     exec[: (:CPPLibId:)(:Inserts:); :] ]|
+to-funcons:
+  |[ exec[: (:CPPLibId:)<<(:E:); :] ]| ->
+  |[ print eval[: (:E:) :] ]|
+to-funcons:
+  |[ exec[: (:CPPStmt:)(:Stmts:) :] ]| ->
+  |[ sequential (exec[: (:CPPStmt:) :], 
+             exec[: (:Stmts:) :]) ]|
+to-funcons:
+  |[ declare[: (:CPPLibId:)(:ID:); :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             alloc (references (objects))) ]|
+to-funcons:
+  |[ initialise[: (:CPPLibId:)(:ID:); :] ]| ->
+  |[ assign (bound id[: (:ID:) :], 
+             give (object (fresh-atom, 
+                             \"(:CPPLibId:)\", 
+                             {"" |-> ""}), 
+                     apply (get-class-method (given, 
+                                     "(constructor)"), 
+                             tuple (reference given)))) ]|
+to-funcons:
+  |[ declare[: (:CPPLibId:)(:ID:){(:Exprs:)}; :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             alloc (references (objects))) ]|
+to-funcons:
+  |[ initialise[: (:CPPLibId:)(:ID:){(:Exprs:)}; :] ]| ->
+  |[ assign (bound id[: (:ID:) :], 
+             give (object (fresh-atom, 
+                             \"(:CPPLibId:)\", 
+                             {"" |-> ""}), 
+                     apply (get-class-method (given, 
+                                     "(constructor)"), 
+                             tuple (reference given, 
+                                     tuple (eval-exprs[: (:Exprs:) :]))))) ]|
+to-funcons:
+  |[ destruct[: (:CPPLibId:)(:ID:){(:Exprs:)}; :] ]| ->
+  |[ give (else (lookup (class-feature-map lookup (assigned (bound ("_std")), 
+                                            object-class-name checked dereference assigned bound id[: (:ID:) :]), 
+                             "(destructor)"), 
+                     null), 
+             if-else (is-equal (given, 
+                             null), 
+                     null, 
+                     apply (given, 
+                             tuple (assigned bound id[: (:ID:) :])))) ]|
+to-funcons-default:
+  |[ destruct[: (:Decl:) :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ exec[: (:CPPLibId:)(:ID:){(:Exprs:)}; :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ declare[: (:CPPLibId:)<(:BasicType:)>(:ID:)=(:E:); :] ]| ->
+  |[ bind (id[: (:ID:) :], 
+             alloc values) ]|
+to-funcons:
+  |[ initialise[: (:CPPLibId:)<(:BasicType:)>(:ID:)=(:E:); :] ]| ->
+  |[ assign (bound id[: (:ID:) :], 
+             eval[: (:E:) :]) ]|
+to-funcons:
+  |[ exec[: (:CPPLibId:)<(:BasicType:)>(:ID:)=(:E:); :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ exec[: (:CPPVarDecl:)(:Stmts:) :] ]| ->
+  |[ sequential (exec[: (:CPPVarDecl:) :], 
+             exec[: (:Stmts:) :]) ]|
+to-funcons:
+  |[ exec[: (:CPPLibId:)(:ID:); :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ initialisations-local[: (:CPPVarDecl:)(:Stmts?:) :] ]| ->
+  |[ initialise[: (:CPPVarDecl:) :], 
+     initialisations-local[: (:Stmts?:) :] ]|
+to-funcons:
+  |[ declarations-local[: (:CPPVarDecl:)(:Stmts?:) :] ]| ->
+  |[ declare[: (:CPPVarDecl:) :], 
+     declarations-local[: (:Stmts?:) :] ]|
+

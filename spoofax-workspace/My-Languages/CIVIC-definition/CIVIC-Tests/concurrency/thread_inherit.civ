@@ -1,0 +1,8 @@
+int b = 0;
+int foo(int a) {
+print b;
+}
+
+int main () {
+    std::thread t{foo, 0};
+return 0;}

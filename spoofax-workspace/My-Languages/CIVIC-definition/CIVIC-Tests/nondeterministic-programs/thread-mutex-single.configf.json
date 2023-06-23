@@ -1,0 +1,11 @@
+{
+"x_label":"",
+"title":"",
+"runs":
+    {
+    "r1":{
+        "args":"--non-deterministic value-operations",
+        "legend_label":"Funcons "
+}
+}
+}

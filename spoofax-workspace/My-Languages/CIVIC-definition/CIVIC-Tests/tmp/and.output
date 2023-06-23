@@ -1,0 +1,10 @@
+===== Program =====
+int main (){
+if (true && false){
+	return 1;}
+else {
+	return 0;
+}}===================
+Result:
+0
+

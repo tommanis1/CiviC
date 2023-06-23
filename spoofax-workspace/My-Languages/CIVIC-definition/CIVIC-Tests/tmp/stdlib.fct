@@ -1,246 +1,167 @@
-initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing multithread postpone-after-effect scope
-  (collateral
-     (bind
-        ("printInt",
-         allocate-variable
-           (functions
-              (tuples
-                 ((values)*),
-               values))),
-      bind
-        ("printFloat",
-         allocate-variable
-           (functions
-              (tuples
-                 ((values)*),
-               values))),
-      bind
-        ("printSpaces",
-         allocate-variable
-           (functions
-              (tuples
-                 ((values)*),
-               values))),
-      bind
-        ("printNewlines",
-         allocate-variable
-           (functions
-              (tuples
-                 ((values)*),
-               values))),
-      bind
-        ("main",
-         allocate-variable
-           (functions
-              (tuples
-                 ((values)*),
-               values)))),
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
    sequential
-     (assign
-        (bound
-           ("printInt"),
-         function closure
-           (scope
-              (match
-                 (given,
-                  tuple
-                    (pattern closure
-                       (bind
-                          ("val",
-                           allocate-initialised-variable
-                             (values,
-                              given))))),
-               handle-return
-                 (print
-                    (assigned
-                       (bound
-                          ("val"))))))),
-      assign
-        (bound
-           ("printFloat"),
-         function closure
-           (scope
-              (match
-                 (given,
-                  tuple
-                    (pattern closure
-                       (bind
-                          ("val",
-                           allocate-initialised-variable
-                             (values,
-                              given))))),
-               handle-return
-                 (print
-                    (assigned
-                       (bound
-                          ("val"))))))),
-      assign
-        (bound
-           ("printSpaces"),
-         function closure
-           (scope
-              (match
-                 (given,
-                  tuple
-                    (pattern closure
-                       (bind
-                          ("num",
-                           allocate-initialised-variable
-                             (values,
-                              given))))),
-               handle-return
-                 (print
-                    (" "))))),
-      assign
-        (bound
-           ("printNewlines"),
-         function closure
-           (scope
-              (match
-                 (given,
-                  tuple
-                    (pattern closure
-                       (bind
-                          ("num",
-                           allocate-initialised-variable
-                             (values,
-                              given))))),
-               handle-return
-                 (print
-                    ("
-"))))),
-      assign
-        (bound
-           ("main"),
-         function closure
-           (scope
-              (match
-                 (given,
-                  tuple
-                    ( )),
-               handle-return
+     (( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (bind
+              ("printInt",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("printFloat",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("printSpaces",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("printNewlines",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (assign
+              (bound
+                 ("printInt"),
+               function closure
                  (scope
-                    (collateral
-                       ( ),
-                     sequential
-                       (( ),
-                        scope
-                          (bind
-                             ("a",
-                              allocate-initialised-variable
-                                (values,
-                                 null)),
-                           scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure
                              (bind
-                                ("m",
+                                ("val",
                                  allocate-initialised-variable
                                    (values,
+                                    given))))),
+                     handle-return
+                       (print
+                          (assigned
+                             (bound
+                                ("val"))))))),
+            assign
+              (bound
+                 ("printFloat"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure
+                             (bind
+                                ("val",
+                                 allocate-initialised-variable
+                                   (values,
+                                    given))))),
+                     handle-return
+                       (print
+                          (assigned
+                             (bound
+                                ("val"))))))),
+            assign
+              (bound
+                 ("printSpaces"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure
+                             (bind
+                                ("num",
+                                 allocate-initialised-variable
+                                   (values,
+                                    given))))),
+                     handle-return
+                       (print
+                          (" "))))),
+            assign
+              (bound
+                 ("printNewlines"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          (pattern closure
+                             (bind
+                                ("num",
+                                 allocate-initialised-variable
+                                   (values,
+                                    given))))),
+                     handle-return
+                       (print
+                          ("
+"))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return
+                       (scope
+                          (collateral
+                             ( ),
+                           sequential
+                             (( ),
+                              else
+                                (int-add
+                                   (decimal-natural
+                                      ("1"),
                                     decimal-natural
-                                      ("10"))),
-                              scope
-                                (bind
-                                   ("n",
-                                    allocate-initialised-variable
-                                      (values,
-                                       decimal-natural
-                                         ("5"))),
-                                 sequential
-                                   (assign
-                                      (bound
-                                         ("a"),
-                                       decimal-natural
-                                         ("10")),
-                                    assign
-                                      (bound
-                                         ("m"),
-                                       decimal-natural
-                                         ("5")),
-                                    assign
-                                      (bound
-                                         ("m"),
-                                       decimal-natural
-                                         ("5")),
-                                    scope
-                                      (bind
-                                         ("i",
-                                          allocate-initialised-variable
-                                            (integers,
-                                             decimal-natural
-                                               ("10"))),
-                                       while
-                                         (is-less
-                                            (assigned
-                                               (bound
-                                                  ("i")),
-                                             assigned
-                                               (bound
-                                                  ("m"))),
-                                          sequential
-                                            (sequential
-                                               (assign
-                                                  (bound
-                                                     ("a"),
-                                                   else
-                                                     (integer-subtract
-                                                        (assigned
-                                                           (bound
-                                                              ("a")),
-                                                         decimal-natural
-                                                           ("1")),
-                                                      float-subtract
-                                                        (assigned
-                                                           (bound
-                                                              ("a")),
-                                                         decimal-natural
-                                                           ("1")))),
-                                                apply
-                                                  (assigned
-                                                     (bound
-                                                        ("printInt")),
-                                                   tuple
-                                                     (assigned
-                                                        (bound
-                                                           ("a")))),
-                                                apply
-                                                  (assigned
-                                                     (bound
-                                                        ("printSpaces")),
-                                                   tuple
-                                                     (decimal-natural
-                                                        ("3")))),
-                                             assign
-                                               (bound
-                                                  ("i"),
-                                                integer-add
-                                                  (assigned
-                                                     (bound
-                                                        ("i")),
-                                                   else
-                                                     (integer-subtract
-                                                        (assigned
-                                                           (bound
-                                                              ("")),
-                                                         decimal-natural
-                                                           ("1")),
-                                                      float-subtract
-                                                        (assigned
-                                                           (bound
-                                                              ("")),
-                                                         decimal-natural
-                                                           ("1")))))))),
-                                    apply
-                                      (assigned
-                                         (bound
-                                            ("printNewlines")),
-                                       tuple
-                                         (decimal-natural
-                                            ("1"))),
-                                    return
-                                      (decimal-natural
-                                         ("0")))))))))))),
-      apply
-        (assigned
-           (bound
-              ("main")),
-         tuple
-           ( ))))
+                                      ("1")),
+                                 float-add
+                                   (decimal-natural
+                                      ("1"),
+                                    decimal-natural
+                                      ("1"))),
+                              exec [: printNewlines ( 1 ) ; :],
+                              apply
+                                (assigned
+                                   (bound
+                                      ("foo")),
+                                 tuple
+                                   (decimal-natural
+                                      ("1"))),
+                              return
+                                (decimal-natural
+                                   ("0")))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))))

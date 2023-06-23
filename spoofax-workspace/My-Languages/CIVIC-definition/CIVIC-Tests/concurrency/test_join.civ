@@ -1,0 +1,12 @@
+void foo(){
+for (int i = 0, 5) {print i;}
+}
+
+int main () {
+std::thread t {foo};
+print 11;
+t.join();
+
+print 10;
+return 0;
+}

@@ -1,0 +1,29 @@
+module CIVIC-CPP
+
+imports
+  libstratego-gpp
+  signatures/-
+  pp/CIVIC-parenthesize
+  pp/CIVIC-pp
+
+imports
+  cbs-gen/CIVIC-Start
+
+// Language "CIVIC"
+
+rules
+
+// #1 CIVIC-CPP
+              
+
+to-funcons:
+  |[ concat[: <<(:E:)(:Inserts?:) :] ]| ->
+  |[ string-append (to-string (eval[: (:E:) :]), 
+             concat[: (:Inserts?:) :]) ]|
+to-funcons:
+  |[ concat[:  :] ]| ->
+  |[ () ]|
+to-funcons:
+  |[ exec[: std::cout(:Inserts:); :] ]| ->
+  |[ print concat[: (:Inserts:) :] ]|
+

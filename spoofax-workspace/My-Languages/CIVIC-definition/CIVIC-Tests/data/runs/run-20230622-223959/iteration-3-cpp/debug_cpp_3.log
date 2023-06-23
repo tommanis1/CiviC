@@ -1,0 +1,9 @@
+2023-06-22 22:41:30,051 INFO Running C++ tests for iteration 3
+2023-06-22 22:41:30,677 INFO Started container return code: 0, 5987100389d74f1b45b58a86372c324d1d7df27f520b6ad84ddd8de8e7f65763
+, 
+2023-06-22 22:41:30,677 INFO Started: data/runs/run-20230622-223959/iteration-3-cpp/permutations_shared_computation.cpp, outfile: data/runs/run-20230622-223959/iteration-3-cpp/permutations_shared_computation_output_cpp-3.txt
+2023-06-22 22:41:30,678 INFO Testing: data/runs/run-20230622-223959/iteration-3-cpp/permutations_shared_computation.cpp
+2023-06-22 22:41:30,791 INFO Compile 130, ^C, 
+2023-06-22 22:41:30,792 INFO Started running
+2023-06-22 22:41:30,897 INFO Succes, /bin/bash: line 1: ./output: No such file or directory
+^C

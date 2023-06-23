@@ -1,0 +1,96 @@
+/*
+Unstable Funcons, for use only in Unstable Languages
+*/
+
+# Computations
+
+## Normal computation
+
+### Value indexing
+[
+  Funcon   allocate-index
+  Funcon   lookup-index
+]
+
+### Memos
+[
+  Funcon   initialise-memos
+]
+
+
+## Abnormal computation
+
+### Postponing
+[
+  Funcon   postpone-after-effect
+]
+
+## Threads
+
+### Multithreading
+[
+  Funcon   thread-joinable
+]
+
+#### Initialisation
+[
+  Funcon   initialise-multithreading
+]
+
+#### Activation
+[
+  Funcon   multithread
+  Funcon   thread-activate
+]
+
+#### Execution
+[
+  Funcon   thread-atomic
+]
+
+#### Termination
+[
+  Funcon   thread-value
+  Funcon   thread-join
+]
+
+#### Scheduling
+[
+  Funcon   update-thread-stepping
+]
+
+### Thread synchronisation
+
+#### Syncs
+[
+  Datatype syncs
+]
+
+#### Locks
+
+
+##### Exclusive locks
+[
+  Funcon   exclusive-lock-create
+  Funcon   exclusive-lock-sync-else-wait
+  Funcon   exclusive-lock-release
+]
+
+##### Shared-exclusive locks
+[
+  Funcon   rw-lock-create
+  Funcon   rw-lock-sync-exclusive-else-wait
+  Funcon   rw-lock-sync-shared-else-wait
+  Funcon   rw-lock-release-exclusive
+  Funcon   rw-lock-release-shared
+]
+
+#### Notifications
+
+##### Conditions
+[
+  Funcon   condition-create
+  Funcon   condition-wait
+  Funcon   condition-notify-all
+]
+

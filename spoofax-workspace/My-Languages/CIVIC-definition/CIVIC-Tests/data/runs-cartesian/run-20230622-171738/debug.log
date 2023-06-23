@@ -1,0 +1,12 @@
+2023-06-22 17:17:39,002 INFO start: single-class-with-member-functions/jthread
+2023-06-22 17:17:39,003 INFO len lines 2
+2023-06-22 17:17:39,003 INFO len combinations4
+2023-06-22 17:17:39,003 INFO start: single-class-with-member-functions/thread
+2023-06-22 17:17:39,003 INFO len lines 2
+2023-06-22 17:17:39,003 INFO len combinations4
+2023-06-22 17:17:39,004 INFO start: single-class-with-member-functions/mutex
+2023-06-22 17:17:39,004 INFO len lines 1
+2023-06-22 17:17:39,004 INFO len combinations1
+2023-06-22 17:17:39,004 INFO start: single-class-with-member-functions/shared_mutex
+2023-06-22 17:17:39,004 INFO len lines 4
+2023-06-22 17:17:39,004 INFO len combinations256

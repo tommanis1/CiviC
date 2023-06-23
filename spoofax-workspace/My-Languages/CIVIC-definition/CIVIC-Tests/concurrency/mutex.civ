@@ -1,0 +1,7 @@
+include <mutex>
+std::mutex g_num_m;
+int main(){
+//std::mutex g_num_mutex;
+//g_num_mutex.lock();
+return 1;
+}

@@ -1,0 +1,16 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing 
+multithread scope(
+bind("t1", thread-activate  thread-joinable thunk closure sequential (
+    print "t1", 
+    thread-terminate(current-thread, null)
+)),
+sequential (
+scope(
+bind("t2", thread-activate  thread-joinable thunk closure sequential (
+	print("1"),
+	print("2"),
+    thread-terminate(current-thread, null)
+)),
+print("end")
+)
+))

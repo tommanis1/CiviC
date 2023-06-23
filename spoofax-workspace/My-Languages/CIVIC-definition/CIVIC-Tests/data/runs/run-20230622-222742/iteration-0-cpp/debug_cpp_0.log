@@ -1,0 +1,77 @@
+2023-06-22 22:27:42,392 INFO Running C++ tests for iteration 0
+2023-06-22 22:27:43,208 INFO Started container return code: 0, eb7ad390650afbe0fc16b3a114fb4f91213d4f250db689b367a8bfd58ffb67c1
+, 
+2023-06-22 22:27:43,209 INFO Started: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, outfile: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_output_cpp-0.txt
+2023-06-22 22:27:43,210 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp
+2023-06-22 22:27:45,059 INFO Compile 0, , 
+2023-06-22 22:27:45,060 INFO Started running
+2023-06-22 22:27:47,784 INFO Terminated with 134
+2023-06-22 22:27:47,784 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 0, 1
+2023-06-22 22:27:47,785 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:1, count:0
+2023-06-22 22:27:47,785 INFO found in: 
+try { std::cout << "count:0 "; std::jthread t1(calculation1, std::ref(prom)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:27:47,785 INFO loc : 0
+2023-06-22 22:27:47,785 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_1.cpp
+2023-06-22 22:27:47,785 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_1.cpp
+2023-06-22 22:27:49,514 INFO Compile 0, , 
+2023-06-22 22:27:49,516 INFO Started running
+2023-06-22 22:27:51,219 INFO Terminated with 134
+2023-06-22 22:27:51,219 INFO count split: ['', '1 ', "2 Received: 42\nFinal Result: 84\nterminate called after throwing an instance of 'std::future_error'\n  what():  std::future_error: No associated state"]
+2023-06-22 22:27:51,219 INFO count is 0, last count found in output: 2, outputcount:1 count:2 Received: 42
+Final Result: 84
+terminate called after throwing an instance of 'std::future_error'
+  what():  std::future_error: No associated state
+2023-06-22 22:27:51,220 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 3, 2
+2023-06-22 22:27:51,220 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:2, count:3
+2023-06-22 22:27:51,220 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:27:51,220 INFO loc : 3
+2023-06-22 22:27:51,220 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_2.cpp
+2023-06-22 22:27:51,220 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_2.cpp
+2023-06-22 22:27:52,807 INFO Compile 0, , 
+2023-06-22 22:27:52,809 INFO Started running
+2023-06-22 22:27:55,476 INFO Terminated with 134
+2023-06-22 22:27:55,476 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 3, 3
+2023-06-22 22:27:55,477 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:3, count:3
+2023-06-22 22:27:55,477 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:27:55,477 INFO loc : 3
+2023-06-22 22:27:55,477 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_3.cpp
+2023-06-22 22:27:55,477 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_3.cpp
+2023-06-22 22:27:57,002 INFO Compile 0, , 
+2023-06-22 22:27:57,004 INFO Started running
+2023-06-22 22:27:59,764 INFO Terminated with 134
+2023-06-22 22:27:59,764 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 3, 4
+2023-06-22 22:27:59,764 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:4, count:3
+2023-06-22 22:27:59,764 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:27:59,765 INFO loc : 3
+2023-06-22 22:27:59,765 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_4.cpp
+2023-06-22 22:27:59,765 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_4.cpp
+2023-06-22 22:28:01,325 INFO Compile 0, , 
+2023-06-22 22:28:01,327 INFO Started running
+2023-06-22 22:28:03,968 INFO Terminated with 134
+2023-06-22 22:28:03,968 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 3, 5
+2023-06-22 22:28:03,969 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:5, count:3
+2023-06-22 22:28:03,969 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:28:03,969 INFO loc : 3
+2023-06-22 22:28:03,969 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_5.cpp
+2023-06-22 22:28:03,969 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_5.cpp
+2023-06-22 22:28:05,490 INFO Compile 0, , 
+2023-06-22 22:28:05,492 INFO Started running
+2023-06-22 22:28:08,191 INFO Terminated with 134
+2023-06-22 22:28:08,191 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 3, 6
+2023-06-22 22:28:08,192 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:6, count:3
+2023-06-22 22:28:08,192 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:28:08,192 INFO loc : 3
+2023-06-22 22:28:08,192 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_6.cpp
+2023-06-22 22:28:08,192 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_6.cpp
+2023-06-22 22:28:09,796 INFO Compile 0, , 
+2023-06-22 22:28:09,799 INFO Started running
+2023-06-22 22:28:12,488 INFO Terminated with 134
+2023-06-22 22:28:12,488 INFO generate_a_continue_file, data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp, 3, 7
+2023-06-22 22:28:12,488 INFO generate_a_continue_file file: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation.cpp continue_counter:7, count:3
+2023-06-22 22:28:12,489 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:28:12,489 INFO loc : 3
+2023-06-22 22:28:12,489 INFO continue_file : data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_7.cpp
+2023-06-22 22:28:12,489 INFO Testing: data/runs/run-20230622-222742/iteration-0-cpp/permutations_shared_computation_cont_7.cpp
+2023-06-22 22:28:13,297 INFO Compile 130, ^C, 
+2023-06-22 22:28:13,299 INFO Started running
+2023-06-22 22:28:14,483 INFO Succes, ^C

@@ -1,0 +1,145 @@
+module CIVIC-B-Cpp
+            
+imports 
+  CIVIC-Start
+  Funcons
+
+// Language "CIVIC"
+    
+lexical syntax // Language
+  
+  // B Cpp
+                
+  
+  LEX-cpp-std-lib = "iostream"
+  LEX-cpp-std-lib = "thread"
+  LEX-cpp-std-lib = "mutex"
+  LEX-cpp-std-lib = "shared_mutex"
+  LEX-cpp-std-lib = "future"
+  LEX-cpp-std-lib = "condition_variable"
+  LEX-cpp-std-lib = "chrono"
+  LEX-lib-id = "std" ":" ":" ( [A-Z] | [a-z] | "_" )* ( ":" ":" ( [A-Z] | [a-z] | "_" )+ )*
+  
+syntax // Language
+  
+  // B Cpp
+                
+  
+  
+context-free syntax // Language
+  
+  // B Cpp
+                
+  
+  L-cpp-std-lib.LEX-cpp-std-lib = 
+    LEX-cpp-std-lib
+  L-lib-id.LEX-lib-id = 
+    LEX-lib-id
+  L-cpp-expr.L-cpp-expr--L-id-DOT-L-id-LPAREN-L-exprs-Q-RPAREN =
+    L-id "." L-id "(" L-exprs? ")"
+  L-cpp-expr.L-cpp-expr--L-lib-id =
+    L-lib-id
+  L-cpp-expr.L-cpp-expr--L-lib-id-LPAREN-L-exprs-Q-RPAREN =
+    L-lib-id "(" L-exprs? ")"
+  
+  L-cpp-decl.L-cpp-decl--R-include-LESS-L-cpp-std-lib-GREATER =
+    "include" "<" L-cpp-std-lib ">"
+  
+  L-insert.L-insert--LESS-LESS-L-exp =
+    "<<" L-exp
+  
+  L-inserts.L-inserts--L-insert-L-inserts-Q =
+    L-insert L-inserts?
+  
+  L-cpp-stmt.L-cpp-stmt--L-insertstmt =
+    L-insertstmt
+  
+  L-types.L-types--L-basic-type-C-COMMA-L-types-D-Q =
+    L-basic-type L-COMMA-L-types?
+  
+  L-COMMA-L-types.L-COMMA-L-types--COMMA-L-types =
+    "," L-types
+  
+  
+  L-function-signature.L-function-signature--L-return-type-LPAREN-L-types-Q-RPAREN =
+    L-return-type "(" L-types? ")"
+  
+  L-insertstmt.L-insertstmt--L-lib-id-L-inserts-SEMI =
+    L-lib-id L-inserts ";"
+  
+  L-cpp-var-decl.L-cpp-var-decl--L-lib-id-L-id-SEMI =
+    L-lib-id L-id ";"
+  L-cpp-var-decl.L-cpp-var-decl--L-lib-id-L-id-LBRACE-L-exprs-Q-RBRACE-SEMI =
+    L-lib-id L-id "{" L-exprs? "}" ";"
+  L-cpp-var-decl.L-cpp-var-decl--L-lib-id-LESS-L-basic-type-GREATER-L-id-EQUALS-L-exp-SEMI =
+    L-lib-id "<" L-basic-type ">" L-id "=" L-exp ";"
+  
+  
+context-free syntax // Semantics
+  
+  // B Cpp
+                
+  
+  FCT-Quoted.L-cpp-std-lib = L-cpp-std-lib
+  FCT-Quoted.L-lib-id = L-lib-id
+  
+context-free syntax // Desugaring
+  
+  // B Cpp
+                
+  
+  
+variables // Meta-variables
+  
+  // B Cpp
+                
+  
+  L-cpp-std-lib = "(:CPP-Lib" [1-9]? ":)" {prefer}
+  L-cpp-std-lib? = "(:CPP-Lib" [1-9]? "?:)" {prefer}
+  L-cpp-std-lib* = "(:CPP-Lib" [1-9]? "*:)" {prefer}
+  L-cpp-std-lib+ = "(:CPP-Lib" [1-9]? "+:)" {prefer}
+  L-lib-id = "(:CPPLibId" [1-9]? ":)" {prefer}
+  L-lib-id? = "(:CPPLibId" [1-9]? "?:)" {prefer}
+  L-lib-id* = "(:CPPLibId" [1-9]? "*:)" {prefer}
+  L-lib-id+ = "(:CPPLibId" [1-9]? "+:)" {prefer}
+  L-cpp-expr = "(:CPPE" [1-9]? ":)" {prefer}
+  L-cpp-expr? = "(:CPPE" [1-9]? "?:)" {prefer}
+  L-cpp-expr* = "(:CPPE" [1-9]? "*:)" {prefer}
+  L-cpp-expr+ = "(:CPPE" [1-9]? "+:)" {prefer}
+  L-cpp-decl = "(:CPPDDecl" [1-9]? ":)" {prefer}
+  L-cpp-decl? = "(:CPPDDecl" [1-9]? "?:)" {prefer}
+  L-cpp-decl* = "(:CPPDDecl" [1-9]? "*:)" {prefer}
+  L-cpp-decl+ = "(:CPPDDecl" [1-9]? "+:)" {prefer}
+  L-insert = "(:Insert" [1-9]? ":)" {prefer}
+  L-insert? = "(:Insert" [1-9]? "?:)" {prefer}
+  L-insert* = "(:Insert" [1-9]? "*:)" {prefer}
+  L-insert+ = "(:Insert" [1-9]? "+:)" {prefer}
+  L-inserts = "(:Inserts" [1-9]? ":)" {prefer}
+  L-inserts? = "(:Inserts" [1-9]? "?:)" {prefer}
+  L-inserts* = "(:Inserts" [1-9]? "*:)" {prefer}
+  L-inserts+ = "(:Inserts" [1-9]? "+:)" {prefer}
+  L-cpp-stmt = "(:CPPStmt" [1-9]? ":)" {prefer}
+  L-cpp-stmt? = "(:CPPStmt" [1-9]? "?:)" {prefer}
+  L-cpp-stmt* = "(:CPPStmt" [1-9]? "*:)" {prefer}
+  L-cpp-stmt+ = "(:CPPStmt" [1-9]? "+:)" {prefer}
+  L-function-signature = "(:FunSign" [1-9]? ":)" {prefer}
+  L-function-signature? = "(:FunSign" [1-9]? "?:)" {prefer}
+  L-function-signature* = "(:FunSign" [1-9]? "*:)" {prefer}
+  L-function-signature+ = "(:FunSign" [1-9]? "+:)" {prefer}
+  L-insertstmt = "(:InsertStmt" [1-9]? ":)" {prefer}
+  L-insertstmt? = "(:InsertStmt" [1-9]? "?:)" {prefer}
+  L-insertstmt* = "(:InsertStmt" [1-9]? "*:)" {prefer}
+  L-insertstmt+ = "(:InsertStmt" [1-9]? "+:)" {prefer}
+  L-cpp-var-decl = "(:CPPVarDecl" [1-9]? ":)" {prefer}
+  L-cpp-var-decl? = "(:CPPVarDecl" [1-9]? "?:)" {prefer}
+  L-cpp-var-decl* = "(:CPPVarDecl" [1-9]? "*:)" {prefer}
+  L-cpp-var-decl+ = "(:CPPVarDecl" [1-9]? "+:)" {prefer}
+  
+// SDF comments
+  
+  // B Cpp
+                
+  
+  
+sorts // ASTs
+  T-start

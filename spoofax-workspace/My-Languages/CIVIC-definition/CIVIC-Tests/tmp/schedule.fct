@@ -1,0 +1,223 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::thread" |-> simple-class
+                                 ("std::thread",
+                                  {"detached" |-> alloc-init
+                                                    (booleans,
+                                                     false),
+                                   "_init" |-> pattern abstraction
+                                                 (bind
+                                                    ("index",
+                                                     alloc-init
+                                                       (values,
+                                                        allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                                          (tuple-head given,
+                                                           tuple-tail given))))},
+                                  {"join" |-> method if-else
+                                                (assigned self
+                                                   "detached",
+                                                 null,
+                                                 thread-join lookup-index assigned self
+                                                   "index"),
+                                   "detach" |-> method sequential
+                                                  (assign
+                                                     (self "detached",
+                                                      true),
+                                                   null),
+                                   "(destructor)" |-> method if-else
+                                                        (or
+                                                           (assigned self
+                                                              "detached",
+                                                            is-thread-terminated lookup-index assigned self
+                                                              "index"),
+                                                         null,
+                                                         throw "terminate called without an active exception")}),
+             "std::jthread" |-> simple-class
+                                  ("std::jthread",
+                                   {"_init" |-> pattern abstraction
+                                                  (bind
+                                                     ("index",
+                                                      alloc-init
+                                                        (values,
+                                                         allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                                           (tuple-head given,
+                                                            tuple-tail given))))},
+                                   {"join" |-> method thread-join lookup-index assigned self
+                                                 "index"})})),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            bind
+              ("foo",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            assign
+              (bound
+                 ("foo"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     scope
+                       (collateral
+                          ( ),
+                        handle-return
+                          (give
+                             (handle-return sequential
+                                (( ),
+                                 print
+                                   ("foo")),
+                              sequential
+                                (( ),
+                                 return given))))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     scope
+                       (collateral
+                          (bind
+                             ("t",
+                              alloc
+                                (references
+                                   (objects))),
+                           bind
+                             ("tt",
+                              alloc
+                                (references
+                                   (objects))),
+                           ( )),
+                        handle-return
+                          (give
+                             (handle-return sequential
+                                (assign
+                                   (bound "t",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("foo"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 assign
+                                   (bound "tt",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("foo"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 ( ),
+                                 ( ),
+                                 ( ),
+                                 print
+                                   ("b"),
+                                   print (current-thread-schedule)
+                                   
+                                   ),
+                              sequential
+                                (give
+                                   (else
+                                      (lookup
+                                         (class-feature-map lookup
+                                            (assigned
+                                               (bound
+                                                  ("_std")),
+                                             object-class-name checked dereference assigned bound
+                                               "t"),
+                                          "(destructor)"),
+                                       null),
+                                    if-else
+                                      (is-equal
+                                         (given,
+                                          null),
+                                       null,
+                                       apply
+                                         (given,
+                                          tuple
+                                            (assigned bound
+                                               "t")))),
+                                 give
+                                   (else
+                                      (lookup
+                                         (class-feature-map lookup
+                                            (assigned
+                                               (bound
+                                                  ("_std")),
+                                             object-class-name checked dereference assigned bound
+                                               "tt"),
+                                          "(destructor)"),
+                                       null),
+                                    if-else
+                                      (is-equal
+                                         (given,
+                                          null),
+                                       null,
+                                       apply
+                                         (given,
+                                          tuple
+                                            (assigned bound
+                                               "tt")))),
+                                 ( ),
+                                 return given))))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( ))))),
+   ( ),
+   ( ),
+   ( ))

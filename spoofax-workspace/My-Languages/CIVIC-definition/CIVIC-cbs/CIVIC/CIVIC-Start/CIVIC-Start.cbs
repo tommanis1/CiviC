@@ -13,10 +13,11 @@ Lexis
        N:int ::= ('0'-'9')+
        
        keyword ::= 'do'  | 'else'  | 'fork'   | 'if'
-                 | 'in'  | 'join' | 'print' | 'return'
-                 | 'ref' | 'spawn' | 'else'   | 'while' | 'true' | 'false' 
-                 | 'stdthread' | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex' | 'lock' | 'unlock'
-                 | 'extern' | 'future'
+                 | 'in'   | 'print' | 'return'
+                 | 'ref' | 'else'   | 'while' | 'true' | 'false' 
+                 | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex'
+                 | 'extern' | 'future' | 'condition_variable'| 'chrono' 
+                 | 'try' | 'catch'
 //                 | 'printInt'
 //		| 'printFloat'
        Bool : bool-const ::= 'true' | 'false'
@@ -26,7 +27,7 @@ Lexis
 	   BasicType : basic-type ::= 'int' | 'float' | 'bool'
 	   RetType : return-type ::= 'void' | basic-type
 	  STDLibID : std-lib-id ::= 'printInt' | 'printFloat'| 'printSpaces' | 'printNewlines' | 'scanInt' | 'scanFloat'
-	  StringContent : str-cont ::= ('A'-'Z'|'a'-'z'| ' ' | '.' | ',' | '\n' | '0'-'9')*
+	  StringContent : str-cont ::= ('A'-'Z'|'a'-'z'|' '| '.' | ',' | '\n' | '0'-'9' | ':' | '_' )*
 	 	//	F: float-const ::= ('0'-'9')+ '.' ('0'-'9')+
 	 	
 Syntax 
@@ -75,7 +76,7 @@ Syntax E:exp ::= '(' exp ')'
 //				| std-lib-call
 
 				
-	Const : const ::=  bool-const | int | negative-num //float-const 
+	Const : const ::= bool-const | int | negative-num //float-const 
 	Exprs : exprs ::= exp (',' exprs)?
 
 /*
@@ -94,7 +95,8 @@ Type basic-types ~> integers
                 | booleans
                 | floats
 
-Semantics eval[[ _:exprs ]] : => values
+Semantics eval[[ _:exp ]] : => values
+Semantics eval-exprs[[ _:exprs? ]] : => values
 Semantics exec-var[[ _:var-decl ]] : => ld-values
 Semantics type[[ _:basic-type ]] : => basic-types
 Semantics
@@ -118,20 +120,20 @@ Rule eval[[ '-' N ]] = 	integer-negate(decimal-natural(\"N\"))
 Rule eval[[ '"' StringContent '"']] = \"StringContent\"
 
 Rule eval[[ ID ]] = assigned(bound(id[[ ID ]]))
-Semantics eval-bool[[ _:bool-const ]] : => bool
+Semantics eval-bool[[ _:bool-const ]] : => booleans
 Rule eval-bool[[ 'true' ]] = true
 
 Rule eval-bool[[ 'false' ]] = false
 Rule eval[[ Bool ]] = eval-bool[[Bool]]
-Rule eval[[ ID '(' ')' ]] = apply(eval[[ ID ]], tuple() )
-Rule eval[[ ID '(' Exprs ')' ]] = apply(eval[[ ID ]], tuple(eval[[ Exprs ]]) )
+//Rule eval[[ ID '(' ')' ]] = apply(eval[[ ID ]], tuple() )
+Rule eval[[ ID '(' Exprs? ')' ]] = apply(eval[[ ID ]], tuple(eval-exprs[[ Exprs? ]]) )
 
-Rule eval[[ E ',' Exprs ]] = sequential(eval[[ E ]], eval[[ Exprs]])
+//Rule eval[[ E ',' Exprs ]] = sequential(eval[[ E ]], eval[[ Exprs ]])
 
 
 Rule eval[[ '(' E ')' ]] = eval[[ E ]]
 
-
+  
 //#3 Arithmetic and Boolean expressions
 Rule eval[[ E1 '+' E2 ]] = else(
 	int-add(eval[[ E1 ]], eval[[ E2 ]]),
@@ -170,8 +172,13 @@ Rule eval[[ E1 '||' E2 ]] = if-else(eval[[ E1 ]],true,eval[[ E2 ]])
 
 Rule eval[[ '!' E ]]        = not(eval[[ E ]])
 Rule eval[[ '(' BasicType ')' E ]] = cast-to-type(eval[[ E ]], type[[ BasicType ]])
-Rule eval[[ '&' E ]]        = eval[[ E ]]
 
+Rule eval-exprs[[ ]] = ()
+Rule eval-exprs[[ E ]] = eval[[ E ]]
+Rule eval-exprs[[ E ',' Exprs ]] = eval[[ E ]], eval-exprs[[ Exprs ]]
+//Rule eval-exprs[[ E ]]
+//Rule eval[[ '&' E ]]        = eval[[ E ]]
+//Rule eval[[ () ]] = ()
 
 //Rule eval[[ 'thread_current' '(' ')' ';' ]] = current-thread
                         
@@ -193,6 +200,7 @@ Syntax
 					| 'return' exp? ';'
 					| block // Needed to be able to exec[[ Block ]] needs a workaround
 					| 'print'  exp  ';' // TODO: standard library?
+					| 'try' block 'catch' '(' '...' ')' block ';'
 //					| 'join''(' exp ')' ';'
 //					| 'threadjoin' id ';'
 
@@ -277,6 +285,9 @@ Rule exec[[ 'for' '(' 'int' ID '=' E1 ',' E2 ')' Block ]] =
         )
     )
     
+Rule exec[[ 'try' Block1 'catch' '(' '...' ')' Block2 ';']] = handle-thrown(sequential(exec[[ Block1 ]]), sequential(exec[[ Block2 ]]))
+
+    
 Rule exec[[ 'return' E ';' ]] = return(eval[[ E ]])
 Rule exec[[ 'return' ';' ]] = return(null)
 Rule exec[[ E ';' ]] = eval[[ E ]]
@@ -342,15 +353,20 @@ Rule initialise[[ RetType ID '(' Params? ')' Block ]] =
       function closure(
         scope(
           match(given,tuple(patts[[ Params? ]])),
-          handle-return(
+          handle-return
           	scope(
           	collateral(declarations-local[[ Block ]]),
-          	sequential(
+          	give(handle-return sequential(
           	initialisations-local[[ Block ]],
           	exec[[ Block ]]
-          	)
+          	),
+          	sequential(
+	          destructions-local[[ Block ]],
+	          return given
+          	) )
+
+          )
           )))
-          ))
 
 Rule
   declare[[ RetType ID '(' Params? ')' Block ]] =
@@ -402,6 +418,18 @@ Rule declarations-local[[ ]] = ()
 //Rule declarations-local[[ LocalFunDef Stmts? ]] = local-fun-declare[[ LocalFunDef ]], declarations-local[[ Stmts? ]]
 Rule declarations-local[[ ImpStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 Rule declarations-local[[ CiviCVarDecl Stmts? ]] = declare[[ CiviCVarDecl ]], declarations-local[[ Stmts? ]]
+Otherwise declarations-local[[ Stmt Stmts? ]] = declarations-local[[ Stmts? ]]
+
+
+Semantics destructions-local[[ _:stmts? ]] : => null-type
+Rule destructions-local[[ '{' Stmts '}' ]] = destructions-local[[ Stmts ]]
+Rule destructions-local[[ '{' '}' ]] = ()
+Rule destructions-local[[ ]] = ()
+
+Rule destructions-local[[ CPPVarDecl Stmts? ]] = destruct[[ CPPVarDecl ]], destructions-local[[ Stmts? ]]
+Otherwise destructions-local[[ Stmt Stmts? ]] = destructions-local[[ Stmts? ]]
+
+
 //Rule declarations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 //
 Semantics initialisations-local[[ _:stmts? ]] : => null-type
@@ -410,8 +438,9 @@ Rule initialisations-local[[ '{' '}' ]] = ()
 Rule initialisations-local[[ ]] = ()
 
 //Rule initialisations-local[[ LocalFunDef Stmts? ]] = initialise-local-fun[[ LocalFunDef ]], initialisations-local[[ Stmts? ]]
-Rule initialisations-local[[ ImpStmt Stmts? ]] = initialisations-local[[ Stmts? ]]
 Rule initialisations-local[[ CiviCVarDecl Stmts? ]] = initialise[[ CiviCVarDecl ]],initialisations-local[[ Stmts? ]]
+Otherwise initialisations-local[[ Stmt Stmts? ]] = initialisations-local[[ Stmts? ]]
+
 ////Rule initialisations-local[[ ThreadStmt Stmts? ]] = declarations-local[[ Stmts? ]]
 
 //#6 Programs
@@ -427,7 +456,7 @@ Rule start[[ Pgm ]] =
     initialise-memos
     finalise-failing
     finalise-throwing
-  multithread
+  overload-multithread
      postpone-after-effect run[[ Pgm ]]
 
 
@@ -446,8 +475,10 @@ Semantics
         ),
         sequential(
           initialisations[[ Decls ]],
-          apply (assigned(bound("main")), tuple
-           ( )))))
+          apply (assigned(bound("main")), tuple( )),
+          destructions[[ Decls]]
+           
+           )))
            )
 Syntax
   Decls : decls ::= decl decls?
@@ -479,3 +510,13 @@ Semantics
   initialise-lib[[ _:decl ]] : =>null-type
 Semantics
   declare[[ _:decl ]] : =>environments
+
+Semantics
+  destructions[[ _:decls ]] : (=>environments)+
+Rule
+  destructions[[ Decl ]] = destruct[[ Decl ]]
+Rule
+  destructions[[ Decl Decls ]] = destruct[[ Decl ]], destructions[[ Decls ]]
+
+Semantics destruct[[ _:decl ]] : =>null-type
+

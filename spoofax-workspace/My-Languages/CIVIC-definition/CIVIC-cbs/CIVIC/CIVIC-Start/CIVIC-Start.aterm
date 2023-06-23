@@ -1,0 +1,3046 @@
+LanguagePart(
+  "\"CIVIC\""
+, Sect(
+    HeadNonNumTitle()
+  , Some(
+      Refs(
+        []
+      , [RefHead(HeadSectNumTitle("A", "Disambiguation\n")), RefHead(HeadSectNumTitle("B", "Cpp\n"))]
+      )
+    )
+  , [ SpecLexis(
+        [ Prod(
+            Some(VarStems([VarStem("UID")]))
+          , "id-user-defined"
+          , [ PhraseTypeSequence(
+                PhraseTypeGroup(
+                  Some(
+                    PhraseTypeUnion(
+                      PhraseTypeRange("'A'", "'Z'")
+                    , PhraseTypeUnion(PhraseTypeRange("'a'", "'z'"), PhraseTypeAtom("'_'"))
+                    )
+                  )
+                )
+              , PhraseTypePostfix(
+                  PhraseTypeGroup(
+                    Some(
+                      PhraseTypeUnion(
+                        PhraseTypeRange("'0'", "'9'")
+                      , PhraseTypeUnion(
+                          PhraseTypeRange("'A'", "'Z'")
+                        , PhraseTypeUnion(PhraseTypeRange("'a'", "'z'"), PhraseTypeAtom("'_'"))
+                        )
+                      )
+                    )
+                  )
+                , "*"
+                )
+              )
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("N")]))
+          , "int"
+          , [PhraseTypePostfix(PhraseTypeGroup(Some(PhraseTypeRange("'0'", "'9'"))), "+")]
+          )
+        , Prod(
+            None()
+          , "keyword"
+          , [ PhraseTypeAtom("'do'")
+            , PhraseTypeAtom("'else'")
+            , PhraseTypeAtom("'fork'")
+            , PhraseTypeAtom("'if'")
+            , PhraseTypeAtom("'in'")
+            , PhraseTypeAtom("'print'")
+            , PhraseTypeAtom("'return'")
+            , PhraseTypeAtom("'ref'")
+            , PhraseTypeAtom("'else'")
+            , PhraseTypeAtom("'while'")
+            , PhraseTypeAtom("'true'")
+            , PhraseTypeAtom("'false'")
+            , PhraseTypeAtom("'include'")
+            , PhraseTypeAtom("'iostream'")
+            , PhraseTypeAtom("'chrono'")
+            , PhraseTypeAtom("'thread'")
+            , PhraseTypeAtom("'mutex'")
+            , PhraseTypeAtom("'extern'")
+            , PhraseTypeAtom("'future'")
+            , PhraseTypeAtom("'condition_variable'")
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Bool")]))
+          , "bool-const"
+          , [PhraseTypeAtom("'true'"), PhraseTypeAtom("'false'")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("BasicType")]))
+          , "basic-type"
+          , [PhraseTypeAtom("'int'"), PhraseTypeAtom("'float'"), PhraseTypeAtom("'bool'")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("RetType")]))
+          , "return-type"
+          , [PhraseTypeAtom("'void'"), PhraseTypeSynName("basic-type")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("STDLibID")]))
+          , "std-lib-id"
+          , [ PhraseTypeAtom("'printInt'")
+            , PhraseTypeAtom("'printFloat'")
+            , PhraseTypeAtom("'printSpaces'")
+            , PhraseTypeAtom("'printNewlines'")
+            , PhraseTypeAtom("'scanInt'")
+            , PhraseTypeAtom("'scanFloat'")
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("StringContent")]))
+          , "str-cont"
+          , [ PhraseTypePostfix(
+                PhraseTypeGroup(
+                  Some(
+                    PhraseTypeUnion(
+                      PhraseTypeRange("'A'", "'Z'")
+                    , PhraseTypeUnion(
+                        PhraseTypeRange("'a'", "'z'")
+                      , PhraseTypeUnion(
+                          PhraseTypeAtom("' '")
+                        , PhraseTypeUnion(
+                            PhraseTypeAtom("'.'")
+                          , PhraseTypeUnion(
+                              PhraseTypeAtom("','")
+                            , PhraseTypeUnion(PhraseTypeAtom("'\\n'"), PhraseTypeRange("'0'", "'9'"))
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              , "*"
+              )
+            ]
+          )
+        ]
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("ID")]))
+          , "id"
+          , [PhraseTypeSynName("id-user-defined"), PhraseTypeSynName("std-lib-id")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("NN")]))
+          , "negative-num"
+          , [PhraseTypeSequence(PhraseTypeAtom("'-'"), PhraseTypeSynName("int"))]
+          )
+        , Prod(
+            Some(VarStems([VarStem("S")]))
+          , "string"
+          , [PhraseTypeSequence(PhraseTypeAtom("'\"'"), PhraseTypeSequence(PhraseTypeSynName("str-cont"), PhraseTypeAtom("'\"'")))]
+          )
+        ]
+      )
+    , Comment([CommentPartOrdinary("\t\t\n  Context-free syntax:\n")])
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("E")]))
+          , "exp"
+          , [ PhraseTypeSequence(PhraseTypeAtom("'('"), PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeAtom("')'")))
+            , PhraseTypeSequence(PhraseTypeAtom("'!'"), PhraseTypeSynName("exp"))
+            , PhraseTypeSynName("string")
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'+'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'-'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'*'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'/'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'=='"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'!='"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'<'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'<='"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'>'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'>='"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'&&'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("'||'"), PhraseTypeSynName("exp")))
+            , PhraseTypeSequence(
+                PhraseTypeSynName("id")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'('")
+                , PhraseTypeSequence(PhraseTypePostfix(PhraseTypeSynName("exprs"), "?"), PhraseTypeAtom("')'"))
+                )
+              )
+            , PhraseTypeSequence(
+                PhraseTypeAtom("'('")
+              , PhraseTypeSequence(PhraseTypeSynName("basic-type"), PhraseTypeSequence(PhraseTypeAtom("')'"), PhraseTypeSynName("exp")))
+              )
+            , PhraseTypeSynName("id")
+            , PhraseTypeSynName("const")
+            , PhraseTypeSynName("cpp-expr")
+            , PhraseTypeSequence(PhraseTypeAtom("'&'"), PhraseTypeSynName("exp"))
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Const")]))
+          , "const"
+          , [PhraseTypeSynName("bool-const"), PhraseTypeSynName("int"), PhraseTypeSynName("negative-num")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Exprs")]))
+          , "exprs"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("exp")
+              , PhraseTypePostfix(
+                  PhraseTypeGroup(Some(PhraseTypeSequence(PhraseTypeAtom("','"), PhraseTypeSynName("exprs"))))
+                , "?"
+                )
+              )
+            ]
+          )
+        ]
+      )
+    , Comment([CommentPartOrdinary("\n  Expression evaluation:\n")])
+    , SpecType(
+        None()
+      , "ld-values"
+      , None()
+      , []
+      , Some(
+          DefinedRewrite(
+            TermUnion(
+              TermUnion(
+                TermUnion(
+                  TermUnion(
+                    TermApp(
+                      "functions"
+                    , TermGroup(Terms([TermName("values"), TermName("values")]))
+                    )
+                  , TermName("integers")
+                  )
+                , TermName("booleans")
+                )
+              , TermName("variables")
+              )
+            , TermName("null-type")
+            )
+          )
+        )
+      )
+    , SpecType(
+        None()
+      , "basic-types"
+      , None()
+      , []
+      , Some(
+          DefinedRewrite(
+            TermUnion(TermUnion(TermName("integers"), TermName("booleans")), TermName("floats"))
+          )
+        )
+      )
+    , SpecSemantics(
+        "eval"
+      , VarWild(None(), None())
+      , PhraseTypePostfix(PhraseTypeSynName("exprs"), "?")
+      , None()
+      , TermComputes(None(), TermName("values"))
+      , None()
+      )
+    , SpecSemantics(
+        "exec-var"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("var-decl")
+      , None()
+      , TermComputes(None(), TermName("ld-values"))
+      , None()
+      )
+    , SpecSemantics(
+        "type"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("basic-type")
+      , None()
+      , TermComputes(None(), TermName("basic-types"))
+      , None()
+      )
+    , SpecSemantics(
+        "id"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("id")
+      , None()
+      , TermComputes(None(), TermName("ids"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "id"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("UID", None(), None()))])
+        , None()
+        , Terms([TermQuoted(TermVar(VarVarStemSuffixPostfix("UID", None(), None())))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "id"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("STDLibID", None(), None()))])
+        , None()
+        , Terms([TermQuoted(TermVar(VarVarStemSuffixPostfix("STDLibID", None(), None())))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "type"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))])
+        , None()
+        , Terms([TermName("values")])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("N", None(), None()))])
+        , None()
+        , Terms(
+            [ TermApp(
+                "decimal-natural"
+              , TermGroup(
+                  Terms([TermQuoted(TermVar(VarVarStemSuffixPostfix("N", None(), None())))])
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [WordAtom("'-'"), WordVar(VarVarStemSuffixPostfix("N", None(), None()))]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "integer-negate"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "decimal-natural"
+                      , TermGroup(
+                          Terms([TermQuoted(TermVar(VarVarStemSuffixPostfix("N", None(), None())))])
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [WordAtom("'\"'"), WordVar(VarVarStemSuffixPostfix("StringContent", None(), None())), WordAtom("'\"'")]
+          )
+        , None()
+        , Terms([TermQuoted(TermVar(VarVarStemSuffixPostfix("StringContent", None(), None())))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+        , None()
+        , Terms(
+            [ TermApp(
+                "assigned"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "id"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "eval-bool"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("bool-const")
+      , None()
+      , TermComputes(None(), TermName("bool"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval-bool"
+        , Phrase([WordAtom("'true'")])
+        , None()
+        , Terms([TermName("true")])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval-bool"
+        , Phrase([WordAtom("'false'")])
+        , None()
+        , Terms([TermName("false")])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Bool", None(), None()))])
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "eval-bool"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Bool", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("Exprs", None(), Some("?")))
+            , WordAtom("')'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "apply"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp(
+                        "tuple"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("Exprs", None(), Some("?")))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("','")
+            , WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "sequential"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Exprs", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [WordAtom("'('"), WordVar(VarVarStemSuffixPostfix("E", None(), None())), WordAtom("')'")]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "eval"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'+'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "else"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "int-add"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "float-add"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'-'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "else"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "integer-subtract"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "float-subtract"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'*'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "else"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "int-mul"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "float-multiply"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'/'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "else"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "int-div"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "float-divide"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'=='")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "is-equal"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'!='")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "not"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "is-equal"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                              , None()
+                              )
+                            , TermSemantics(
+                                "eval"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'<'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "is-less"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'<='")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "is-less-or-equal"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'>'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "is-greater"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'>='")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "is-greater-or-equal"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'&&'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "if-else"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    , TermName("false")
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("'||'")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "if-else"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermName("true")
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [WordAtom("'!'"), WordVar(VarVarStemSuffixPostfix("E", None(), None()))]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "not"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase(
+            [ WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "cast-to-type"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "type"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "eval"
+        , Phrase([WordGroup([])])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("Decl")]))
+          , "decl"
+          , [PhraseTypeSynName("cpp-decl"), PhraseTypeSynName("function-definition"), PhraseTypeSynName("var-decl")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("CiviCVarDecl")]))
+          , "civic-var-decl"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("basic-type")
+              , PhraseTypeSequence(
+                  PhraseTypeSynName("id")
+                , PhraseTypeSequence(
+                    PhraseTypePostfix(
+                      PhraseTypeGroup(Some(PhraseTypeSequence(PhraseTypeAtom("'='"), PhraseTypeSynName("exp"))))
+                    , "?"
+                    )
+                  , PhraseTypeAtom("';'")
+                  )
+                )
+              )
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("VarDecl")]))
+          , "var-decl"
+          , [PhraseTypeSynName("civic-var-decl"), PhraseTypeSynName("cpp-var-decl")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Stmts")]))
+          , "stmts"
+          , [PhraseTypeSequence(PhraseTypeSynName("stmt"), PhraseTypePostfix(PhraseTypeSynName("stmts"), "?"))]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Stmt")]))
+          , "stmt"
+          , [PhraseTypeSynName("civic-var-decl"), PhraseTypeSynName("imp-stmt"), PhraseTypeSynName("cpp-stmt"), PhraseTypeSynName("cpp-var-decl")]
+          )
+        , Prod(
+            Some(VarStems([VarStem("ImpStmt")]))
+          , "imp-stmt"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("id")
+              , PhraseTypeSequence(PhraseTypeAtom("'='"), PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeAtom("';'")))
+              )
+            , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeAtom("';'"))
+            , PhraseTypeSequence(
+                PhraseTypeAtom("'if'")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'('")
+                , PhraseTypeSequence(
+                    PhraseTypeSynName("exp")
+                  , PhraseTypeSequence(
+                      PhraseTypeAtom("')'")
+                    , PhraseTypeSequence(
+                        PhraseTypeSynName("block")
+                      , PhraseTypePostfix(
+                          PhraseTypeGroup(Some(PhraseTypeSequence(PhraseTypeAtom("'else'"), PhraseTypeSynName("block"))))
+                        , "?"
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            , PhraseTypeSequence(
+                PhraseTypeAtom("'while'")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'('")
+                , PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeSequence(PhraseTypeAtom("')'"), PhraseTypeSynName("block")))
+                )
+              )
+            , PhraseTypeSequence(
+                PhraseTypeAtom("'do'")
+              , PhraseTypeSequence(
+                  PhraseTypeSynName("block")
+                , PhraseTypeSequence(
+                    PhraseTypeAtom("'while'")
+                  , PhraseTypeSequence(PhraseTypeAtom("'('"), PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeAtom("')'")))
+                  )
+                )
+              )
+            , PhraseTypeSequence(
+                PhraseTypeAtom("'for'")
+              , PhraseTypeSequence(
+                  PhraseTypeAtom("'('")
+                , PhraseTypeSequence(
+                    PhraseTypeAtom("'int'")
+                  , PhraseTypeSequence(
+                      PhraseTypeSynName("id")
+                    , PhraseTypeSequence(
+                        PhraseTypeAtom("'='")
+                      , PhraseTypeSequence(
+                          PhraseTypeSynName("exp")
+                        , PhraseTypeSequence(
+                            PhraseTypeAtom("','")
+                          , PhraseTypeSequence(
+                              PhraseTypeSynName("exp")
+                            , PhraseTypeSequence(
+                                PhraseTypePostfix(
+                                  PhraseTypeGroup(Some(PhraseTypeSequence(PhraseTypeAtom("','"), PhraseTypeSynName("exp"))))
+                                , "?"
+                                )
+                              , PhraseTypeSequence(PhraseTypeAtom("')'"), PhraseTypeSynName("block"))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            , PhraseTypeSequence(
+                PhraseTypeAtom("'return'")
+              , PhraseTypeSequence(PhraseTypePostfix(PhraseTypeSynName("exp"), "?"), PhraseTypeAtom("';'"))
+              )
+            , PhraseTypeSynName("block")
+            , PhraseTypeSequence(PhraseTypeAtom("'print'"), PhraseTypeSequence(PhraseTypeSynName("exp"), PhraseTypeAtom("';'")))
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Block")]))
+          , "block"
+          , [ PhraseTypeSequence(
+                PhraseTypeAtom("'{'")
+              , PhraseTypeSequence(PhraseTypePostfix(PhraseTypeSynName("stmts"), "?"), PhraseTypeAtom("'}'"))
+              )
+            ]
+          )
+        ]
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "bind"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "id"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp(
+                        "alloc"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "type"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "bind"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "id"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp(
+                        "alloc"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "type"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "id"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "exec"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("stmts")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("ImpStmt", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "sequential"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ImpStmt", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CiviCVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "exec"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("';'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "id"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleDesugar(
+          Phrase(
+            [ WordAtom("'if'")
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            ]
+          )
+        , PhraseTypeSynName("stmt")
+        , Phrase(
+            [ WordAtom("'if'")
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            , WordAtom("'else'")
+            , WordAtom("'{'")
+            , WordAtom("'}'")
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordAtom("'if'")
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", Some("1"), None()))
+            , WordAtom("'else'")
+            , WordVar(VarVarStemSuffixPostfix("Block", Some("2"), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "if-true-else"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Block", Some("1"), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Block", Some("2"), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordAtom("'while'")
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "while"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordAtom("'do'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            , WordAtom("'while'")
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("E", None(), None()))
+            , WordAtom("')'")
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "while"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    , TermSemantics(
+                        "exec"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordAtom("'for'")
+            , WordAtom("'('")
+            , WordAtom("'int'")
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("','")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            , WordAtom("','")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("3"), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "scope"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bind"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "id"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                              , None()
+                              )
+                            , TermApp(
+                                "allocate-initialised-variable"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermName("integers")
+                                    , TermSemantics(
+                                        "eval"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                                      , None()
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "while"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "is-less"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermApp(
+                                        "assigned"
+                                      , TermGroup(
+                                          Terms(
+                                            [ TermApp(
+                                                "bound"
+                                              , TermGroup(
+                                                  Terms(
+                                                    [ TermSemantics(
+                                                        "id"
+                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                                      , None()
+                                                      )
+                                                    ]
+                                                  )
+                                                )
+                                              )
+                                            ]
+                                          )
+                                        )
+                                      )
+                                    , TermSemantics(
+                                        "eval"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                                      , None()
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            , TermApp(
+                                "sequential"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermSemantics(
+                                        "exec"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                                      , None()
+                                      )
+                                    , TermApp(
+                                        "assign"
+                                      , TermGroup(
+                                          Terms(
+                                            [ TermApp(
+                                                "bound"
+                                              , TermGroup(
+                                                  Terms(
+                                                    [ TermSemantics(
+                                                        "id"
+                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                                      , None()
+                                                      )
+                                                    ]
+                                                  )
+                                                )
+                                              )
+                                            , TermApp(
+                                                "integer-add"
+                                              , TermGroup(
+                                                  Terms(
+                                                    [ TermApp(
+                                                        "assigned"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "bound"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermSemantics(
+                                                                        "id"
+                                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                                                      , None()
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    , TermSemantics(
+                                                        "eval"
+                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("3"), None()))])
+                                                      , None()
+                                                      )
+                                                    ]
+                                                  )
+                                                )
+                                              )
+                                            ]
+                                          )
+                                        )
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [ WordAtom("'for'")
+            , WordAtom("'('")
+            , WordAtom("'int'")
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'='")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))
+            , WordAtom("','")
+            , WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "scope"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bind"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "id"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                              , None()
+                              )
+                            , TermApp(
+                                "allocate-initialised-variable"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermName("integers")
+                                    , TermSemantics(
+                                        "eval"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("1"), None()))])
+                                      , None()
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "while"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "is-less"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermApp(
+                                        "assigned"
+                                      , TermGroup(
+                                          Terms(
+                                            [ TermApp(
+                                                "bound"
+                                              , TermGroup(
+                                                  Terms(
+                                                    [ TermSemantics(
+                                                        "id"
+                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                                      , None()
+                                                      )
+                                                    ]
+                                                  )
+                                                )
+                                              )
+                                            ]
+                                          )
+                                        )
+                                      )
+                                    , TermSemantics(
+                                        "eval"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", Some("2"), None()))])
+                                      , None()
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            , TermApp(
+                                "sequential"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermSemantics(
+                                        "exec"
+                                      , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                                      , None()
+                                      )
+                                    , TermApp(
+                                        "assign"
+                                      , TermGroup(
+                                          Terms(
+                                            [ TermApp(
+                                                "bound"
+                                              , TermGroup(
+                                                  Terms(
+                                                    [ TermSemantics(
+                                                        "id"
+                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                                      , None()
+                                                      )
+                                                    ]
+                                                  )
+                                                )
+                                              )
+                                            , TermApp(
+                                                "integer-add"
+                                              , TermGroup(
+                                                  Terms(
+                                                    [ TermApp(
+                                                        "assigned"
+                                                      , TermGroup(
+                                                          Terms(
+                                                            [ TermApp(
+                                                                "bound"
+                                                              , TermGroup(
+                                                                  Terms(
+                                                                    [ TermSemantics(
+                                                                        "id"
+                                                                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                                                      , None()
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        )
+                                                      )
+                                                    , TermApp("decimal-natural", TermGroup(Terms([TermString("\"1\"")])))
+                                                    ]
+                                                  )
+                                                )
+                                              )
+                                            ]
+                                          )
+                                        )
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [WordAtom("'return'"), WordVar(VarVarStemSuffixPostfix("E", None(), None())), WordAtom("';'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "return"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase([WordAtom("'return'"), WordAtom("';'")])
+        , None()
+        , Terms(
+            [TermApp("return", TermGroup(Terms([TermName("null")])))]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [WordVar(VarVarStemSuffixPostfix("E", None(), None())), WordAtom("';'")]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "eval"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [WordAtom("'print'"), WordVar(VarVarStemSuffixPostfix("E", None(), None())), WordAtom("';'")]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "print"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "eval"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("E", None(), None()))])
+                      , None()
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase(
+            [WordAtom("'{'"), WordVar(VarVarStemSuffixPostfix("Stmts", None(), None())), WordAtom("'}'")]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "exec"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "exec"
+        , Phrase([WordAtom("'{'"), WordAtom("'}'")])
+        , None()
+        , Terms([TermName("null")])
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("FunDef")]))
+          , "function-definition"
+          , [ PhraseTypeSequence(
+                PhraseTypePostfix(PhraseTypeAtom("'export'"), "?")
+              , PhraseTypeSequence(
+                  PhraseTypeSynName("return-type")
+                , PhraseTypeSequence(
+                    PhraseTypeSynName("id")
+                  , PhraseTypeSequence(
+                      PhraseTypeAtom("'('")
+                    , PhraseTypeSequence(
+                        PhraseTypePostfix(PhraseTypeSynName("params"), "?")
+                      , PhraseTypeSequence(PhraseTypeAtom("')'"), PhraseTypeSynName("block"))
+                      )
+                    )
+                  )
+                )
+              )
+            ]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Param")]))
+          , "param"
+          , [PhraseTypeSequence(PhraseTypeSynName("basic-type"), PhraseTypeSynName("id"))]
+          )
+        , Prod(
+            Some(VarStems([VarStem("Params")]))
+          , "params"
+          , [ PhraseTypeSequence(
+                PhraseTypeSynName("param")
+              , PhraseTypePostfix(
+                  PhraseTypeGroup(Some(PhraseTypeSequence(PhraseTypeAtom("','"), PhraseTypeSynName("params"))))
+                , "?"
+                )
+              )
+            ]
+          )
+        ]
+      )
+    , SpecSemantics(
+        "patts"
+      , VarWild(None(), None())
+      , PhraseTypePostfix(PhraseTypeSynName("params"), "?")
+      , None()
+      , TermPostfix(TermName("patterns"), "*")
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "patts"
+        , Phrase([])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "patts"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "pattern"
+              , TermApp(
+                  "closure"
+                , TermGroup(
+                    Terms(
+                      [ TermApp(
+                          "bind"
+                        , TermGroup(
+                            Terms(
+                              [ TermSemantics(
+                                  "id"
+                                , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                                , None()
+                                )
+                              , TermApp(
+                                  "allocate-initialised-variable"
+                                , TermGroup(Terms([TermName("values"), TermName("given")]))
+                                )
+                              ]
+                            )
+                          )
+                        )
+                      ]
+                    )
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "patts"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("','")
+            , WordVar(VarVarStemSuffixPostfix("Params", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "patts"
+              , Phrase(
+                  [ WordVar(VarVarStemSuffixPostfix("BasicType", None(), None()))
+                  , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+                  ]
+                )
+              , None()
+              )
+            , TermSemantics(
+                "patts"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Params", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialise"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("RetType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("Params", None(), Some("?")))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "assign"
+              , TermGroup(
+                  Terms(
+                    [ TermApp(
+                        "bound"
+                      , TermGroup(
+                          Terms(
+                            [ TermSemantics(
+                                "id"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                              , None()
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    , TermApp(
+                        "function"
+                      , TermApp(
+                          "closure"
+                        , TermGroup(
+                            Terms(
+                              [ TermApp(
+                                  "scope"
+                                , TermGroup(
+                                    Terms(
+                                      [ TermApp(
+                                          "match"
+                                        , TermGroup(
+                                            Terms(
+                                              [ TermName("given")
+                                              , TermApp(
+                                                  "tuple"
+                                                , TermGroup(
+                                                    Terms(
+                                                      [ TermSemantics(
+                                                          "patts"
+                                                        , Phrase([WordVar(VarVarStemSuffixPostfix("Params", None(), Some("?")))])
+                                                        , None()
+                                                        )
+                                                      ]
+                                                    )
+                                                  )
+                                                )
+                                              ]
+                                            )
+                                          )
+                                        )
+                                      , TermApp(
+                                          "handle-return"
+                                        , TermApp(
+                                            "give"
+                                          , TermGroup(
+                                              Terms(
+                                                [ TermApp(
+                                                    "handle-return"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermApp(
+                                                            "scope"
+                                                          , TermGroup(
+                                                              Terms(
+                                                                [ TermApp(
+                                                                    "collateral"
+                                                                  , TermGroup(
+                                                                      Terms(
+                                                                        [ TermSemantics(
+                                                                            "declarations-local"
+                                                                          , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                                                                          , None()
+                                                                          )
+                                                                        ]
+                                                                      )
+                                                                    )
+                                                                  )
+                                                                , TermApp(
+                                                                    "sequential"
+                                                                  , TermGroup(
+                                                                      Terms(
+                                                                        [ TermSemantics(
+                                                                            "initialisations-local"
+                                                                          , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                                                                          , None()
+                                                                          )
+                                                                        , TermSemantics(
+                                                                            "exec"
+                                                                          , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                                                                          , None()
+                                                                          )
+                                                                        ]
+                                                                      )
+                                                                    )
+                                                                  )
+                                                                ]
+                                                              )
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                , TermApp(
+                                                    "sequential"
+                                                  , TermGroup(
+                                                      Terms(
+                                                        [ TermSemantics(
+                                                            "destructions-local"
+                                                          , Phrase([WordVar(VarVarStemSuffixPostfix("Block", None(), None()))])
+                                                          , None()
+                                                          )
+                                                        , TermApp("return", TermName("given"))
+                                                        ]
+                                                      )
+                                                    )
+                                                  )
+                                                ]
+                                              )
+                                            )
+                                          )
+                                        )
+                                      ]
+                                    )
+                                  )
+                                )
+                              ]
+                            )
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declare"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("RetType", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("ID", None(), None()))
+            , WordAtom("'('")
+            , WordVar(VarVarStemSuffixPostfix("Params", None(), Some("?")))
+            , WordAtom("')'")
+            , WordVar(VarVarStemSuffixPostfix("Block", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermApp(
+                "bind"
+              , TermGroup(
+                  Terms(
+                    [ TermSemantics(
+                        "id"
+                      , Phrase([WordVar(VarVarStemSuffixPostfix("ID", None(), None()))])
+                      , None()
+                      )
+                    , TermApp(
+                        "allocate-variable"
+                      , TermGroup(
+                          Terms(
+                            [ TermApp(
+                                "functions"
+                              , TermGroup(
+                                  Terms(
+                                    [ TermApp(
+                                        "tuples"
+                                      , TermGroup(Terms([TermPostfix(TermName("values"), "*")]))
+                                      )
+                                    , TermName("values")
+                                    ]
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "declarations-local"
+      , VarWild(None(), None())
+      , PhraseTypePostfix(PhraseTypeSynName("stmts"), "?")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase(
+            [WordAtom("'{'"), WordVar(VarVarStemSuffixPostfix("Stmts", None(), None())), WordAtom("'}'")]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declarations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase([WordAtom("'{'"), WordAtom("'}'")])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase([])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("ImpStmt", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declarations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CiviCVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declare"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("CiviCVarDecl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "declarations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecOtherwise(
+        RuleSemantic(
+          "declarations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Stmt", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declarations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "destructions-local"
+      , VarWild(None(), None())
+      , PhraseTypePostfix(PhraseTypeSynName("stmts"), "?")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "destructions-local"
+        , Phrase(
+            [WordAtom("'{'"), WordVar(VarVarStemSuffixPostfix("Stmts", None(), None())), WordAtom("'}'")]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "destructions-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "destructions-local"
+        , Phrase([WordAtom("'{'"), WordAtom("'}'")])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "destructions-local"
+        , Phrase([])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "destructions-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "destruct"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("CPPVarDecl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "destructions-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecOtherwise(
+        RuleSemantic(
+          "destructions-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Stmt", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "destructions-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "initialisations-local"
+      , VarWild(None(), None())
+      , PhraseTypePostfix(PhraseTypeSynName("stmts"), "?")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-local"
+        , Phrase(
+            [WordAtom("'{'"), WordVar(VarVarStemSuffixPostfix("Stmts", None(), None())), WordAtom("'}'")]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialisations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-local"
+        , Phrase([WordAtom("'{'"), WordAtom("'}'")])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-local"
+        , Phrase([])
+        , None()
+        , Terms([TermGroup(Terms([]))])
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("CiviCVarDecl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialise"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("CiviCVarDecl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "initialisations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecOtherwise(
+        RuleSemantic(
+          "initialisations-local"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Stmt", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialisations-local"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Stmts", None(), Some("?")))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("START")]))
+          , "start"
+          , [PhraseTypeSynName("pgm")]
+          )
+        ]
+      )
+    , SpecSemantics(
+        "start"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("start")
+      , None()
+      , TermComputes(None(), TermName("values"))
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "start"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Pgm", None(), None()))])
+        , None()
+        , Terms(
+            [ TermApp(
+                "initialise-binding"
+              , TermApp(
+                  "initialise-storing"
+                , TermApp(
+                    "initialise-giving"
+                  , TermApp(
+                      "initialise-memos"
+                    , TermApp(
+                        "finalise-failing"
+                      , TermApp(
+                          "finalise-throwing"
+                        , TermApp(
+                            "overload-multithread"
+                          , TermApp(
+                              "postpone-after-effect"
+                            , TermSemantics(
+                                "run"
+                              , Phrase([WordVar(VarVarStemSuffixPostfix("Pgm", None(), None()))])
+                              , None()
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("Pgm")]))
+          , "pgm"
+          , [PhraseTypeSynName("decls")]
+          )
+        ]
+      )
+    , SpecSemantics(
+        "run"
+      , VarVarStemSuffixPostfix("Decls", None(), None())
+      , PhraseTypeSynName("pgm")
+      , None()
+      , TermComputes(None(), TermName("values"))
+      , Some(
+          Defined(
+            TermApp(
+              "scope"
+            , TermGroup(
+                Terms(
+                  [ TermApp(
+                      "bind"
+                    , TermGroup(
+                        Terms(
+                          [ TermString("\"_std\"")
+                          , TermApp(
+                              "allocate-initialised-variable"
+                            , TermGroup(
+                                Terms(
+                                  [TermName("environments"), TermApp("map", TermGroup(Terms([])))]
+                                )
+                              )
+                            )
+                          ]
+                        )
+                      )
+                    )
+                  , TermApp(
+                      "sequential"
+                    , TermGroup(
+                        Terms(
+                          [ TermSemantics(
+                              "initialisations-lib"
+                            , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+                            , None()
+                            )
+                          , TermApp(
+                              "scope"
+                            , TermGroup(
+                                Terms(
+                                  [ TermApp(
+                                      "collateral"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermSemantics(
+                                              "declarations"
+                                            , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+                                            , None()
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  , TermApp(
+                                      "sequential"
+                                    , TermGroup(
+                                        Terms(
+                                          [ TermSemantics(
+                                              "initialisations"
+                                            , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+                                            , None()
+                                            )
+                                          , TermApp(
+                                              "apply"
+                                            , TermGroup(
+                                                Terms(
+                                                  [ TermApp(
+                                                      "assigned"
+                                                    , TermGroup(
+                                                        Terms(
+                                                          [TermApp("bound", TermGroup(Terms([TermString("\"main\"")])))]
+                                                        )
+                                                      )
+                                                    )
+                                                  , TermApp("tuple", TermGroup(Terms([])))
+                                                  ]
+                                                )
+                                              )
+                                            )
+                                          , TermSemantics(
+                                              "destructions"
+                                            , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+                                            , None()
+                                            )
+                                          ]
+                                        )
+                                      )
+                                    )
+                                  ]
+                                )
+                              )
+                            )
+                          ]
+                        )
+                      )
+                    )
+                  ]
+                )
+              )
+            )
+          )
+        )
+      )
+    , SpecSyntax(
+        [ Prod(
+            Some(VarStems([VarStem("Decls")]))
+          , "decls"
+          , [PhraseTypeSequence(PhraseTypeSynName("decl"), PhraseTypePostfix(PhraseTypeSynName("decls"), "?"))]
+          )
+        ]
+      )
+    , SpecSemantics(
+        "declarations"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decls")
+      , None()
+      , TermPostfix(
+          TermGroup(Terms([TermComputes(None(), TermName("environments"))]))
+        , "+"
+        )
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declare"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "declarations"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "declare"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "declarations"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "initialisations"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decls")
+      , None()
+      , TermPostfix(
+          TermGroup(Terms([TermComputes(None(), TermName("null-type"))]))
+        , "+"
+        )
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialise"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialise"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "initialisations"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "initialisations-lib"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decls")
+      , None()
+      , TermPostfix(
+          TermGroup(Terms([TermComputes(None(), TermName("null-type"))]))
+        , "+"
+        )
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-lib"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialise-lib"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "initialisations-lib"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "initialise-lib"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "initialisations-lib"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "initialise"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decl")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    , SpecSemantics(
+        "initialise-lib"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decl")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    , SpecSemantics(
+        "declare"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decl")
+      , None()
+      , TermComputes(None(), TermName("environments"))
+      , None()
+      )
+    , SpecSemantics(
+        "destructions"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decls")
+      , None()
+      , TermPostfix(
+          TermGroup(Terms([TermComputes(None(), TermName("environments"))]))
+        , "+"
+        )
+      , None()
+      )
+    , SpecRule(
+        RuleSemantic(
+          "destructions"
+        , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "destruct"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecRule(
+        RuleSemantic(
+          "destructions"
+        , Phrase(
+            [ WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))
+            , WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))
+            ]
+          )
+        , None()
+        , Terms(
+            [ TermSemantics(
+                "destruct"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decl", None(), None()))])
+              , None()
+              )
+            , TermSemantics(
+                "destructions"
+              , Phrase([WordVar(VarVarStemSuffixPostfix("Decls", None(), None()))])
+              , None()
+              )
+            ]
+          )
+        )
+      )
+    , SpecSemantics(
+        "destruct"
+      , VarWild(None(), None())
+      , PhraseTypeSynName("decl")
+      , None()
+      , TermComputes(None(), TermName("null-type"))
+      , None()
+      )
+    ]
+  , []
+  )
+)

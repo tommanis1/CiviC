@@ -1,0 +1,22 @@
+initialise-binding initialise-storing
+    finalise-failing multithread scope
+  (
+  collateral(
+  	match(tuple("x"), tuple(pattern abstraction(bind("b",alloc-init(values, given))))),
+  	match(tuple("x"), unpack "c"),
+  	 match(tuple(tuple("x")), unpack "z")
+  	
+
+    ),
+    
+    
+  
+  sequential (
+  print(assigned bound"b"),
+  print(assigned bound"c"),
+  print(assigned bound"z")
+  
+  
+  )
+  
+  )

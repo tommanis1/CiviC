@@ -1,0 +1,710 @@
+initialise-binding initialise-storing initialise-giving initialise-memos finalise-failing finalise-throwing overload-multithread postpone-after-effect scope
+  (bind
+     ("_std",
+      allocate-initialised-variable
+        (environments,
+         map
+           ( ))),
+   sequential
+     (assign
+        (bound "_std",
+         map-unite
+           (assigned
+              (bound
+                 ("_std")),
+            {"std::this_thread::sleep_for" |-> function closure
+                                                 (scope
+                                                    (match
+                                                       (given,
+                                                        tuple
+                                                          (pattern closure
+                                                             (bind
+                                                                ("n",
+                                                                 alloc-init
+                                                                   (ints,
+                                                                    given))))),
+                                                     sequential
+                                                       (thread-sleep
+                                                          (cast
+                                                             (assigned bound
+                                                                "n",
+                                                              ints))))),
+             "std::thread" |-> simple-class
+                                 ("std::thread",
+                                  {"detached" |-> alloc-init
+                                                    (booleans,
+                                                     false),
+                                   "_init" |-> pattern abstraction
+                                                 (bind
+                                                    ("index",
+                                                     alloc-init
+                                                       (values,
+                                                        allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                                          (tuple-head given,
+                                                           tuple-tail given))))},
+                                  {"join" |-> method sequential
+                                                (if-else
+                                                   (assigned self
+                                                      "detached",
+                                                    null,
+                                                    sequential
+                                                      (thread-join lookup-index assigned self
+                                                         "index",
+                                                       null))),
+                                   "detach" |-> method sequential
+                                                  (assign
+                                                     (self "detached",
+                                                      true),
+                                                   null),
+                                   "(destructor)" |-> method sequential if-else
+                                                        (or
+                                                           (assigned self
+                                                              "detached",
+                                                            is-thread-terminated lookup-index assigned self
+                                                              "index"),
+                                                         null,
+                                                         throw "terminate called without an active exception")}),
+             "std::jthread" |-> simple-class
+                                  ("std::jthread",
+                                   {"_init" |-> pattern abstraction
+                                                  (bind
+                                                     ("index",
+                                                      alloc-init
+                                                        (values,
+                                                         allocate-index thread-activate thread-joinable postpone-after-effect supply
+                                                           (tuple-head given,
+                                                            tuple-tail given))))},
+                                   {"join" |-> method thread-join lookup-index assigned self
+                                                 "index"})})),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      ( ),
+      scope
+        (collateral
+           (( ),
+            ( ),
+            bind
+              ("foo",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("bar",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("foobar",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("four",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("five",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("six",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values))),
+            bind
+              ("main",
+               allocate-variable
+                 (functions
+                    (tuples
+                       ((values)*),
+                     values)))),
+         sequential
+           (( ),
+            ( ),
+            assign
+              (bound
+                 ("foo"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("a",
+                                    alloc
+                                      (values)),
+                                 bind
+                                   ("b",
+                                    alloc
+                                      (values)),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound
+                                      ("a"),
+                                    decimal-natural
+                                      ("1")),
+                                 assign
+                                   (bound
+                                      ("b"),
+                                    decimal-natural
+                                      ("2")),
+                                 ( ),
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("200"))),
+                                 print "2"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("bar"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("a",
+                                    alloc
+                                      (values)),
+                                 bind
+                                   ("b",
+                                    alloc
+                                      (values)),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound
+                                      ("a"),
+                                    decimal-natural
+                                      ("1")),
+                                 assign
+                                   (bound
+                                      ("b"),
+                                    decimal-natural
+                                      ("2")),
+                                 ( ),
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("400"))),
+                                 print "3"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("foobar"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("a",
+                                    alloc
+                                      (values)),
+                                 bind
+                                   ("b",
+                                    alloc
+                                      (values)),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound
+                                      ("a"),
+                                    decimal-natural
+                                      ("1")),
+                                 assign
+                                   (bound
+                                      ("b"),
+                                    decimal-natural
+                                      ("2")),
+                                 ( ),
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("100"))),
+                                 print "1"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("four"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("a",
+                                    alloc
+                                      (values)),
+                                 bind
+                                   ("b",
+                                    alloc
+                                      (values)),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound
+                                      ("a"),
+                                    decimal-natural
+                                      ("1")),
+                                 assign
+                                   (bound
+                                      ("b"),
+                                    decimal-natural
+                                      ("2")),
+                                 ( ),
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("600"))),
+                                 print "4"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("five"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("a",
+                                    alloc
+                                      (values)),
+                                 bind
+                                   ("b",
+                                    alloc
+                                      (values)),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound
+                                      ("a"),
+                                    decimal-natural
+                                      ("1")),
+                                 assign
+                                   (bound
+                                      ("b"),
+                                    decimal-natural
+                                      ("2")),
+                                 ( ),
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("900"))),
+                                 print "5"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("six"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                ( ),
+                              sequential
+                                (( ),
+                                 apply
+                                   (lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       "std::this_thread::sleep_for"),
+                                    tuple
+                                      (decimal-natural
+                                         ("1000"))),
+                                 print "6"))),
+                        sequential
+                          (( ),
+                           return given))))),
+            assign
+              (bound
+                 ("main"),
+               function closure
+                 (scope
+                    (match
+                       (given,
+                        tuple
+                          ( )),
+                     handle-return give
+                       (handle-return
+                          (scope
+                             (collateral
+                                (bind
+                                   ("tsix",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 bind
+                                   ("tfour",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 bind
+                                   ("tfive",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 bind
+                                   ("ttt",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 bind
+                                   ("t",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 bind
+                                   ("tt",
+                                    alloc
+                                      (references
+                                         (objects))),
+                                 ( )),
+                              sequential
+                                (assign
+                                   (bound "tsix",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("six"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 assign
+                                   (bound "tfour",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("four"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 assign
+                                   (bound "tfive",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("five"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 assign
+                                   (bound "ttt",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("foobar"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 assign
+                                   (bound "t",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("foo"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 assign
+                                   (bound "tt",
+                                    reference give
+                                      (checked dereference force class-instantiator lookup
+                                         (assigned
+                                            (bound
+                                               ("_std")),
+                                          "std::thread"),
+                                       extend-object-map
+                                         (given,
+                                          match
+                                            (tuple
+                                               (assigned
+                                                  (bound
+                                                     ("bar"))),
+                                             lookup
+                                               (object-feature-map given,
+                                                "_init"))))),
+                                 ( ),
+                                 ( ),
+                                 ( ),
+                                 ( ),
+                                 ( ),
+                                 ( ),
+                                 ( )))),
+                        sequential
+                          (give
+                             (else
+                                (lookup
+                                   (class-feature-map lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       object-class-name checked dereference assigned bound
+                                         "tsix"),
+                                    "(destructor)"),
+                                 null),
+                              if-else
+                                (is-equal
+                                   (given,
+                                    null),
+                                 null,
+                                 apply
+                                   (given,
+                                    tuple
+                                      (assigned bound
+                                         "tsix")))),
+                           give
+                             (else
+                                (lookup
+                                   (class-feature-map lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       object-class-name checked dereference assigned bound
+                                         "tfour"),
+                                    "(destructor)"),
+                                 null),
+                              if-else
+                                (is-equal
+                                   (given,
+                                    null),
+                                 null,
+                                 apply
+                                   (given,
+                                    tuple
+                                      (assigned bound
+                                         "tfour")))),
+                           give
+                             (else
+                                (lookup
+                                   (class-feature-map lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       object-class-name checked dereference assigned bound
+                                         "tfive"),
+                                    "(destructor)"),
+                                 null),
+                              if-else
+                                (is-equal
+                                   (given,
+                                    null),
+                                 null,
+                                 apply
+                                   (given,
+                                    tuple
+                                      (assigned bound
+                                         "tfive")))),
+                           give
+                             (else
+                                (lookup
+                                   (class-feature-map lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       object-class-name checked dereference assigned bound
+                                         "ttt"),
+                                    "(destructor)"),
+                                 null),
+                              if-else
+                                (is-equal
+                                   (given,
+                                    null),
+                                 null,
+                                 apply
+                                   (given,
+                                    tuple
+                                      (assigned bound
+                                         "ttt")))),
+                           give
+                             (else
+                                (lookup
+                                   (class-feature-map lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       object-class-name checked dereference assigned bound
+                                         "t"),
+                                    "(destructor)"),
+                                 null),
+                              if-else
+                                (is-equal
+                                   (given,
+                                    null),
+                                 null,
+                                 apply
+                                   (given,
+                                    tuple
+                                      (assigned bound
+                                         "t")))),
+                           give
+                             (else
+                                (lookup
+                                   (class-feature-map lookup
+                                      (assigned
+                                         (bound
+                                            ("_std")),
+                                       object-class-name checked dereference assigned bound
+                                         "tt"),
+                                    "(destructor)"),
+                                 null),
+                              if-else
+                                (is-equal
+                                   (given,
+                                    null),
+                                 null,
+                                 apply
+                                   (given,
+                                    tuple
+                                      (assigned bound
+                                         "tt")))),
+                           ( ),
+                           return given))))),
+            apply
+              (assigned
+                 (bound
+                    ("main")),
+               tuple
+                 ( )),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( ),
+            ( )))))

@@ -1,0 +1,52 @@
+2023-06-22 22:44:06,552 INFO Running C++ tests for iteration 2
+2023-06-22 22:44:07,213 INFO Started container return code: 0, 320c87a023e4a8c3e6df1baec0ca567187849172aa4e7229e51c592ea1514072
+, 
+2023-06-22 22:44:07,214 INFO Started: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp, outfile: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_output_cpp-2.txt
+2023-06-22 22:44:07,214 INFO Testing: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp
+2023-06-22 22:44:08,815 INFO Compile 0, , 
+2023-06-22 22:44:08,817 INFO Started running
+2023-06-22 22:44:11,535 INFO Terminated with 134 output:terminate called after throwing an instance of 'std::future_error'
+  what():  std::future_error: Promise already satisfied
+2023-06-22 22:44:11,535 INFO Getting the count failed iinc
+2023-06-22 22:44:11,535 INFO generate_a_continue_file file: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp continue_counter:1, count:1
+2023-06-22 22:44:11,535 INFO found in: try { std::cout << "count:1 "; std::jthread t1(calculation1, std::ref(prom)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:44:11,535 INFO loc : 1
+2023-06-22 22:44:11,536 INFO continue_file : data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_1.cpp
+2023-06-22 22:44:11,536 INFO Testing: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_1.cpp
+2023-06-22 22:44:13,202 INFO Compile 0, , 
+2023-06-22 22:44:13,204 INFO Started running
+2023-06-22 22:44:43,206 INFO Timeout
+2023-06-22 22:44:43,388 INFO Terminating ./output 0, , 
+2023-06-22 22:44:43,389 INFO Wrote partial result 
+2023-06-22 22:44:43,389 INFO Getting the count failed iinc
+2023-06-22 22:44:43,389 INFO generate_a_continue_file, data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp, 2, 2
+2023-06-22 22:44:43,389 INFO generate_a_continue_file file: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp continue_counter:2, count:2
+2023-06-22 22:44:43,389 INFO found in: try { std::cout << "count:2 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:44:43,389 INFO loc : 2
+2023-06-22 22:44:43,389 INFO continue_file : data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_2.cpp
+2023-06-22 22:44:43,390 INFO Testing: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_2.cpp
+2023-06-22 22:44:44,903 INFO Compile 0, , 
+2023-06-22 22:44:44,905 INFO Started running
+2023-06-22 22:45:14,907 INFO Timeout
+2023-06-22 22:45:15,072 INFO Terminating ./output 0, , 
+2023-06-22 22:45:15,073 INFO Wrote partial result 
+2023-06-22 22:45:15,073 INFO Getting the count failed iinc
+2023-06-22 22:45:15,073 INFO generate_a_continue_file, data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp, 3, 3
+2023-06-22 22:45:15,073 INFO generate_a_continue_file file: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp continue_counter:3, count:3
+2023-06-22 22:45:15,073 INFO found in: try { std::cout << "count:3 "; std::jthread t2(calculation2, std::ref(fut)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:45:15,073 INFO loc : 3
+2023-06-22 22:45:15,073 INFO continue_file : data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_3.cpp
+2023-06-22 22:45:15,073 INFO Testing: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_3.cpp
+2023-06-22 22:45:16,549 INFO Compile 0, , 
+2023-06-22 22:45:16,551 INFO Started running
+2023-06-22 22:45:19,292 INFO Terminated with 134 output:terminate called after throwing an instance of 'std::future_error'
+  what():  std::future_error: Promise already satisfied
+2023-06-22 22:45:19,293 INFO Getting the count failed iinc
+2023-06-22 22:45:19,293 INFO generate_a_continue_file file: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation.cpp continue_counter:4, count:4
+2023-06-22 22:45:19,293 INFO found in: try { std::cout << "count:4 "; std::jthread t1(calculation1, std::ref(prom)) ;} catch (...) { std::cout << "fail" <<std::endl;}
+2023-06-22 22:45:19,293 INFO loc : 4
+2023-06-22 22:45:19,293 INFO continue_file : data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_4.cpp
+2023-06-22 22:45:19,294 INFO Testing: data/runs/run-20230622-224133/iteration-2-cpp/permutations_shared_computation_cont_4.cpp
+2023-06-22 22:45:20,769 INFO Compile 0, , 
+2023-06-22 22:45:20,770 INFO Started running
+2023-06-22 22:45:21,911 INFO Succes, count:5

@@ -1,0 +1,9 @@
+initialise-binding initialise-storing initialise-giving finalise-failing finalise-throwing 
+scope (collateral(
+bind("t1", multithread sequential (print(1))),
+bind("t2", multithread print(2))
+),
+sequential(
+thread-join bound "t1",
+print("emd")
+))
