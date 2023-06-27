@@ -1,8 +1,9 @@
 #!/bin/bash
 
 DEPENDENCIES="$(pwd)/dependencies"
-#TODO replace with find
-cbsc="$DEPENDENCIES/funcons-intgen/dist-newstyle/build/x86_64-linux/ghc-9.0.2/funcons-intgen-0.2.0.3/x/cbsc/build/cbsc/cbsc"
+cbsc=$(find "$DEPENDENCIES/funcons-intgen" -name "cbsc" -type f | sort | head -n 1)
+
+
 #
 #$(${cbsc} )
 #
