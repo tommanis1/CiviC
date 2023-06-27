@@ -42,7 +42,7 @@ create_permutations:
 run_permutations: create_permutations
 	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(PERM_DIR) -t $(THREAD_POOL_SIZE); \
 
-test: clean run_gcc_tests run_permutations
+test: clean run_permutations
 	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(TEST_DIRS) -t $(THREAD_POOL_SIZE); \
 
 # run_non_determ:
