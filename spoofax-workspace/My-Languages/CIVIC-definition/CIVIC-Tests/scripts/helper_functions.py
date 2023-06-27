@@ -14,6 +14,7 @@ def run(cmd):
     return return_code, stdout, stderr
 
 
+
 def select_files_with_extensions(dir, extensions, include_subdirectories=True):
     matches = {}
     
@@ -22,7 +23,7 @@ def select_files_with_extensions(dir, extensions, include_subdirectories=True):
             for filename in filenames:
                 for extension in extensions:
                     if filename.endswith(extension):
-                        basename = filename[:filename.rfind(extension)]
+                        basename = os.path.join(root, filename[:filename.rfind(extension)])
                         if basename not in matches:
                             matches[basename] = set()
                         matches[basename].add(extension)
@@ -30,12 +31,12 @@ def select_files_with_extensions(dir, extensions, include_subdirectories=True):
         for filename in os.listdir(dir):
             for extension in extensions:
                 if filename.endswith(extension):
-                    basename = filename[:filename.rfind(extension)]
+                    basename = os.path.join(dir, filename[:filename.rfind(extension)])
                     if basename not in matches:
                         matches[basename] = set()
                     matches[basename].add(extension)
 
-    result = [os.path.join(dir, name) for name, exts in matches.items() if exts == set(extensions)]
+    result = [name for name, exts in matches.items() if exts == set(extensions)]
     return result
 
 def get_logger(name, log_file, level=logging.INFO):
@@ -69,3 +70,7 @@ def run_with_log(cmd, str, logger):
     stderr = re.sub(r'\x1b\[[0-9;]*[mK]', '', result.stderr)
 
     logger.info(f"{str} {result.returncode}, {stdout}, {stderr}")
+
+def runp(cmd):
+    r, o, e = run(cmd)
+    if r : print(e)

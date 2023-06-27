@@ -9,7 +9,7 @@ start_container() {
 # Function to pass the file to the container and run the file in the container with g++
 run_cpp_in_container() {
     # Copy the file into the container, compile and run it
-    sudo docker exec -it cpp_container /bin/bash -c "g++ -O0 -std=c++2b -o output /usr/src/myapp/$1 && ./output"
+    sudo docker exec -it cpp_container /bin/bash -c "g++ -O0 -D_GLIBCXX_ASSERTIONS -std=gnu++2b -o output /usr/src/myapp/$1 && ./output"
 }
 
 # Function to stop and remove the container

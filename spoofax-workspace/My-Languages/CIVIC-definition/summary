@@ -1,0 +1,28 @@
+The following classes and member functions are defined:
+Class Name: std::condition_variable
+Functions: (constructor), wait, notify_all
+
+Class Name: std::mutex
+Functions: (constructor), lock, unlock
+
+Class Name: std::unique_lock
+Functions: (constructor), (destructor), lock, unlock, unlock, (destructor)
+
+Class Name: std::shared_mutex
+Functions: (constructor), lock, unlock, unlock_shared
+
+Class Name: std::promise
+Functions: (constructor), get_future
+
+Class Name: std::packaged_task
+Functions: (constructor), get_future, _call
+
+Class Name: 
+Functions: (constructor), get
+
+Class Name: std::thread
+Functions: (constructor), join, detach
+
+Class Name: std::jthread
+Functions: (constructor), join
+

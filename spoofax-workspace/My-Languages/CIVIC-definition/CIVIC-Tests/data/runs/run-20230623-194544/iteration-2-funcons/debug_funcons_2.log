@@ -1,0 +1,90 @@
+2023-06-23 19:49:50,578 INFO Running Funcons tests for iteration 2
+2023-06-23 19:49:50,579 INFO Created 1 civ files
+2023-06-23 19:49:56,411 INFO Gen fct:  255, Generating funcons for all .civ files in ./data/runs/run-20230623-194544/iteration-2-funcons
+, WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.google.inject.internal.cglib.core.$ReflectUtils$1 (file:/home/l/Documents/year_4/CiviC-Semantics/dependencies/org.metaborg.sunshine2-2.5.16.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of com.google.inject.internal.cglib.core.$ReflectUtils$1
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+19:49:52 INFO  - Building file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons
+19:49:52 INFO  - Building 1 sources, 0 includes of language impl. org.example:CIVIC-Editor:0.1.0-SNAPSHOT
+19:49:54 ERROR - ERROR in file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons/permutations_shared_computation.civ:1
+19:49:54 ERROR -     void printThreadMsg(const std::string& msg){
+19:49:54 ERROR -                          ^^^^
+19:49:54 ERROR - Syntax error near unexpected character 'o'
+19:49:54 ERROR - 
+19:49:54 ERROR - ERROR in file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons/permutations_shared_computation.civ:1
+19:49:54 ERROR -     std::promise<int> prom;
+19:49:54 ERROR -     std::future<int> fut = prom.get_future();
+19:49:54 ERROR -     ^^^^^^^^^^^^^^^^^^^^^^^
+19:49:54 ERROR - Syntax error near unexpected character 's'
+19:49:54 ERROR - 
+19:49:56 ERROR - Transformation failed unexpectedly for file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons/permutations_shared_computation.civ
+org.metaborg.core.transform.TransformException: Cannot transform analyze unit org.metaborg.spoofax.core.unit.AnalyzeUnit@6dbdeb69, it has no AST
+	at org.metaborg.spoofax.core.transform.StrategoTransformer.transform(StrategoTransformer.java:84)
+	at org.metaborg.spoofax.core.transform.StrategoTransformer.transform(StrategoTransformer.java:1)
+	at org.metaborg.core.transform.TransformService.transform(TransformService.java:88)
+	at org.metaborg.core.transform.ITransformService.transform(ITransformService.java:154)
+	at org.metaborg.core.build.Builder.transform(Builder.java:504)
+	at org.metaborg.core.build.Builder.updateLanguageResources(Builder.java:282)
+	at org.metaborg.core.build.Builder.build(Builder.java:167)
+	at org.metaborg.spoofax.core.build.SpoofaxBuilder.build(SpoofaxBuilder.java:48)
+	at org.metaborg.spoofax.core.build.SpoofaxBuilder.build(SpoofaxBuilder.java:1)
+	at org.metaborg.core.processing.BlockingProcessor.lambda$0(BlockingProcessor.java:49)
+	at org.metaborg.core.processing.BlockingTask.schedule(BlockingTask.java:25)
+	at org.metaborg.sunshine.command.base.BuildCommand.run(BuildCommand.java:149)
+	at org.metaborg.sunshine.command.base.BuildCommand.run(BuildCommand.java:92)
+	at org.metaborg.sunshine.command.local.LocalBuildCommand.run(LocalBuildCommand.java:33)
+	at org.metaborg.sunshine.Runner.run(Runner.java:79)
+	at org.metaborg.sunshine.Main.run(Main.java:27)
+	at org.metaborg.sunshine.Main.main(Main.java:16)
+19:49:56 ERROR - EXCEPTION in /home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons/permutations_shared_computation.civ
+19:49:56 ERROR - Transformation failed unexpectedly for file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons/permutations_shared_computation.civ
+19:49:56 ERROR - 	Caused by:
+19:49:56 ERROR - org.metaborg.core.transform.TransformException: Cannot transform analyze unit org.metaborg.spoofax.core.unit.AnalyzeUnit@6dbdeb69, it has no AST
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.transform.StrategoTransformer.transform(StrategoTransformer.java:84)
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.transform.StrategoTransformer.transform(StrategoTransformer.java:1)
+19:49:56 ERROR - 	at org.metaborg.core.transform.TransformService.transform(TransformService.java:88)
+19:49:56 ERROR - 	at org.metaborg.core.transform.ITransformService.transform(ITransformService.java:154)
+19:49:56 ERROR - 	at org.metaborg.core.build.Builder.transform(Builder.java:504)
+19:49:56 ERROR - 	at org.metaborg.core.build.Builder.updateLanguageResources(Builder.java:282)
+19:49:56 ERROR - 	at org.metaborg.core.build.Builder.build(Builder.java:167)
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.build.SpoofaxBuilder.build(SpoofaxBuilder.java:48)
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.build.SpoofaxBuilder.build(SpoofaxBuilder.java:1)
+19:49:56 ERROR - 	at org.metaborg.core.processing.BlockingProcessor.lambda$0(BlockingProcessor.java:49)
+19:49:56 ERROR - 	at org.metaborg.core.processing.BlockingTask.schedule(BlockingTask.java:25)
+19:49:56 ERROR - 	at org.metaborg.sunshine.command.base.BuildCommand.run(BuildCommand.java:149)
+19:49:56 ERROR - 	at org.metaborg.sunshine.command.base.BuildCommand.run(BuildCommand.java:92)
+19:49:56 ERROR - 	at org.metaborg.sunshine.command.local.LocalBuildCommand.run(LocalBuildCommand.java:33)
+19:49:56 ERROR - 	at org.metaborg.sunshine.Runner.run(Runner.java:79)
+19:49:56 ERROR - 	at org.metaborg.sunshine.Main.run(Main.java:27)
+19:49:56 ERROR - 	at org.metaborg.sunshine.Main.main(Main.java:16)
+19:49:56 ERROR - 
+19:49:56 ERROR - 
+19:49:56 ERROR - ERROR in file:///home/l/Documents/year_4/CiviC-Semantics/spoofax-workspace/My-Languages/CIVIC-definition/CIVIC-Tests/data/runs/run-20230623-194544/iteration-2-funcons
+19:49:56 ERROR - Transformation failed unexpectedly
+19:49:56 ERROR - 	Caused by:
+19:49:56 ERROR - org.metaborg.core.transform.TransformException: Cannot transform analyze unit org.metaborg.spoofax.core.unit.AnalyzeUnit@6dbdeb69, it has no AST
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.transform.StrategoTransformer.transform(StrategoTransformer.java:84)
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.transform.StrategoTransformer.transform(StrategoTransformer.java:1)
+19:49:56 ERROR - 	at org.metaborg.core.transform.TransformService.transform(TransformService.java:88)
+19:49:56 ERROR - 	at org.metaborg.core.transform.ITransformService.transform(ITransformService.java:154)
+19:49:56 ERROR - 	at org.metaborg.core.build.Builder.transform(Builder.java:504)
+19:49:56 ERROR - 	at org.metaborg.core.build.Builder.updateLanguageResources(Builder.java:282)
+19:49:56 ERROR - 	at org.metaborg.core.build.Builder.build(Builder.java:167)
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.build.SpoofaxBuilder.build(SpoofaxBuilder.java:48)
+19:49:56 ERROR - 	at org.metaborg.spoofax.core.build.SpoofaxBuilder.build(SpoofaxBuilder.java:1)
+19:49:56 ERROR - 	at org.metaborg.core.processing.BlockingProcessor.lambda$0(BlockingProcessor.java:49)
+19:49:56 ERROR - 	at org.metaborg.core.processing.BlockingTask.schedule(BlockingTask.java:25)
+19:49:56 ERROR - 	at org.metaborg.sunshine.command.base.BuildCommand.run(BuildCommand.java:149)
+19:49:56 ERROR - 	at org.metaborg.sunshine.command.base.BuildCommand.run(BuildCommand.java:92)
+19:49:56 ERROR - 	at org.metaborg.sunshine.command.local.LocalBuildCommand.run(LocalBuildCommand.java:33)
+19:49:56 ERROR - 	at org.metaborg.sunshine.Runner.run(Runner.java:79)
+19:49:56 ERROR - 	at org.metaborg.sunshine.Main.run(Main.java:27)
+19:49:56 ERROR - 	at org.metaborg.sunshine.Main.main(Main.java:16)
+19:49:56 ERROR - 
+19:49:56 ERROR - 
+19:49:56 INFO  - 4 messages (1 exception, 3 errors, 0 warnings, 0 notes)
+19:49:56 ERROR - Build failed
+
+2023-06-23 19:49:56,413 INFO Created 0 fct files

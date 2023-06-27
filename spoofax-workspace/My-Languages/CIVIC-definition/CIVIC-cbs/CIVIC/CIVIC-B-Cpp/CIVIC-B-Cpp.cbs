@@ -189,30 +189,39 @@ Rule initialise-lib[[ 'include' '<' 'shared_mutex' '>' ]] = assign(bound "_std",
  	}
  	)}))
 Rule initialise-lib[[ 'include' '<' 'future' '>' ]] = assign(bound "_std", map-unite(assigned(bound("_std")),{
-	"std::promise" |-> simple-class("std::promise",
-	{"promise" |-> allocate-initialised-variable(shared-state, shared-state-create)},
+	"std::promise" |-> simple-class("std::promise",{"" |-> ""},
 	{
-		"get" |-> method(shared-state-get assigned self "promise"),
- 		"set" |->method(
-        	sequential (shared-state-set(assigned self("promise"), assigned bound "val")), 
-        	"val"
- 		)
+		"(constructor)" |-> method(reference extend-object-map( dereference force class-instantiator lookup(assigned(bound("_std")), "std::promise"),
+			{"promise" |-> allocate-initialised-variable(shared-state, shared-state-create)		}
+		), unpack "shared-state"),
+		"get_future" |-> method(
+			reference object(fresh-atom, "std::future", {"shared-state" |-> assigned self "promise"})),
+		"set" |->method(
+        	sequential (shared-state-set(assigned self("promise"), assigned bound "val")
+        ), unpack "val")
  	}),
-	"std::packaged_task" |->   simple-class("std::packaged_task", {
-		"shared-state" |-> allocate-initialised-variable(shared-state, shared-state-create),
-		"_init" |-> tuple(unpack "callable")
-		
-	},
+	"std::packaged_task" |->   simple-class("std::packaged_task", {""|->""},
 	{
+	"(constructor)" |-> method(reference extend-object-map(
+		dereference force class-instantiator lookup(assigned(bound("_std")), "std::packaged_task"),
+        {
+            "shared-state" |-> allocate-initialised-variable(shared-state, shared-state-create),
+            "callable" |-> alloc-init(values, assigned bound "callable")
+            
+        }), unpack "callable"),
 	
 	"get_future" |-> method(
 		reference object(fresh-atom, "std::future", {"shared-state" |-> assigned self "shared-state"})),
-	"_call" |-> method(shared-state-set(assigned self "shared-state", apply(assigned self "callable", assigned bound "args")) , "args")
+	"_call" |-> method(shared-state-set(assigned self "shared-state", apply(assigned self "callable", assigned bound "args")) , unpack "args")
 	})
 	,
-	"std::future" |->simple-class("std::future",{"_init" |-> [unpack( "shared-state")]} ,{
+	"std::future" |->simple-class({""|->""}, {
+		"(constructor)" |-> method(reference extend-object-map( dereference force class-instantiator lookup(assigned(bound("_std")), "std::future"),
+		{
+		"shared-state" |-> allocate-initialised-variable(shared-state, assigned bound "shared-state")
+		}), unpack "shared-state"),
 	
-	"get"|-> method-zero-params(shared-state-get( self "shared-state")) 
+	"get"|-> method(shared-state-get( self "shared-state")) 
 	})
 //	,
 //	"std::async" |-> function closure scope(match(given, tuple(unpack("args"))),
@@ -283,7 +292,7 @@ Rule initialise-lib[[ 'include' '<' 'thread' '>' ]] = assign(bound "_std", map-u
 			null
 		),
 		"(destructor)" |-> 
-		method thread-atomic sequential(
+		method sequential(
 		 if-else(
 			or(
 				assigned self "detached",
@@ -586,3 +595,4 @@ Rule declarations-local[[ CPPVarDecl Stmts? ]] = declare[[ CPPVarDecl ]], declar
 //
 //Rule initialise[[ CPPVarDecl ]] = ()
 //Rule declare[[ CPPVarDecl ]] = var-declare[[ CPPVarDecl]]
+

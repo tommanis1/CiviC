@@ -8,7 +8,6 @@ imports
 
 imports
   cbs-gen/CIVIC-Funcons
-  cbs-gen/CIVIC-A-Disambiguation
   cbs-gen/CIVIC-B-Cpp
 
 // Language "CIVIC"
@@ -67,8 +66,13 @@ to-funcons:
   |[ eval-bool[: (:Bool:) :] ]|
 to-funcons:
   |[ eval[: (:ID:)((:Exprs?:)) :] ]| ->
-  |[ apply (eval[: (:ID:) :], 
-             tuple (eval-exprs[: (:Exprs?:) :])) ]|
+  |[ if-else (is (eval[: (:ID:) :], 
+                     functions), 
+             apply (eval[: (:ID:) :], 
+                     tuple (eval-exprs[: (:Exprs?:) :])), 
+             apply (get-class-method (dereference eval[: (:ID:) :], 
+                             "_callable"), 
+                     tuple (eval-exprs[: (:Exprs?:) :]))) ]|
 to-funcons:
   |[ eval[: ((:E:)) :] ]| ->
   |[ eval[: (:E:) :] ]|

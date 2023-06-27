@@ -47,25 +47,12 @@ Rule
         handle-abrupt(
           sequential(
             while-true(or(is-some-thread-active, is-some-thread-sleeping),
-//            thread-atomic
            		sequential(
-//           			print tuple("begin loop",current-sleep-map,is-some-thread-sleeping, set-size current-active-thread-set, is-equal(set-size current-active-thread-set, 0)),
-           			
            			if-else(and(is-equal(set-size current-active-thread-set, 0), is-some-thread-sleeping),
-//           				thread-atomic 
-//           				sequential(
            				force-wake tuple-elements sleeping-threads-lowest-v map-elements current-sleep-map,
-           				
-//           				),
            				null
            			),
            			update-thread-stepping,
-//           		 print(tuple("sdsdf", current-thread-stepping)),
-           			
-//           			if-else(is-equal(current-thread-stepping, "empty"),
-//           				sequential(
-//           					print("rr")
-//           				),
            				sequential(
            				handle-abrupt(
            					thread-step, 
@@ -232,37 +219,7 @@ Rule  force-wake(V:ints, S:syncs) ~>
 	)
 //
 // Suspend I for V steps
-Funcon thread-sleep(V:ints) :=> null-type ~>
-	 thread-atomic
-	 sequential(
-closed( scope(
-	{
-		"wake-time" |-> integer-add(V, current-n-steps),
-		"condition" |-> condition-create
-	},
-//	thread-atomic 
-	sequential(
-//		if-else( true, print(tuple("start thread sleep fun" ,V," ATS is:", current-active-thread-set, and(is-equal(set-size-active-thread-set, decimal-natural("1")), not is-some-thread-sleeping))), null),
-//		if-else( true, print(""), null),
-		print "",
-//		if-else(and(is-equal(set-size-active-thread-set, decimal-natural("1")), not is-some-thread-sleeping),
-//			n-steps-set(bound "wake-time"),
-			if-else(is-equal(tuple lookup(current-sleep-map, bound "wake-time"), tuple()),
-					thread-atomic sequential(
-						add-to-sleep-map(bound "wake-time", bound "condition"),
-//						print(tuple("no condition founs, will wait on :", bound "condition")),
-						condition-wait bound "condition"
-					),
-					
-					condition-wait lookup(current-sleep-map, bound "wake-time") 
-					)
-				)
-//				,print("end thread sleep fun")
-//			)
-			
-		)
-	)
-)
+
 //if there is already a thread waiting to resume at the same time, wait on the same condition, 
 //Otherwise
 //	if(is-equal(map-elements current-sleep-map, tuple)
@@ -441,13 +398,13 @@ Datatype
 Auxiliary Type
   shared-state ~> maps(shared-state-features, values-or-syncs)
   
- Funcon shared-state-create : =>  shared-state // promise
+ Funcon shared-state-create : =>  shared-state
   ~>
   {
-  	cv |->  allocate-initialised-variable(syncs, condition-create),
-  	mtx |-> allocate-initialised-variable(syncs, exclusive-lock-create),
-  	state |-> allocate-initialised-variable(values, null),
-  	is-set |-> allocate-initialised-variable(booleans, false)
+  	cv |->  alloc-init(syncs, condition-create),
+  	mtx |-> alloc-init(syncs, exclusive-lock-create),
+  	state |-> alloc-init(values, null),
+  	is-set |-> alloc-init(booleans, false)
   }
 
   
@@ -470,18 +427,8 @@ Auxiliary Type
 Funcon shared-state-get(P:shared-state) : => values ~>
 	 if-else(assigned checked map-lookup(P, is-set), 
 		assigned checked map-lookup(P, state),
-//		force thunk closure 
 		    sequential(
-			print("waiting"),
-			//exclusive-lock-sync-else-wait(assigned checked map-lookup(P, mtx)),
-//			print("got lock"),
-			//thread-spin(condition-wait-with-lock(assigned checked map-lookup(P, cv), assigned checked map-lookup(P, mtx))),
 			condition-wait(assigned checked map-lookup(P, cv)),
-			print("was notified"),
-			//promise-get(P)
-			
-			//print(string-append("the val is set to", to-string assigned checked map-lookup(P, shared-state))),
-			///exclusive-lock-release(assigned checked map-lookup(P, mtx)),
 			assigned checked map-lookup(P, state)
 		)
 	)
@@ -495,18 +442,13 @@ Funcon shared-state-get(P:shared-state) : => values ~>
 
 Funcon shared-state-set(P:shared-state, V:values) : => null-type  ~> 
 	thread-atomic if-else(assigned checked map-lookup(P, is-set),
-		print(null), // TODO noop
+		null
 		thread-atomic sequential (
-//		exclusive-lock-sync-else-wait(assigned checked map-lookup(P, mtx)),
-//		print("value is:"),
-	//	print(V),
-		assign(checked map-lookup(P, state), V),//	set value
-		assign(checked map-lookup(P, is-set), true),//	set value
-//		exclusive-lock-release(assigned checked map-lookup(P, mtx)),
-		condition-notify-all assigned checked map-lookup(P, cv)
-		,
-		print("has notified")
-	)
+			assign(checked map-lookup(P, state), V),//	set value
+			assign(checked map-lookup(P, is-set), true),//	set value
+	//		exclusive-lock-release(assigned checked map-lookup(P, mtx)),
+			condition-notify-all assigned checked map-lookup(P, cv)
+		)
 	)
 
 Meta-variables

@@ -445,7 +445,7 @@ if __name__ == "__main__":
             shutil.copytree(permutations, funcons_dir)
 
             executor.submit(run_cpp_tests, cpp_dir, i)
-            # executor.submit(run_funcons_tests, funcons_dir, i, args.regen_funcons_script)
+            executor.submit(run_funcons_tests, funcons_dir, i, args.regen_funcons_script)
 
     # cpp_files = 
     # for each test file colect all the output files for all iterations 

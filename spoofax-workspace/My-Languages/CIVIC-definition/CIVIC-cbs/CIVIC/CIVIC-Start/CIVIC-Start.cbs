@@ -17,7 +17,7 @@ Lexis
                  | 'ref' | 'else'   | 'while' | 'true' | 'false' 
                  | 'include' | 'iostream' | 'chrono' | 'thread' | 'mutex'
                  | 'extern' | 'future' | 'condition_variable'| 'chrono' 
-                 | 'try' | 'catch'
+                 | 'try' | 'catch' | 'typedef'
 //                 | 'printInt'
 //		| 'printFloat'
        Bool : bool-const ::= 'true' | 'false'
@@ -126,7 +126,11 @@ Rule eval-bool[[ 'true' ]] = true
 Rule eval-bool[[ 'false' ]] = false
 Rule eval[[ Bool ]] = eval-bool[[Bool]]
 //Rule eval[[ ID '(' ')' ]] = apply(eval[[ ID ]], tuple() )
-Rule eval[[ ID '(' Exprs? ')' ]] = apply(eval[[ ID ]], tuple(eval-exprs[[ Exprs? ]]) )
+Rule eval[[ ID '(' Exprs? ')' ]] =
+if-else(is(eval[[ ID ]], functions),
+	 apply(eval[[ ID ]], tuple(eval-exprs[[ Exprs? ]]) ),
+	 apply(get-class-method(dereference eval[[ ID ]], "_callable"), tuple(eval-exprs[[ Exprs? ]]))
+ )
 
 //Rule eval[[ E ',' Exprs ]] = sequential(eval[[ E ]], eval[[ Exprs ]])
 
