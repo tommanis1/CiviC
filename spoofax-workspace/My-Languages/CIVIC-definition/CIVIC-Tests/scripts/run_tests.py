@@ -11,7 +11,7 @@ import traceback
 import json
 GPP_FLAGS = "-std=c++2b -O0"
 TIMEOUT = 30
-ITERATIONS = 5
+ITERATIONS = 1
 CONFIG = "--non-deterministic value-operations"
 
 def create_cpp_output(directory, f):
@@ -74,14 +74,14 @@ def create_cpp_output(directory, f):
         logger.removeFilter(handler)
     
     return ret
-def create_fct_output(directory, f): 
+def create_fct_output(directory, f, rfct): 
     logger = get_logger(f"fct_logger_{os.path.basename(f)}", f+"_fct.debug")
 
     ret = []
     for i in range(ITERATIONS):
 
         seed = random.randint(0, 65535)
-        code, stdout, stderr = run(f'ulimit -Sv 4000000 && /home/l/.cabal/bin/CIVIC-Runfct --show-output-only true --refocus false {CONFIG} --seed {seed} {f + ".fct"}')
+        code, stdout, stderr = run(f'ulimit -Sv 4000000 && {rfct} --show-output-only true --refocus false {CONFIG} --seed {seed} {f + ".fct"}')
 
                     # print(code, stdout, stderr)
         stdout = "".join(stdout)
@@ -101,10 +101,13 @@ def main():
     parser.add_argument('regen', help='path to regen.sh')
     parser.add_argument('dockerfile_dir', type=str, help='Dir with a Dockerfile')
     parser.add_argument('data_folder', help='Path for summary output')
+    parser.add_argument('rfct', help='Runfct')
+
     parser.add_argument('directories', metavar='DIR', nargs='+', help='input directories')
+
     parser.add_argument('-t', '--threads', type=int, default=4, help='Number of threads to use')
     args = parser.parse_args()
-
+    print(run(f"docker build -t test_cpp_image:latest -f Dockerfile {os.path.abspath(args.dockerfile_dir)}"))
     directory_list = args.directories
     n_tests = 0
     n_test_syntax = 0
@@ -126,7 +129,7 @@ def main():
 
             # Submit tasks to thread pool
             for f in files:
-                futures.append(executor.submit(process_file, directory, f, args.regen))
+                futures.append(executor.submit(process_file, directory, f, args.regen, args.rfct))
 
             # Wait for all tasks to complete
             concurrent.futures.wait(futures)
@@ -152,15 +155,12 @@ def main():
 
             print(f"summary created in {args.data_folder}")
 
-def process_file(directory, f, regen):
+def process_file(directory, f, regen, rfct):
     create_civ_file(f)
     run(f"bash {regen} {directory}")
     cpp_outputs = create_cpp_output(directory, f)
-    fct_outputs = create_fct_output(directory, f)
+    fct_outputs = create_fct_output(directory, f, rfct)
     return f, cpp_outputs, fct_outputs
-
-if __name__ == '__main__':
-    main()
 
 if __name__ == '__main__':
     main()

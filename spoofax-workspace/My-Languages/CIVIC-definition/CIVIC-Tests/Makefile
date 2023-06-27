@@ -18,6 +18,7 @@ TEST_DIRS = C++
 GCC_DIR = gcc/libstdc++v3/testsuite/30_threads/
 SELECT_GCC_DIR = relevant_tests_from_gcc
 LANGUAGE_PROJECT = ..
+RUNFCT := $(shell find ../.. -name "CIVIC-Runfct" -type f | sort | head -n 1)
 # .PHONY: 
 # run, create_table_determ_tests
 
@@ -39,10 +40,10 @@ create_permutations:
 	$(PYTHON) scripts/create_permutations.py perm $(PERM_DIR); \
 
 run_permutations: create_permutations
-	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(PERM_DIR) -t $(THREAD_POOL_SIZE); \
+	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(PERM_DIR) -t $(THREAD_POOL_SIZE); \
 
 test: clean run_gcc_tests run_permutations
-	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(TEST_DIRS) -t $(THREAD_POOL_SIZE); \
+	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(TEST_DIRS) -t $(THREAD_POOL_SIZE); \
 
 # run_non_determ:
 # 	$(PYTHON) scripts/run-nondeterministic.py 10 $(NON_DETERM_FOLDER) $(DOCKERFILE) $(REGEN_FUNCONS) $(TEX); \
