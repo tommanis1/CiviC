@@ -40,10 +40,10 @@ create_permutations:
 	$(PYTHON) scripts/create_permutations.py perm $(PERM_DIR); \
 
 run_permutations: create_permutations
-	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(PERM_DIR) -t $(THREAD_POOL_SIZE); \
+	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(THREAD_POOL_SIZE) $(PERM_DIR); \
 
 test: clean run_permutations
-	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(TEST_DIRS) -t $(THREAD_POOL_SIZE); \
+	$(PYTHON) scripts/run_tests.py $(REGEN_FUNCONS) $(DOCKERFILE) $(DATA_FOLDER) $(RUNFCT) $(THREAD_POOL_SIZE) $(TEST_DIRS) ; \
 
 # run_non_determ:
 # 	$(PYTHON) scripts/run-nondeterministic.py 10 $(NON_DETERM_FOLDER) $(DOCKERFILE) $(REGEN_FUNCONS) $(TEX); \

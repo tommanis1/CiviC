@@ -102,10 +102,9 @@ def main():
     parser.add_argument('dockerfile_dir', type=str, help='Dir with a Dockerfile')
     parser.add_argument('data_folder', help='Path for summary output')
     parser.add_argument('rfct', help='Runfct')
+    parser.add_argument('threads', type=int, default=4, help='Number of threads to use')
 
     parser.add_argument('directories', metavar='DIR', nargs='+', help='input directories')
-
-    parser.add_argument('-t', '--threads', type=int, default=4, help='Number of threads to use')
     args = parser.parse_args()
     print(run(f"docker build -t test_cpp_image:latest -f Dockerfile {os.path.abspath(args.dockerfile_dir)}"))
     directory_list = args.directories
@@ -123,13 +122,20 @@ def main():
 
             files = select_files_with_extensions(directory, [".cpp"], include_subdirectories=False)
             n_tests += len(files)
+            # for f in files:
+            for f in files:
+                create_civ_file(f)
+            run(f"bash {args.regen} {directory}")
+            files = select_files_with_extensions(directory, [".cpp", ".civ", ".fct"], include_subdirectories=False)
+            n_test_syntax += len(files)
+            print(files)
 
             # Create a list to hold our future results
             futures = []
 
             # Submit tasks to thread pool
             for f in files:
-                futures.append(executor.submit(process_file, directory, f, args.regen, args.rfct))
+                futures.append(executor.submit(process_file, directory, f, args.rfct))
 
             # Wait for all tasks to complete
             concurrent.futures.wait(futures)
@@ -155,9 +161,7 @@ def main():
 
             print(f"summary created in {args.data_folder}")
 
-def process_file(directory, f, regen, rfct):
-    create_civ_file(f)
-    run(f"bash {regen} {directory}")
+def process_file(directory, f, rfct):
     cpp_outputs = create_cpp_output(directory, f)
     fct_outputs = create_fct_output(directory, f, rfct)
     return f, cpp_outputs, fct_outputs
